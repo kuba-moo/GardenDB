@@ -25,8 +25,6 @@ MainTable::MainTable(QSqlDatabase& db, QWidget *parent) :
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
     connect(ui->tableView, SIGNAL(doubleClicked(QModelIndex)),
             SIGNAL(rowDetails(QModelIndex)));
-    connect(ui->tableView, SIGNAL(entered(QModelIndex)),
-            SIGNAL(rowDetails(QModelIndex)));
 
     loadData();
 
