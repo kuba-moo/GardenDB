@@ -48,7 +48,7 @@
         <string>Add</string>
        </property>
        <property name="icon">
-        <iconset resource="icons.qrc">
+        <iconset resource="app.qrc">
          <normaloff>:/icons/plus</normaloff>:/icons/plus</iconset>
        </property>
        <property name="shortcut">
@@ -62,7 +62,7 @@
         <string>Remove</string>
        </property>
        <property name="icon">
-        <iconset resource="icons.qrc">
+        <iconset resource="app.qrc">
          <normaloff>:/icons/minus</normaloff>:/icons/minus</iconset>
        </property>
       </widget>
@@ -77,7 +77,7 @@
   <tabstop>tableView</tabstop>
  </tabstops>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="app.qrc"/>
  </resources>
  <connections/>
 </ui>
