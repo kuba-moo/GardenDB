@@ -8,13 +8,6 @@
 #include <QDebug>
 #include <QMessageBox>
 
-class OPictureItemDelegate : public QStyledItemDelegate {
-    void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-    {
-        QStyledItemDelegate::paint(painter, option, index);
-    }
-};
-
 MainTable::MainTable(QSqlDatabase& db, QWidget *parent) :
     QWidget(parent), database(db),
     ui(new Ui::MainTable)
