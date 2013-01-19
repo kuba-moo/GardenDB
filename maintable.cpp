@@ -46,7 +46,6 @@ void MainTable::loadData()
     model->setHeaderData(3, Qt::Horizontal, trUtf8("Bush size"));
     model->setHeaderData(4, Qt::Horizontal, trUtf8("Description"));
     model->setHeaderData(5, Qt::Horizontal, trUtf8("Photo"));
-    model->setRelation(5, QSqlRelation("Images", "id", "data"));
     model->setHeaderData(6, Qt::Horizontal, trUtf8("Flavour"));
     model->setRelation(6, QSqlRelation("Flavour", "id", "name"));
     model->setHeaderData(7, Qt::Horizontal, trUtf8("Flowering"));

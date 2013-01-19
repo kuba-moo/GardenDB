@@ -4,6 +4,7 @@
 #include "obuiltinseditor.h"
 #include "maintable.h"
 #include "addnew.h"
+#include "imagecache.h"
 
 #include <QFileDialog>
 #include <QSqlQuery>
@@ -83,6 +84,8 @@ void OMain::openFile()
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
     ui->tabWidget->addTab(mainTable, QIcon(), trUtf8("Garden"));
+
+    ImageCache::getInstance().clear();
 }
 
 void OMain::closeFile()

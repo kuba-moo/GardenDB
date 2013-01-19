@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     addnew.cpp \
     oqueries.cpp \
     specialattribute.cpp \
-    imagerenderer.cpp
+    imagerenderer.cpp \
+    imagecache.cpp
 
 HEADERS  += omain.h \
     oqueries.h \
@@ -25,7 +26,8 @@ HEADERS  += omain.h \
     maintable.h \
     addnew.h \
     specialattribute.h \
-    imagerenderer.h
+    imagerenderer.h \
+    imagecache.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \
