@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="plus">Icons/list-add.png</file>
+        <file alias="image">Icons/image-x-generic.png</file>
+        <file alias="minus">Icons/list-remove.png</file>
+        <file>Icons/edit-delete.png</file>
+    </qresource>
+    <qresource prefix="/translations">
+        <file alias="pl">garden_pl.qm</file>
+    </qresource>
+</RCC>
