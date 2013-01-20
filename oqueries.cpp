@@ -51,9 +51,6 @@ const QString creates[numCreates] = {
     ")",
 };
 
-/* TODO: get rid of max image size */
-const QSize ImageSize(5000,5000);
-
 /* TODO: translate those */
 const unsigned int numInserts = 22;
 const QString inserts[numInserts] = {

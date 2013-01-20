@@ -94,7 +94,7 @@ void AddNew::setData(const QSqlRecord &record)
     {
         const int picId = pictures.record().value("id").toInt();
 
-        QPixmap *pixmap = cache.getPixmapGe(picId, ui->listWidget->iconSize()*2);
+        QPixmap *pixmap = cache.getPixmapGe(picId, QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
         picIds.push_back(picId);
         if (mainPhotoId == picId)
@@ -142,8 +142,6 @@ void AddNew::addPhoto()
     if (! pixmap.load(fileName))
         return;
 
-    QIcon image(pixmap);
-
     if (! isNew)
     {
         QSqlQuery insertPicture;
@@ -151,7 +149,6 @@ void AddNew::addPhoto()
 
         QByteArray array;
         QBuffer buf(&array);
-        QPixmap pixmap = image.pixmap(ImageSize.width(), ImageSize.height());
         buf.open(QIODevice::WriteOnly);
         pixmap.save(&buf, "PNG");
 
@@ -165,7 +162,10 @@ void AddNew::addPhoto()
             qDebug() << insertPicture.lastError();
     }
 
-    ui->listWidget->addItem(new QListWidgetItem(image, QString()));
+    QIcon icon(pixmap.scaled(QSize(800, 800), Qt::KeepAspectRatio,
+                             Qt::SmoothTransformation));
+    ui->listWidget->addItem(new QListWidgetItem(icon, ""));
+    ui->listWidget->item(ui->listWidget->count()-1)->setToolTip(fileName);
 }
 
 void AddNew::setMainPhoto(int n)
@@ -223,8 +223,12 @@ void AddNew::acceptAdd()
 
         QByteArray array;
         QBuffer buf(&array);
-        QPixmap pixmap = item->icon().pixmap(ImageSize.width(),
-                                             ImageSize.height());
+        QPixmap pixmap;
+        /* Check if image was read successfully. */
+        if (! pixmap.load(item->toolTip())) {
+            qDebug() << "Item is spooky!" << item;
+            continue;
+        }
         buf.open(QIODevice::WriteOnly);
         pixmap.save(&buf, "PNG");
 

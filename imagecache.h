@@ -61,8 +61,8 @@ private:
     /* Can persistent cache be used to generate image. */
     bool canUsePCache(const QSize &size) const
     {
-        return size.width() < UsableCacheSize.width() &&
-               size.height() < UsableCacheSize.height();
+        return size.width() <= UsableCacheSize.width() &&
+               size.height() <= UsableCacheSize.height();
     }
 
     /* Insert pixmap into cache. */

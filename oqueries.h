@@ -13,8 +13,6 @@
 extern const unsigned int numCreates;
 extern const QString creates[];
 
-extern const QSize ImageSize;
-
 /* Commands initializing configuration stored in database to defaults. */
 extern const unsigned int numInserts;
 extern const QString inserts[];
