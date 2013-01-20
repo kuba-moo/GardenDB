@@ -181,11 +181,13 @@ void AddNew::addPhoto()
 
 void AddNew::setMainPhoto(int n)
 {
+    QLabel * const photo = ui->mainPhoto;
+
     if (n < 0)
-        ui->mainPhoto->setPixmap(QIcon(":/icons/image").pixmap(180, 180));
+        photo->setPixmap(QIcon(":/icons/image").pixmap(photo->size()));
     else {
         QListWidgetItem *selected = ui->listWidget->item(n);
-        ui->mainPhoto->setPixmap(selected->icon().pixmap(180, 180));
+        photo->setPixmap(selected->icon().pixmap(photo->size()));
     }
 }
 

@@ -56,8 +56,8 @@
         <widget class="QLabel" name="mainPhoto">
          <property name="minimumSize">
           <size>
-           <width>180</width>
-           <height>180</height>
+           <width>200</width>
+           <height>200</height>
           </size>
          </property>
          <property name="font">
@@ -105,8 +105,11 @@
          <property name="isWrapping" stdset="0">
           <bool>true</bool>
          </property>
+         <property name="resizeMode">
+          <enum>QListView::Adjust</enum>
+         </property>
          <property name="viewMode">
-          <enum>QListView::ListMode</enum>
+          <enum>QListView::IconMode</enum>
          </property>
          <property name="selectionRectVisible">
           <bool>true</bool>
