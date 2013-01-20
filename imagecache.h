@@ -22,6 +22,9 @@ class QWidget;
  * smaller than UsableCacheSize. Pictures are inserted to "pre-scaled" cache
  * on first use for backwards compatibility (old dbs don't have that table.)
  *
+ * In Image table, first image (id=1) is always empty - null or maybe even
+ * doesn't exist after cascade delete.
+ *
  * All the elements are scaled with Qt::KeepAspectRatio.
  */
 

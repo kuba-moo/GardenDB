@@ -3,13 +3,14 @@
 #include "oqueries.h"
 #include "imagecache.h"
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
+#include <QBuffer>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStringList>
+#include <QSqlDatabase>
 #include <QSqlError>
-#include <QBuffer>
+#include <QSqlQuery>
 
 AddNew::AddNew(QWidget *parent) :
     QWidget(parent),
@@ -191,12 +192,8 @@ void AddNew::magnifyImage(QModelIndex index)
     label->show();
 }
 
-/* TODO: Speed this up. */
-void AddNew::accept()
+void AddNew::acceptAdd()
 {
-    /* TODO: marge some things maybe? */
-    if (isNew)
-    {
     QString insert = "INSERT INTO Species VALUES("
             "NULL, '" + ui->name->text() + "', '" + ui->flowers->text() + "', "
             "'" + ui->bush->text() + "', '"
@@ -247,69 +244,41 @@ void AddNew::accept()
 
     if (setMain.lastError().isValid())
         qDebug() << setMain.lastError();
-    }
+}
+
+void AddNew::acceptUpdate()
+{
+    int mainPhotoId = (ui->listWidget->currentRow() == -1) ?
+                1 : picIds[ui->listWidget->currentRow()];
+
+    QStringList ul;
+    ul << "UPDATE Species SET";
+    ul << " name='" << ui->name->text() << "'";
+    ul << ", flowers='" << ui->flowers->text() << "'";
+    ul << ", size='" << ui->bush->text() << "'";
+    ul << ", main_photo='" << QString::number(mainPhotoId) << "'";
+    ul << ", desc='" << ui->desc->document()->toPlainText() << "'";
+    ul << ", fl_id="
+       << QString::number(ui->flavour->itemData(ui->flavour->currentIndex()).toInt());
+    ul << ", fw_id="
+       << QString::number(ui->flowering->itemData(ui->flowering->currentIndex()).toInt());
+    ul << ", fr_id="
+       << QString::number(ui->frost->itemData(ui->frost->currentIndex()).toInt());
+    ul << ", tp_id="
+       << QString::number(ui->type->itemData(ui->type->currentIndex()).toInt());
+    ul << " WHERE id=" << QString::number(speciesId);
+
+    QSqlQuery updateQuery(ul.join(""));
+    if (updateQuery.lastError().isValid())
+        qDebug() << updateQuery.executedQuery() << "\n" << updateQuery.lastError();
+}
+
+void AddNew::accept()
+{
+    if (isNew)
+        acceptAdd();
     else
-    {
-        QSqlQuery update(QString("UPDATE Species SET %1 = '%2' WHERE id=%3")
-                         .arg("name").arg(ui->name->text()).arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = '%2' WHERE id=%3")
-                    .arg("flowers").arg(ui->flowers->text()).arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = '%2' WHERE id=%3")
-                    .arg("size").arg(ui->bush->text()).arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        int mainPhotoId = (ui->listWidget->currentRow() == -1) ?
-                    1 : picIds[ui->listWidget->currentRow()];
-        update.exec(QString("UPDATE Species SET %1 = '%2' WHERE id=%3")
-                    .arg("main_photo").arg(mainPhotoId).arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = '%2' WHERE id=%3")
-                    .arg("desc").arg(ui->desc->document()->toPlainText())
-                    .arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = %2 WHERE id=%3")
-                    .arg("fl_id")
-                    .arg(ui->flavour->itemData(
-                             ui->flavour->currentIndex()).toInt())
-                    .arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = %2 WHERE id=%3")
-                    .arg("fw_id")
-                    .arg(ui->flowering->itemData(
-                             ui->flowering->currentIndex()).toInt())
-                    .arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = %2 WHERE id=%3")
-                    .arg("fr_id")
-                    .arg(ui->frost->itemData(
-                             ui->frost->currentIndex()).toInt())
-                    .arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-
-        update.exec(QString("UPDATE Species SET %1 = %2 WHERE id=%3")
-                    .arg("tp_id")
-                    .arg(ui->type->itemData(
-                             ui->type->currentIndex()).toInt())
-                    .arg(speciesId));
-        if (update.lastError().isValid())
-            qDebug() << update.executedQuery() << "\n" << update.lastError();
-    }
+        acceptUpdate();
 
     close();
 }

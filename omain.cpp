@@ -75,8 +75,6 @@ void OMain::openFile()
     for (unsigned i=0; i < numInserts && !result.lastError().isValid(); i++)
         result = database.exec(inserts[i]);
 
-    QSqlQuery("INSERT INTO Images VALUES(1, '', 0)");
-
     ui->actionEdit_built_ins->setEnabled(true);
 
     mainTable = new MainTable(database, this);

@@ -55,7 +55,7 @@ const QString creates[numCreates] = {
 const QSize ImageSize(5000,5000);
 
 /* TODO: translate those */
-const unsigned int numInserts = 21;
+const unsigned int numInserts = 22;
 const QString inserts[numInserts] = {
     "INSERT INTO Types VALUES(1, 'wielkokwiatowe')",
     "INSERT INTO Types VALUES(2, 'wielokwiatowe')",
@@ -77,7 +77,10 @@ const QString inserts[numInserts] = {
     "INSERT INTO Frost VALUES(3, '6a')",
     "INSERT INTO Frost VALUES(4, '6b')",
     "INSERT INTO Frost VALUES(5, '7a')",
-    "INSERT INTO Frost VALUES(6, '7b')"
+    "INSERT INTO Frost VALUES(6, '7b')",
+
+    /* null - image */
+    "INSERT INTO Images VALUES(1, '', 0)"
 };
 
 const QString getTypes = "SELECT * FROM Types";

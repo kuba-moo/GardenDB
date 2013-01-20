@@ -24,6 +24,12 @@ public slots:
     /* Populates data fields with values form record and changes title. */
     void setData(const QSqlRecord& record);
 
+private:
+    /* Add contained data to database as new specimen. */
+    void acceptAdd();
+    /* Update contained specimen. */
+    void acceptUpdate();
+
 private slots:
     /* Spawn file selection window and append chosen image to images. */
     void addPhoto();

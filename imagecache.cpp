@@ -94,6 +94,9 @@ QPixmap *ImageCache::insertError(const int id, const QSize &size)
 
 QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
 {
+    if (id == 1)
+        return insertError(id, size);
+
     if (root.size() <= id)
         return loadSlowpath(id, size);
 
@@ -113,6 +116,9 @@ QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
 QPixmap *ImageCache::getPixmapGe(const int id, const QSize &size)
 {
     QPixmap *ret = NULL;
+
+    if (id == 1)
+        return insertError(id, size);
 
     if (root.size() <= id)
         return loadSlowpath(id, size);
