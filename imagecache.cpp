@@ -110,6 +110,25 @@ QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
     return loadSlowpath(id, size);
 }
 
+QPixmap *ImageCache::getPixmapGe(const int id, const QSize &size)
+{
+    QPixmap *ret = NULL;
+
+    if (root.size() <= id)
+        return loadSlowpath(id, size);
+
+    /* Search the list - remember smallest bigger. */
+    QLinkedList<QPixmap *>::iterator i = root[id].begin();
+    for (; i != root[id].end(); i++)
+        if ((*i)->width() >= size.width() || (*i)->height() >= size.height())
+            ret = *i;
+
+    if (ret)
+        return ret;
+
+    return loadSlowpath(id, size);
+}
+
 QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size)
 {
     QByteArray binaryPhoto;

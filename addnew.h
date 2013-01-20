@@ -9,8 +9,6 @@ namespace Ui {
     class AddNew;
 }
 
-class SpecialAttribute;
-
 class AddNew : public QWidget
 {
     Q_OBJECT
@@ -33,7 +31,7 @@ private slots:
     void removePhoto();
     /* Set main photo to nth photo in listWidget. */
     void setMainPhoto(int n);
-    /* TODO: doc */
+    /* Show image in separate, bigger window. */
     void magnifyImage(QModelIndex);
 
     /* Add all contained data to database and destroy this tab. */
@@ -45,7 +43,6 @@ private:
     int oldPhotoes;
     Ui::AddNew *ui;
     QVector<int> picIds;
-    QList<SpecialAttribute *> specialAttributes;
 };
 
 #endif // ADDNEW_H

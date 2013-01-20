@@ -4,7 +4,7 @@
 
 #include "oqueries.h"
 
-const unsigned int numCreates = 9;
+const unsigned int numCreates = 8;
 const QString creates[numCreates] = {
     "CREATE TABLE IF NOT EXISTS Types ("
         "id INTEGER PRIMARY KEY ASC AUTOINCREMENT,"
@@ -49,13 +49,6 @@ const QString creates[numCreates] = {
         "data BLOB,"
         "FOREIGN KEY(id) REFERENCES Images(id) ON DELETE CASCADE"
     ")",
-    "CREATE TABLE IF NOT EXISTS Attributes ("
-        "id INTEGER PRIMARY KEY ASC AUTOINCREMENT,"
-        "sp_id INTEGER,"
-        "value TEXT,"
-        "name TEXT,"
-        "FOREIGN KEY(sp_id) REFERENCES Species(id) ON DELETE CASCADE"
-    ")"
 };
 
 /* TODO: get rid of max image size */

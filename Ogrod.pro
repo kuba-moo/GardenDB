@@ -16,7 +16,6 @@ SOURCES += main.cpp\
     maintable.cpp \
     addnew.cpp \
     oqueries.cpp \
-    specialattribute.cpp \
     imagerenderer.cpp \
     imagecache.cpp
 
@@ -25,15 +24,13 @@ HEADERS  += omain.h \
     obuiltinseditor.h \
     maintable.h \
     addnew.h \
-    specialattribute.h \
     imagerenderer.h \
     imagecache.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \
     maintable.ui \
-    addnew.ui \
-    specialattribute.ui
+    addnew.ui
 
 RESOURCES += \
     app.qrc

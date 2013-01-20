@@ -1,7 +1,7 @@
 #include "addnew.h"
 #include "ui_addnew.h"
 #include "oqueries.h"
-#include "specialattribute.h"
+#include "imagecache.h"
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -82,40 +82,27 @@ void AddNew::setData(const QSqlRecord &record)
     ui->frost->setCurrentIndex(bareRecord.record().value("fr_id").toInt()-1);
     ui->desc->setText(record.value("desc").toString());
 
-    QSqlQuery pictures(QString("SELECT * FROM Images WHERE sp_id = %1")
-                       .arg(speciesId));
-    int mainPhotoId = bareRecord.record().value("main_photo").toInt();
+    /* Pictures. */
     int mainPhotoIndex = -1;
+    int mainPhotoId = bareRecord.record().value("main_photo").toInt();
+    ImageCache &cache = ImageCache::getInstance();
+    QSqlQuery pictures(QString("SELECT id FROM Images WHERE sp_id = %1")
+                              .arg(speciesId));
+
     while (pictures.next())
     {
-        QByteArray data(pictures.record().value("data").toByteArray());
-        QPixmap pixmap;
-        pixmap.loadFromData(data, "PNG");
-        ui->listWidget->addItem(new QListWidgetItem(QIcon(pixmap), ""));
-        picIds.push_back(pictures.record().value("id").toInt());
-        if (mainPhotoId == pictures.record().value("id").toInt())
+        const int picId = pictures.record().value("id").toInt();
+
+        QPixmap *pixmap = cache.getPixmapGe(picId, ui->listWidget->iconSize()*2);
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
+        picIds.push_back(picId);
+        if (mainPhotoId == picId)
             mainPhotoIndex = ui->listWidget->count()-1;
     }
     oldPhotoes = ui->listWidget->count();
     ui->listWidget->setCurrentRow(mainPhotoIndex);
 
-    /* TODO: really remove special attributes from project. */
     return;
-/*
-    QSqlQuery attributes(QString("SELECT * FROM Attributes WHERE sp_id = %1")
-                         .arg(speciesId));
-    while (attributes.next())
-    {
-        SpecialAttribute *attr = new SpecialAttribute(
-                    attributes.record().value("name").toString(), this);
-        attr->setValue(attributes.record().value("value").toString());
-        attr->setId(attributes.record().value("id").toInt());
-
-        specialAttributes.append(attr);
-        connect(attr, SIGNAL(destroyed()), SLOT(removeAttribute()));
-
-        ui->formLayout->addRow(attr);
-    }*/
 }
 
 void AddNew::removePhoto()
@@ -196,12 +183,15 @@ void AddNew::magnifyImage(QModelIndex index)
 {
     QLabel *label = new QLabel("");
     label->setAttribute(Qt::WA_DeleteOnClose);
-    QIcon icon = index.data(Qt::DecorationRole).value<QIcon>();
-    label->setPixmap(icon.pixmap(800));
+
+    QPixmap *pixmap = ImageCache::getInstance().getPixmapGe(picIds[index.row()],
+                                                            QSize(800, 800));
+    label->setPixmap(*pixmap);
     label->adjustSize();
     label->show();
 }
 
+/* TODO: Speed this up. */
 void AddNew::accept()
 {
     /* TODO: marge some things maybe? */
@@ -319,23 +309,6 @@ void AddNew::accept()
                     .arg(speciesId));
         if (update.lastError().isValid())
             qDebug() << update.executedQuery() << "\n" << update.lastError();
-    }
-
-    QSqlQuery insertAttribute;
-    insertAttribute.prepare(QString("INSERT INTO Attributes VALUES("
-                                      "NULL, %1, :value, :name)")
-                              .arg(speciesId));
-    foreach (SpecialAttribute *sa, specialAttributes) {
-        if (sa->id())
-            continue;
-
-        insertAttribute.bindValue(":value", sa->value());
-        insertAttribute.bindValue(":name", sa->name());
-        insertAttribute.exec();
-
-        if (insertAttribute.lastError().isValid())
-            qDebug() << __FILE__ << insertAttribute.executedQuery() << '\n'
-                        << insertAttribute.lastError();
     }
 
     close();

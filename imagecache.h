@@ -39,8 +39,10 @@ public:
     /* Clear cache. */
     void clear();
 
-    /* Read form cache pixmapof exactly given size. */
+    /* Read form cache pixmap of exactly given size. */
     QPixmap *getPixmap(const int, const QSize &);
+    /* Get pixmap greater or equal to given size. */
+    QPixmap *getPixmapGe(const int, const QSize &);
 
 private:
     /* Size of images in ImagesCache table. */
