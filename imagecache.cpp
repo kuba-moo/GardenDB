@@ -11,7 +11,7 @@
 #include "oqueries.h"
 
 ImageCache::ImageCache(QObject *parent) :
-    QObject(parent)
+    QObject(parent), MaxCost(400*1000*1000)
 {
     root.resize(128);
 }
@@ -28,11 +28,23 @@ void ImageCache::insert(const int id, QPixmap *pixmap)
     if (root.size() <= id)
         root.resize(id*2);
 
+    reserveSpace(pixmap);
+
     QLinkedList<QPixmap *>::iterator i = root[id].begin();
     for (; i != root[id].end(); i++)
         if ((*i)->width() < pixmap->width())
             break;
     root[id].insert(i, pixmap);
+}
+
+void ImageCache::reserveSpace(QPixmap *pixmap)
+{
+    cost += 1000 + pixmap->width()*pixmap->height()*4;
+
+    if (cost > MaxCost) {
+        clear();
+        cost = 1000 + pixmap->width()*pixmap->height()*4;
+    }
 }
 
 void ImageCache::preserve(const int id, QPixmap *fullsize)
@@ -67,7 +79,7 @@ QPixmap *ImageCache::insertError(const int id, const QSize &size)
 {
     /* Perhaps we could share empty pixmaps but they should only appear
      * in abnormal situations so it's not really worth optimizing. */
-
+    /* Create and fill with zeroes. */
     QPixmap *pixmap = new QPixmap(size);
     pixmap->fill();
 

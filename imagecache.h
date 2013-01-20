@@ -19,9 +19,6 @@ class QWidget;
  * All the elements are scaled with Qt::KeepAspectRatio.
  */
 
-/* TODO: LRU - keep cache small. */
-/* TODO: use bigger pixmaps to generate smaller. */
-
 class ImageCache : public QObject
 {
     Q_OBJECT
@@ -57,6 +54,8 @@ private:
 
     /* Insert pixmap into cache. */
     void insert(const int, QPixmap *);
+    /* Update cost and kick out oldest images if needed. */
+    void reserveSpace(QPixmap *);
     /* Save image into ImagesCache. */
     void preserve(const int, QPixmap *);
 
@@ -66,6 +65,9 @@ private:
     QPixmap *loadSlowpath(const int, const QSize &);
 
     QVector<QLinkedList<QPixmap *> > root;
+
+    unsigned cost;
+    const unsigned MaxCost;
 };
 
 #endif // IMAGECACHE_H
