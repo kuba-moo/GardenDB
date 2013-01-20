@@ -4,7 +4,7 @@
 
 #include "oqueries.h"
 
-const unsigned int numCreates = 8;
+const unsigned int numCreates = 9;
 const QString creates[numCreates] = {
     "CREATE TABLE IF NOT EXISTS Types ("
         "id INTEGER PRIMARY KEY ASC AUTOINCREMENT,"
@@ -44,6 +44,11 @@ const QString creates[numCreates] = {
         "sp_id INTEGER,"
         "FOREIGN KEY(sp_id) REFERENCES Species(id) ON DELETE CASCADE"
     ")",
+    "CREATE TABLE IF NOT EXISTS ImagesCache ("
+        "id INTEGER PRIMARY KEY,"
+        "data BLOB,"
+        "FOREIGN KEY(id) REFERENCES Images(id) ON DELETE CASCADE"
+    ")",
     "CREATE TABLE IF NOT EXISTS Attributes ("
         "id INTEGER PRIMARY KEY ASC AUTOINCREMENT,"
         "sp_id INTEGER,"
@@ -53,6 +58,13 @@ const QString creates[numCreates] = {
     ")"
 };
 
+/* Size of images in ImagesCache table. */
+const QSize CachedImageSize(400, 400);
+/* Max size of image that can be generated from cached images. */
+const QSize UsableCacheSize(200, 200);
+
+
+/* TODO: get rid of max image size */
 const QSize ImageSize(5000,5000);
 
 /* TODO: translate those */

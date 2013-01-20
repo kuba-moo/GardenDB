@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QBuffer>
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlQuery>
@@ -7,6 +8,7 @@
 #include <QVariant>
 
 #include "imagecache.h"
+#include "oqueries.h"
 
 ImageCache::ImageCache(QObject *parent) :
     QObject(parent)
@@ -31,6 +33,34 @@ void ImageCache::insert(const int id, QPixmap *pixmap)
         if ((*i)->width() < pixmap->width())
             break;
     root[id].insert(i, pixmap);
+}
+
+void ImageCache::preserve(const int id, QPixmap *fullsize)
+{
+    qDebug() << "Preserve" << id;
+
+    /* If image is to small there is no use in scaling it down. */
+    if (fullsize->size().width() < CachedImageSize.width() ||
+        fullsize->size().height() < CachedImageSize.height())
+        return;
+
+    QSqlQuery insertPicture;
+    insertPicture.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
+
+    QByteArray array;
+    QBuffer buf(&array);
+    QPixmap pixmap = fullsize->scaled(CachedImageSize,
+                                      Qt::KeepAspectRatioByExpanding,
+                                      Qt::SmoothTransformation);
+    buf.open(QIODevice::WriteOnly);
+    pixmap.save(&buf, "PNG");
+
+    insertPicture.bindValue(":id", id);
+    insertPicture.bindValue(":image", array);
+    insertPicture.exec();
+
+    if (insertPicture.lastError().isValid())
+        qDebug() << insertPicture.lastError();
 }
 
 QPixmap *ImageCache::insertError(const int id, const QSize &size)
@@ -66,23 +96,39 @@ QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
 
 QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size)
 {
+    QByteArray binaryPhoto;
+
     qDebug() << "Load" << id << size;
 
-    QSqlQuery readPhoto(QString("SELECT data FROM Images WHERE id = %1").arg(id));
-    if (!readPhoto.next() || readPhoto.lastError().isValid()) {
-        if (readPhoto.lastError().isValid())
-            qDebug() << readPhoto.lastError().text();
-        else
-            qDebug() << "Image not found!";
+    /* First try to dig it out of the persistent cache. */
+    QSqlQuery searchCache(QString("SELECT data FROM ImagesCache WHERE id = %1").arg(id));
+    if (searchCache.lastError().isValid())
+            qDebug() << searchCache.lastError().text();
 
-        return insertError(id, size);
+    if (searchCache.next() && canUsePCache(size))
+            binaryPhoto = searchCache.record().value(0).toByteArray();
+    else { /* Miss, we need to go deeper... */
+        qDebug() << "Miss" << id;
+
+        QSqlQuery readPhoto(QString("SELECT data FROM Images WHERE id = %1").arg(id));
+        if (!readPhoto.next() || readPhoto.lastError().isValid()) {
+            if (readPhoto.lastError().isValid())
+                qDebug() << readPhoto.lastError().text();
+            else
+                qDebug() << "Image not found!";
+
+            return insertError(id, size);
+        }
+
+        binaryPhoto = readPhoto.record().value(0).toByteArray();
     }
 
-    QByteArray array = readPhoto.record().value(0).toByteArray();
-
     QPixmap tmp, *result = new QPixmap;
-    tmp.loadFromData(array, "PNG");
+    tmp.loadFromData(binaryPhoto, "PNG");
     *result = tmp.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    if (!searchCache.isValid())
+        preserve(id, &tmp);
     insert(id, result);
 
     return result;

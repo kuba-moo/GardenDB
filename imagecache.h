@@ -6,6 +6,8 @@
 #include <QPixmap>
 #include <QVector>
 
+#include "oqueries.h"
+
 class QWidget;
 
 /** ImageCache
@@ -46,8 +48,18 @@ private:
     ImageCache(ImageCache const&);
     void operator=(ImageCache const&);
 
+    /* Can persistent cache be used to generate image. */
+    bool canUsePCache(const QSize &size) const
+    {
+        return size.width() < UsableCacheSize.width() &&
+               size.height() < UsableCacheSize.height();
+    }
+
     /* Insert pixmap into cache. */
     void insert(const int, QPixmap *);
+    /* Save image into ImagesCache. */
+    void preserve(const int, QPixmap *);
+
     /* Insert empty pixmap into cache. */
     QPixmap *insertError(const int, const QSize &);
     /* Load from database, resize and insert. */

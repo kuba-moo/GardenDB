@@ -13,6 +13,8 @@
 extern const unsigned int numCreates;
 extern const QString creates[];
 
+extern const QSize CachedImageSize;
+extern const QSize UsableCacheSize;
 extern const QSize ImageSize;
 
 /* Commands initializing configuration stored in database to defaults. */
