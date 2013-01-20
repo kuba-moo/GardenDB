@@ -53,6 +53,12 @@ void OMain::openFile()
                                        QString("Garden files (*.grd)"));
     if (newFileName.isEmpty())
         return;
+
+    doOpen(newFileName);
+}
+
+void OMain::doOpen(QString newFileName)
+{
     fileName = newFileName;
     if (! fileName.endsWith(".grd"))
         fileName += ".grd";

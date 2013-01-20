@@ -21,6 +21,9 @@ public:
     explicit OMain(QWidget *parent = 0);
     ~OMain();
 
+    /* Open file from given path. */
+    void doOpen(QString);
+
 private slots:
     /* Shows file selection dialog and load selected file. If another file
      * is currently open it will call closeFile() to close it. May be used
