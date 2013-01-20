@@ -54,7 +54,8 @@ QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
     /* Search the list. */
     QLinkedList<QPixmap *>::iterator i = root[id].begin();
     for (; i != root[id].end(); i++)
-        if ((*i)->width() == size.width() || (*i)->height() == size.height())
+        if (((*i)->width() == size.width() && (*i)->height() <= size.height()) ||
+            ((*i)->width() <= size.width() && (*i)->height() == size.height()))
             break;
 
     if (i != root[id].end())
