@@ -26,8 +26,8 @@
       <property name="tabPosition">
        <enum>QTabWidget::West</enum>
       </property>
-      <property name="currentIndex">
-       <number>-1</number>
+      <property name="documentMode">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -39,7 +39,7 @@
      <x>0</x>
      <y>0</y>
      <width>751</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPlik">
@@ -63,7 +63,6 @@
    <addaction name="menuPlik"/>
    <addaction name="menuOptions"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen_file">
    <property name="text">
     <string>Open file</string>
