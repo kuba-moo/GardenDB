@@ -24,52 +24,52 @@
         <translation>Kliknij na obrazku i zapisz zmiany, aby uczynić go domyślnym. Kliknij dwukrotnie, by powiększyć obrazek.</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="121"/>
+        <location filename="addnew.ui" line="124"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="132"/>
+        <location filename="addnew.ui" line="135"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="152"/>
+        <location filename="addnew.ui" line="155"/>
         <source>Data:</source>
         <translation>Dane:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="170"/>
+        <location filename="addnew.ui" line="173"/>
         <source>Name:</source>
         <translation>Nazwa:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="180"/>
+        <location filename="addnew.ui" line="183"/>
         <source>Type:</source>
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="200"/>
+        <location filename="addnew.ui" line="203"/>
         <source>Flavour:</source>
         <translation>Zapach:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="210"/>
+        <location filename="addnew.ui" line="213"/>
         <source>Flowering time:</source>
         <translation>Pora kwitnienia:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="220"/>
+        <location filename="addnew.ui" line="223"/>
         <source>Bush size:</source>
         <translation>Wielkość krzewów:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="230"/>
+        <location filename="addnew.ui" line="233"/>
         <source>Frost resistance:</source>
         <translation>Mrozoodporność:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="240"/>
+        <location filename="addnew.ui" line="243"/>
         <source>Description:</source>
         <translation>Opis:</translation>
     </message>
@@ -78,7 +78,7 @@
         <translation type="obsolete">Nowy atrybut:</translation>
     </message>
     <message>
-        <location filename="addnew.ui" line="190"/>
+        <location filename="addnew.ui" line="193"/>
         <source>Flowers:</source>
         <translation>Kwiaty:</translation>
     </message>
@@ -87,12 +87,12 @@
         <translation type="obsolete">Atrybuty specjalne:</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="73"/>
+        <location filename="addnew.cpp" line="74"/>
         <source>Edit </source>
         <translation>Edycja </translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="131"/>
+        <location filename="addnew.cpp" line="119"/>
         <source>Removing failed</source>
         <translation>Usuwanie nie powiodło się</translation>
     </message>
@@ -103,19 +103,19 @@ Pleasecancel edtition, reopen tab and tryagain.</source>
 Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="132"/>
+        <location filename="addnew.cpp" line="120"/>
         <source>Unspecified error occured during attempt to remove picture.
 Please cancel edtition, reopen tab and try again.</source>
         <translation>Wystąpił nieznany błąd podczas usuwania obrazka.
 Proszę anulować edycję i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="145"/>
+        <location filename="addnew.cpp" line="133"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="147"/>
+        <location filename="addnew.cpp" line="135"/>
         <source>Images (*.png *.jpg *.bmp)</source>
         <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
@@ -301,47 +301,47 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Opcje</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="69"/>
+        <location filename="omain.ui" line="68"/>
         <source>Open file</source>
         <translation>Otwórz plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="72"/>
+        <location filename="omain.ui" line="71"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="77"/>
+        <location filename="omain.ui" line="76"/>
         <source>New file</source>
         <translation>Nowy plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="80"/>
+        <location filename="omain.ui" line="79"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="88"/>
+        <location filename="omain.ui" line="87"/>
         <source>Edit built-ins</source>
         <translation>Edytuj wartości wbudowane</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="91"/>
+        <location filename="omain.ui" line="90"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="96"/>
+        <location filename="omain.ui" line="95"/>
         <source>Close file</source>
         <translation>Zamknij plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="101"/>
+        <location filename="omain.ui" line="100"/>
         <source>Quit</source>
         <translation>Wyjście</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="104"/>
+        <location filename="omain.ui" line="103"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
@@ -369,22 +369,22 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>QApplication</name>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="63"/>
+        <location filename="oqueries.cpp" line="62"/>
         <source>pnące</source>
         <translation>pnące</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="70"/>
+        <location filename="oqueries.cpp" line="69"/>
         <source>średni</source>
         <translation>średni</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="71"/>
+        <location filename="oqueries.cpp" line="70"/>
         <source>słaby</source>
         <translation>słaby</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="75"/>
+        <location filename="oqueries.cpp" line="74"/>
         <source>słabo powtarza</source>
         <translation>słabo powtarza</translation>
     </message>
@@ -392,14 +392,12 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>SpecialAttribute</name>
     <message>
-        <location filename="specialattribute.ui" line="14"/>
         <source>Form</source>
-        <translation>Formularz</translation>
+        <translation type="obsolete">Formularz</translation>
     </message>
     <message>
-        <location filename="specialattribute.ui" line="20"/>
         <source>Attribute</source>
-        <translation>Atrybut</translation>
+        <translation type="obsolete">Atrybut</translation>
     </message>
 </context>
 </TS>
