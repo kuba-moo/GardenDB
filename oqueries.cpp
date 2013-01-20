@@ -1,6 +1,6 @@
 #include <QApplication>
-#include <QString>
 #include <QSize>
+#include <QString>
 
 #include "oqueries.h"
 
@@ -57,12 +57,6 @@ const QString creates[numCreates] = {
         "FOREIGN KEY(sp_id) REFERENCES Species(id) ON DELETE CASCADE"
     ")"
 };
-
-/* Size of images in ImagesCache table. */
-const QSize CachedImageSize(400, 400);
-/* Max size of image that can be generated from cached images. */
-const QSize UsableCacheSize(200, 200);
-
 
 /* TODO: get rid of max image size */
 const QSize ImageSize(5000,5000);

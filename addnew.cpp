@@ -37,6 +37,7 @@ AddNew::~AddNew()
     delete ui;
 }
 
+/* TODO: this is slow, we can't just query it every time. */
 void AddNew::populateComboes()
 {
     QSqlQuery query(getTypes);

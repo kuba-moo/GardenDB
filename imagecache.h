@@ -3,11 +3,11 @@
 
 #include <QLinkedList>
 #include <QObject>
-#include <QPixmap>
 #include <QVector>
 
 #include "oqueries.h"
 
+class QPixmap;
 class QWidget;
 
 /** ImageCache
@@ -15,6 +15,12 @@ class QWidget;
  * It's not a cache acutally, more like a accessor. You don't insert anything
  * into it and if it doesn't have the object stored it will fetch it from the
  * database.
+ *
+ * Database:
+ * Pictures are stored in database in "full" and in "pre-scaled" form. They
+ * are scaled down to size CachedImageSize which is used to generate pictures
+ * smaller than UsableCacheSize. Pictures are inserted to "pre-scaled" cache
+ * on first use for backwards compatibility (old dbs don't have that table.)
  *
  * All the elements are scaled with Qt::KeepAspectRatio.
  */
@@ -33,14 +39,16 @@ public:
     /* Clear cache. */
     void clear();
 
-    /* Read from cache. */
+    /* Read form cache pixmapof exactly given size. */
     QPixmap *getPixmap(const int, const QSize &);
 
-signals:
-
-public slots:
-
 private:
+    /* Size of images in ImagesCache table. */
+    const QSize CachedImageSize;
+    /* Max size of image that can be generated from cached images. */
+    const QSize UsableCacheSize;
+
+
     explicit ImageCache(QObject *parent = 0);
     ImageCache(ImageCache const&);
     void operator=(ImageCache const&);
@@ -63,6 +71,7 @@ private:
     QPixmap *insertError(const int, const QSize &);
     /* Load from database, resize and insert. */
     QPixmap *loadSlowpath(const int, const QSize &);
+
 
     QVector<QLinkedList<QPixmap *> > root;
 

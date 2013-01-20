@@ -2,6 +2,7 @@
 #include <QBuffer>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -11,7 +12,10 @@
 #include "oqueries.h"
 
 ImageCache::ImageCache(QObject *parent) :
-    QObject(parent), MaxCost(400*1000*1000)
+    QObject(parent),
+    CachedImageSize(400, 400),
+    UsableCacheSize(200, 200),
+    MaxCost(400*1000*1000)
 {
     root.resize(128);
 }
