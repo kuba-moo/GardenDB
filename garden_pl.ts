@@ -87,12 +87,12 @@
         <translation type="obsolete">Atrybuty specjalne:</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="74"/>
+        <location filename="addnew.cpp" line="75"/>
         <source>Edit </source>
         <translation>Edycja </translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="119"/>
+        <location filename="addnew.cpp" line="120"/>
         <source>Removing failed</source>
         <translation>Usuwanie nie powiodło się</translation>
     </message>
@@ -103,19 +103,19 @@ Pleasecancel edtition, reopen tab and tryagain.</source>
 Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="120"/>
+        <location filename="addnew.cpp" line="121"/>
         <source>Unspecified error occured during attempt to remove picture.
 Please cancel edtition, reopen tab and try again.</source>
         <translation>Wystąpił nieznany błąd podczas usuwania obrazka.
 Proszę anulować edycję i spróbować ponownie.</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="133"/>
+        <location filename="addnew.cpp" line="134"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="addnew.cpp" line="135"/>
+        <location filename="addnew.cpp" line="136"/>
         <source>Images (*.png *.jpg *.bmp)</source>
         <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
@@ -226,55 +226,56 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Edytuj wartości wbudowane</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="38"/>
+        <location filename="obuiltinseditor.ui" line="57"/>
+        <source>Warning! Removing a value will cause all records which are associated with it to be removed as well.</source>
+        <translation>Uwaga! Usunięcie wartości spowoduje usunięcie wszystkich rekordów, które mają ją aktualnie ustawioną.</translation>
+    </message>
+    <message>
+        <location filename="obuiltinseditor.ui" line="85"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="58"/>
+        <location filename="obuiltinseditor.ui" line="105"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="69"/>
-        <location filename="obuiltinseditor.cpp" line="27"/>
+        <location filename="obuiltinseditor.ui" line="116"/>
         <source>Types</source>
         <translation>Typy</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="74"/>
+        <location filename="obuiltinseditor.ui" line="121"/>
         <source>Flavours</source>
         <translation>Zapachy</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="79"/>
+        <location filename="obuiltinseditor.ui" line="126"/>
         <source>Flowering times</source>
         <translation>Pory kwitnienia</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="84"/>
+        <location filename="obuiltinseditor.ui" line="131"/>
         <source>Frost resistance</source>
         <translation>Mrozoodporność</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.ui" line="108"/>
+        <location filename="obuiltinseditor.ui" line="155"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="27"/>
         <source>Flavour</source>
-        <translation>Zapach</translation>
+        <translation type="obsolete">Zapach</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="28"/>
         <source>Flowering</source>
-        <translation>Pora kwitnienia</translation>
+        <translation type="obsolete">Pora kwitnienia</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="28"/>
         <source>Frost</source>
-        <translation>Mrozoodporność</translation>
+        <translation type="obsolete">Mrozoodporność</translation>
     </message>
     <message>
         <location filename="obuiltinseditor.cpp" line="36"/>
@@ -286,7 +287,7 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <name>OMain</name>
     <message>
         <location filename="omain.ui" line="14"/>
-        <location filename="omain.cpp" line="86"/>
+        <location filename="omain.cpp" line="90"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -351,17 +352,17 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="69"/>
+        <location filename="omain.cpp" line="75"/>
         <source>Unable to open file</source>
         <translation>Nie można otworzyć pliku</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="70"/>
+        <location filename="omain.cpp" line="76"/>
         <source>Selected file cannot be opened</source>
         <translation>Wybrany plik nie może zostać otwarty</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="114"/>
+        <location filename="omain.cpp" line="118"/>
         <source>New specimen</source>
         <translation>Nowy gatunek</translation>
     </message>
@@ -369,22 +370,22 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>QApplication</name>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="62"/>
+        <location filename="oqueries.cpp" line="59"/>
         <source>pnące</source>
         <translation>pnące</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="69"/>
+        <location filename="oqueries.cpp" line="66"/>
         <source>średni</source>
         <translation>średni</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="70"/>
+        <location filename="oqueries.cpp" line="67"/>
         <source>słaby</source>
         <translation>słaby</translation>
     </message>
     <message utf8="true">
-        <location filename="oqueries.cpp" line="74"/>
+        <location filename="oqueries.cpp" line="71"/>
         <source>słabo powtarza</source>
         <translation>słabo powtarza</translation>
     </message>

@@ -24,8 +24,8 @@ OBuiltInsEditor::~OBuiltInsEditor()
 
 void OBuiltInsEditor::changeTable(int row_id)
 {
-    static QString tables[] = { trUtf8("Types"), trUtf8("Flavour"),
-                                trUtf8("Flowering"), trUtf8("Frost") };
+    static QString tables[] = { "Types", "Flavour",
+                                "Flowering", "Frost" };
     if (ui->tableView->model())
         delete ui->tableView->model();
     QSqlTableModel *model = new QSqlTableModel(ui->tableView);
