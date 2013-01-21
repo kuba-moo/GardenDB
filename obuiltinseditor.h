@@ -2,7 +2,6 @@
 #define OBUILTINSEDITOR_H
 
 #include <QWidget>
-#include <QSqlDatabase>
 
 namespace Ui {
     class OBuiltInsEditor;
@@ -13,7 +12,7 @@ class OBuiltInsEditor : public QWidget
     Q_OBJECT
 
 public:
-    explicit OBuiltInsEditor(QSqlDatabase& db, QWidget *parent = 0);
+    explicit OBuiltInsEditor(QWidget *parent = 0);
     ~OBuiltInsEditor();
 
 private slots:
@@ -22,7 +21,6 @@ private slots:
     void removeRow();
 
 private:
-    QSqlDatabase& database;
     Ui::OBuiltInsEditor *ui;
 };
 

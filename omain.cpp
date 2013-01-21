@@ -132,7 +132,7 @@ void OMain::editBuiltIns()
 {
     if (! editor)
     {
-        editor = new OBuiltInsEditor(database);
+        editor = new OBuiltInsEditor();
 
         connect(editor, SIGNAL(destroyed()), SLOT(builtInsClosed()));
 

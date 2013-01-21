@@ -4,8 +4,8 @@
 #include <QSqlTableModel>
 #include <QDebug>
 
-OBuiltInsEditor::OBuiltInsEditor(QSqlDatabase& db, QWidget *parent) :
-    QWidget(parent), database(db),
+OBuiltInsEditor::OBuiltInsEditor(QWidget *parent) :
+    QWidget(parent),
     ui(new Ui::OBuiltInsEditor)
 {
     ui->setupUi(this);
