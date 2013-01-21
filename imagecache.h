@@ -28,6 +28,8 @@ class QWidget;
  * All the elements are scaled with Qt::KeepAspectRatio.
  */
 
+/* TODO: regenerate images from those already in cache. */
+
 class ImageCache : public QObject
 {
     Q_OBJECT

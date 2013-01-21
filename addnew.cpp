@@ -90,6 +90,18 @@ void AddNew::setData(const QSqlRecord &record)
     QSqlQuery pictures(QString("SELECT id FROM Images WHERE sp_id = %1")
                               .arg(speciesId));
 
+    /* We could try to add some kind of prefetch here that would read all
+     * specimen's pictures in one database access, but that would require
+     * regerating images from bigger already in cache (we would prefetch
+     * not-scaled) and somehow checking if images for specimen are not
+     * already in cache (otherwise we would risk prefetch being a slowdown).
+     *
+     * It seem like a wiser idea to fetch images in query above and pass
+     * QByteArrays into cache in case of a miss.
+     *
+     * Perhaps I should move this code over to ImgeCache and add getAllPictures
+     * kind of function.
+     */
     while (pictures.next())
     {
         const int picId = pictures.record().value("id").toInt();
