@@ -36,7 +36,7 @@ void ImageCache::insert(const int id, QPixmap *pixmap)
 
     QLinkedList<QPixmap *>::iterator i = root[id].begin();
     for (; i != root[id].end(); i++)
-        if ((*i)->width() < pixmap->width())
+        if ((*i)->width() < pixmap->width() && (*i)->height() < pixmap->height())
             break;
     root[id].insert(i, pixmap);
 }
