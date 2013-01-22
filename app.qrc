@@ -4,6 +4,11 @@
         <file alias="image">Icons/image-x-generic.png</file>
         <file alias="minus">Icons/list-remove.png</file>
         <file>Icons/edit-delete.png</file>
+        <file>Icons/document-close.png</file>
+        <file>Icons/document-new.png</file>
+        <file>Icons/document-open.png</file>
+        <file>Icons/insert-table.png</file>
+        <file>Icons/application-exit.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="pl">garden_pl.qm</file>
