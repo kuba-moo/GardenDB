@@ -81,15 +81,14 @@ void OMain::doOpen(QString newFileName)
     for (unsigned i=0; i < numInserts && !result.lastError().isValid(); i++)
         result = database.exec(inserts[i]);
 
-    ui->actionEdit_built_ins->setEnabled(true);
-
     mainTable = new MainTable(database, this);
     connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
     ui->tabWidget->addTab(mainTable, QIcon(), trUtf8("Garden"));
 
-    ImageCache::getInstance().clear();
+    ui->actionEdit_built_ins->setEnabled(true);
+    this->setWindowTitle(trUtf8("Garden") + " - " + QFileInfo(newFileName).baseName());
 }
 
 void OMain::closeFile()
@@ -108,6 +107,9 @@ void OMain::closeFile()
     database.close();
 
     ui->actionEdit_built_ins->setEnabled(false);
+
+    this->setWindowTitle(trUtf8("Garden"));
+    ImageCache::getInstance().clear();
 }
 
 void OMain::addRow()
