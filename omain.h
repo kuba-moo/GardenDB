@@ -8,6 +8,8 @@
 class OBuiltInsEditor;
 class MainTable;
 class AddNew;
+class BuiltIns;
+class ImageCache;
 
 namespace Ui {
     class OMain;
@@ -59,6 +61,10 @@ private:
     QString fileName;
 
     OBuiltInsEditor* editor;
+
+    /* Data objects */
+    BuiltIns *builtins;
+    ImageCache *ic;
 
     /* Specific tabs */
     MainTable *mainTable;

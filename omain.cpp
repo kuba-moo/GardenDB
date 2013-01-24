@@ -1,9 +1,10 @@
+#include "addnew.h"
+#include "builtins.h"
 #include "omain.h"
 #include "ui_omain.h"
 #include "oqueries.h"
 #include "obuiltinseditor.h"
 #include "maintable.h"
-#include "addnew.h"
 #include "imagecache.h"
 
 #include <QFileDialog>
@@ -81,7 +82,10 @@ void OMain::doOpen(QString newFileName)
     for (unsigned i=0; i < numInserts && !result.lastError().isValid(); i++)
         result = database.exec(inserts[i]);
 
-    mainTable = new MainTable(database, this);
+    builtins = new BuiltIns;
+    ic = new ImageCache;
+
+    mainTable = new MainTable(ic, this);
     connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
@@ -104,19 +108,21 @@ void OMain::closeFile()
     if (editor)
         editor->close();
 
+    delete builtins;
+    delete ic;
+
     database.close();
 
     ui->actionEdit_built_ins->setEnabled(false);
 
     this->setWindowTitle(trUtf8("Garden"));
-    ImageCache::getInstance().clear();
 }
 
 void OMain::addRow()
 {
     if (! addNew)
     {
-        addNew = new AddNew(this);
+        addNew = new AddNew(ic, this);
         ui->tabWidget->addTab(addNew, QIcon(":/plus"), trUtf8("New specimen"));
     }
 
@@ -160,7 +166,7 @@ void OMain::showDetails(QModelIndex index)
     const QSqlRelationalTableModel *model =
             dynamic_cast<const QSqlRelationalTableModel *> (index.model());
 
-    AddNew *tab = new AddNew(this);
+    AddNew *tab = new AddNew(ic, this);
     ui->tabWidget->addTab(tab, QIcon(),
                           model->record(index.row()).value("name").toString());
     tab->setData(model->record(index.row()));

@@ -2,12 +2,13 @@
 #define MAINTABLE_H
 
 #include <QWidget>
-#include <QSqlDatabase>
 #include <QModelIndex>
 
 namespace Ui {
     class MainTable;
 }
+
+class ImageCache;
 
 class MainTable : public QWidget
 {
@@ -18,7 +19,7 @@ signals:
     void rowDetails(QModelIndex);
 
 public:
-    explicit MainTable(QSqlDatabase& db, QWidget *parent = 0);
+    explicit MainTable(ImageCache *imageCache, QWidget *parent = 0);
     ~MainTable();
 
 public slots:
@@ -30,7 +31,6 @@ private slots:
     void removeRow();
 
 private:
-    QSqlDatabase& database;
     Ui::MainTable *ui;
 };
 

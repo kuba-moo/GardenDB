@@ -8,8 +8,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
-MainTable::MainTable(QSqlDatabase& db, QWidget *parent) :
-    QWidget(parent), database(db),
+MainTable::MainTable(ImageCache *imageCache, QWidget *parent) :
+    QWidget(parent),
     ui(new Ui::MainTable)
 {
     ui->setupUi(this);
@@ -25,7 +25,8 @@ MainTable::MainTable(QSqlDatabase& db, QWidget *parent) :
     ui->tableView->horizontalHeader()->moveSection(5, 1);
     ui->tableView->horizontalHeader()->moveSection(9, 3);
     ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
-    ui->tableView->setItemDelegateForColumn(5, new ImageRenderer(ui->tableView));
+    ui->tableView->setItemDelegateForColumn(5, new ImageRenderer(imageCache,
+                                                                 ui->tableView));
     ui->tableView->setColumnWidth(5, 83);
     ui->tableView->verticalHeader()->setDefaultSectionSize(64);
 }

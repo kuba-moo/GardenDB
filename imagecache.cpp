@@ -20,6 +20,11 @@ ImageCache::ImageCache(QObject *parent) :
     root.resize(128);
 }
 
+ImageCache::~ImageCache()
+{
+    clear();
+}
+
 void ImageCache::clear()
 {
     for (int i = 0; i < root.size(); i++)

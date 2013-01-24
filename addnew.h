@@ -9,12 +9,14 @@ namespace Ui {
     class AddNew;
 }
 
+class ImageCache;
+
 class AddNew : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit AddNew(QWidget *parent = 0);
+    explicit AddNew(ImageCache *imageCache, QWidget *parent = 0);
     ~AddNew();
 
 public slots:
@@ -48,6 +50,7 @@ private:
     int speciesId;
     int oldPhotoes;
     Ui::AddNew *ui;
+    ImageCache *ic;
     QVector<int> picIds;
 };
 

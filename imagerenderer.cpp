@@ -6,17 +6,17 @@
 #include <QFile>
 #include <QApplication>
 
-ImageRenderer::ImageRenderer(QWidget *parent) :
+ImageRenderer::ImageRenderer(ImageCache *imageCache, QWidget *parent) :
     QStyledItemDelegate(parent)
 {
+    ic = imageCache;
 }
 
 void ImageRenderer::paint(QPainter *painter,
                                   const QStyleOptionViewItem& option,
                                   const QModelIndex& index) const
 {
-    QPixmap *pixmap = ImageCache::getInstance().getPixmap(index.data().toInt(),
-                                                          option.rect.size());
+    QPixmap *pixmap = ic->getPixmap(index.data().toInt(), option.rect.size());
 
     QApplication::style()->drawItemPixmap(painter, option.rect, 0, *pixmap);
 }

@@ -3,18 +3,19 @@
 
 #include <QStyledItemDelegate>
 
+class ImageCache;
+
 class ImageRenderer : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit ImageRenderer(QWidget *parent = 0);
+    explicit ImageRenderer(ImageCache *imageCache, QWidget *parent = 0);
 
     virtual void paint(QPainter *, const QStyleOptionViewItem&,
                        const QModelIndex&) const;
-signals:
 
-public slots:
-
+private:
+    ImageCache *ic;
 };
 
 #endif // IMAGERENDERER_H

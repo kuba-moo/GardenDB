@@ -34,15 +34,9 @@ class ImageCache : public QObject
 {
     Q_OBJECT
 public:
-    static ImageCache& getInstance()
-    {
-        static ImageCache instance;
+    explicit ImageCache(QObject *parent = 0);
+    ~ImageCache();
 
-        return instance;
-    }
-
-    /* Clear cache. */
-    void clear();
 
     /* Read form cache pixmap of exactly given size. */
     QPixmap *getPixmap(const int, const QSize &);
@@ -55,17 +49,15 @@ private:
     /* Max size of image that can be generated from cached images. */
     const QSize UsableCacheSize;
 
-
-    explicit ImageCache(QObject *parent = 0);
-    ImageCache(ImageCache const&);
-    void operator=(ImageCache const&);
-
     /* Can persistent cache be used to generate image. */
     bool canUsePCache(const QSize &size) const
     {
         return size.width() <= UsableCacheSize.width() &&
                size.height() <= UsableCacheSize.height();
     }
+
+    /* Clear cache. */
+    void clear();
 
     /* Insert pixmap into cache. */
     void insert(const int, QPixmap *);

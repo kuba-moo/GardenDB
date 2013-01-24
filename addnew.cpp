@@ -12,7 +12,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-AddNew::AddNew(QWidget *parent) :
+AddNew::AddNew(ImageCache *imageCache, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AddNew)
 {
@@ -21,6 +21,7 @@ AddNew::AddNew(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
 
     isNew = true;
+    ic = imageCache;
     populateComboes();
 
     connect(ui->addPhoto, SIGNAL(clicked()), SLOT(addPhoto()));
@@ -86,7 +87,6 @@ void AddNew::setData(const QSqlRecord &record)
     /* Pictures. */
     int mainPhotoIndex = -1;
     int mainPhotoId = bareRecord.record().value("main_photo").toInt();
-    ImageCache &cache = ImageCache::getInstance();
     QSqlQuery pictures(QString("SELECT id FROM Images WHERE sp_id = %1")
                               .arg(speciesId));
 
@@ -106,7 +106,7 @@ void AddNew::setData(const QSqlRecord &record)
     {
         const int picId = pictures.record().value("id").toInt();
 
-        QPixmap *pixmap = cache.getPixmapGe(picId, QSize(200, 200));
+        QPixmap *pixmap = ic->getPixmapGe(picId, QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
         picIds.push_back(picId);
         if (mainPhotoId == picId)
@@ -197,8 +197,7 @@ void AddNew::magnifyImage(QModelIndex index)
     QLabel *label = new QLabel("");
     label->setAttribute(Qt::WA_DeleteOnClose);
 
-    QPixmap *pixmap = ImageCache::getInstance().getPixmapGe(picIds[index.row()],
-                                                            QSize(800, 800));
+    QPixmap *pixmap = ic->getPixmapGe(picIds[index.row()], QSize(800, 800));
     label->setPixmap(*pixmap);
     label->adjustSize();
     label->show();
