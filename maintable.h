@@ -9,6 +9,7 @@ namespace Ui {
 }
 
 class ImageCache;
+class BuiltIns;
 
 class MainTable : public QWidget
 {
@@ -19,7 +20,7 @@ signals:
     void rowDetails(QModelIndex);
 
 public:
-    explicit MainTable(ImageCache *imageCache, QWidget *parent = 0);
+    explicit MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent = 0);
     ~MainTable();
 
 public slots:

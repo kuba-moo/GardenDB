@@ -29,6 +29,7 @@ AddNew::AddNew(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent,
         setData(record);
     populateComboes();
 
+    connect(builtins, SIGNAL(changed()), SLOT(populateComboes()));
     connect(ui->addPhoto, SIGNAL(clicked()), SLOT(addPhoto()));
     connect(ui->removePhoto, SIGNAL(clicked()), SLOT(removePhoto()));
     connect(ui->listWidget, SIGNAL(currentRowChanged(int)),
@@ -107,13 +108,13 @@ void AddNew::setData(const QSqlRecord &record)
 
 void AddNew::populateComboes()
 {
-    fillCombo(ui->type, "Types", typeId);
-    fillCombo(ui->flavour, "Flavour", flavourId);
-    fillCombo(ui->flowering, "Flowering", floweringId);
-    fillCombo(ui->frost, "Frost", frostId);
+    fillCombo(ui->type, trUtf8("Types"), typeId);
+    fillCombo(ui->flavour, trUtf8("Flavour"), flavourId);
+    fillCombo(ui->flowering, trUtf8("Flowering time"), floweringId);
+    fillCombo(ui->frost, trUtf8("Frost resistance"), frostId);
 }
 
-void AddNew::fillCombo(QComboBox *combo, QString category, unsigned current)
+void AddNew::fillCombo(QComboBox *combo, const QString &category, const unsigned current)
 {
     const QLinkedList<QPair<unsigned, QString> > &values = builtins->getValues(category);
     int currentIndex = 0;

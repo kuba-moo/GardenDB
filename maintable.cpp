@@ -1,3 +1,4 @@
+#include "builtins.h"
 #include "maintable.h"
 #include "ui_maintable.h"
 #include "imagerenderer.h"
@@ -8,7 +9,7 @@
 #include <QDebug>
 #include <QMessageBox>
 
-MainTable::MainTable(ImageCache *imageCache, QWidget *parent) :
+MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainTable)
 {
@@ -18,6 +19,7 @@ MainTable::MainTable(ImageCache *imageCache, QWidget *parent) :
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
     connect(ui->tableView, SIGNAL(doubleClicked(QModelIndex)),
             SIGNAL(rowDetails(QModelIndex)));
+    connect(builtIns, SIGNAL(changed()), SLOT(loadData()));
 
     loadData();
 

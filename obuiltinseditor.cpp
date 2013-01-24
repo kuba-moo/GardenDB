@@ -1,10 +1,12 @@
+#include "builtins.h"
 #include "obuiltinseditor.h"
 #include "ui_obuiltinseditor.h"
 
-#include <QSqlTableModel>
 #include <QDebug>
+#include <QMessageBox>
+#include <QSqlTableModel>
 
-OBuiltInsEditor::OBuiltInsEditor(QWidget *parent) :
+OBuiltInsEditor::OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OBuiltInsEditor)
 {
@@ -12,9 +14,18 @@ OBuiltInsEditor::OBuiltInsEditor(QWidget *parent) :
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(changeTable(int)));
+    builtins = builtIns;
+    lastRowId = 0;
+    blockEdits = true;
+
+    connect(ui->categories,SIGNAL(currentRowChanged(int)),SLOT(setTable(int)));
     connect(ui->add, SIGNAL(clicked()), SLOT(addRow()));
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
+    connect(builtins, SIGNAL(changed()), SLOT(reload()));
+    connect(ui->values, SIGNAL(itemChanged(QListWidgetItem*)),
+            SLOT(edit(QListWidgetItem*)));
+
+    reload();
 }
 
 OBuiltInsEditor::~OBuiltInsEditor()
@@ -22,39 +33,64 @@ OBuiltInsEditor::~OBuiltInsEditor()
     delete ui;
 }
 
-void OBuiltInsEditor::changeTable(int row_id)
+void OBuiltInsEditor::reload()
 {
-    static QString tables[] = { "Types", "Flavour",
-                                "Flowering", "Frost" };
-    if (ui->tableView->model())
-        delete ui->tableView->model();
-    QSqlTableModel *model = new QSqlTableModel(ui->tableView);
+    ui->categories->clear();
+    ui->categories->addItems(builtins->getCategories());
 
-    model->setTable(tables[row_id]);
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
-    model->select();
-    model->setHeaderData(1, Qt::Horizontal, trUtf8("Name"));
+    ui->categories->setCurrentRow(lastRowId);
+}
 
-    ui->tableView->setModel(model);
-    ui->tableView->setColumnHidden(0, true);
+void OBuiltInsEditor::setTable(int row_id)
+{
+    if (row_id < 0)
+        return;
+
+    lastRowId = row_id;
+
+    blockEdits = true;
+
+    const QLinkedList<QPair<unsigned, QString> > &values =
+            builtins->getValues(ui->categories->item(row_id)->text());
+    ui->values->clear();
+    ids.clear();
+    QLinkedList<QPair<unsigned, QString> >::const_iterator i;
+    for (i = values.constBegin(); i != values.constEnd(); i++) {
+        ui->values->addItem(i->second);
+        /* Make item editable. */
+        QListWidgetItem * item = ui->values->item(ui->values->count()-1);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        ids[item] = i->first;
+    }
+
+    blockEdits = false;
 }
 
 void OBuiltInsEditor::addRow()
 {
-    QSqlTableModel *model = (QSqlTableModel*)ui->tableView->model();
-    if (model)
-    {
-        int lastRow = model->rowCount();
-        /* Careful with column no, model sees them all */
-        model->insertRows(lastRow, 1);
-        ui->tableView->edit(model->index(lastRow, 1));
-    }
+    builtins->addValue(ui->categories->item(lastRowId)->text());
 }
 
 void OBuiltInsEditor::removeRow()
 {
-    if (ui->tableView->model()
-            && ui->tableView->selectionModel()->hasSelection())
-        ui->tableView->model()->removeRow(
-                    ui->tableView->selectionModel()->currentIndex().row());
+    if (ui->categories->currentRow() < 0 || ui->values->currentRow() < 0)
+        return;
+
+    unsigned count = builtins->countSpecies(ui->categories->currentItem()->text(),
+                                            ids[ui->values->currentItem()]);
+    if (count)
+        QMessageBox::warning(this, trUtf8("Remove value"),
+                             trUtf8("Cannot remove value because it is used "
+                                    "by %1 species.").arg(count));
+    else
+        builtins->removeValue(ui->categories->currentItem()->text(),
+                              ids[ui->values->currentItem()]);
+}
+
+void OBuiltInsEditor::edit(QListWidgetItem *item)
+{
+    if (blockEdits)
+        return;
+
+    builtins->setValue(ui->categories->currentItem()->text(), ids[item], item->text());
 }

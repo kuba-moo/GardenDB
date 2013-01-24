@@ -28,11 +28,8 @@ private:
     void resetData();
     /* Populates data fields with values form record and changes title. */
     void setData(const QSqlRecord& record);
-    /* TODO: use this after built ins change. */
-    /* Should be called apon built-ins change. */
-    void populateComboes();
-    /* Fill combo with data from given builtins' caetgory. */
-    void fillCombo(QComboBox *combo, QString category, unsigned current);
+    /* Fill combo with data from given builtins' category. */
+    void fillCombo(QComboBox *combo, const QString &category, const unsigned current);
 
     /* Add contained data to database as new specimen. */
     void acceptAdd();
@@ -40,6 +37,8 @@ private:
     void acceptUpdate();
 
 private slots:
+    /* Fills comboBoxes with built-ins. */
+    void populateComboes();
     /* Spawn file selection window and append chosen image to images. */
     void addPhoto();
     /* Remove selected photo. */

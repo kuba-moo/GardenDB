@@ -82,10 +82,10 @@ void OMain::doOpen(QString newFileName)
     for (unsigned i=0; i < numInserts && !result.lastError().isValid(); i++)
         result = database.exec(inserts[i]);
 
-    builtins = new BuiltIns;
+    builtins = new BuiltIns(this);
     ic = new ImageCache;
 
-    mainTable = new MainTable(ic, this);
+    mainTable = new MainTable(ic, builtins, this);
     connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
@@ -140,7 +140,7 @@ void OMain::editBuiltIns()
 {
     if (! editor)
     {
-        editor = new OBuiltInsEditor();
+        editor = new OBuiltInsEditor(builtins);
 
         connect(editor, SIGNAL(destroyed()), SLOT(builtInsClosed()));
 
