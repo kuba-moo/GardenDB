@@ -56,9 +56,12 @@ private slots:
     void refreshView();
 
 private:
+    /* Some file is currently opened. */
+    bool isFileOpened() { return !fileName.isEmpty(); }
+
     Ui::OMain *ui;
     QSqlDatabase database;
-    QString fileName;
+    QString fileName;    /* If not empty some file is opened. */
 
     OBuiltInsEditor* editor;
 

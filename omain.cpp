@@ -34,7 +34,7 @@ OMain::OMain(QWidget *parent) :
 
 OMain::~OMain()
 {
-    if (! fileName.isEmpty())
+    if (isFileOpened())
         closeFile();
 
     delete ui;
@@ -42,7 +42,7 @@ OMain::~OMain()
 
 void OMain::openFile()
 {
-    if (! fileName.isEmpty())
+    if (isFileOpened())
         closeFile();
 
     QFileDialog fileDialog(this);
@@ -112,9 +112,9 @@ void OMain::closeFile()
     delete ic;
 
     database.close();
+    fileName.clear();
 
     ui->actionEdit_built_ins->setEnabled(false);
-
     this->setWindowTitle(trUtf8("Garden"));
 }
 
