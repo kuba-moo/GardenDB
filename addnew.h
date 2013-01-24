@@ -10,23 +10,30 @@ namespace Ui {
 }
 
 class ImageCache;
+class BuiltIns;
+class QComboBox;
 
 class AddNew : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit AddNew(ImageCache *imageCache, QWidget *parent = 0);
+    explicit AddNew(ImageCache *imageCache, BuiltIns *builtIns,
+                    QWidget *parent = 0, const QSqlRecord &record = QSqlRecord());
     ~AddNew();
 
-public slots:
+private:
+    /* Initialization. */
+    /* Set data values to defaults. */
+    void resetData();
+    /* Populates data fields with values form record and changes title. */
+    void setData(const QSqlRecord& record);
     /* TODO: use this after built ins change. */
     /* Should be called apon built-ins change. */
     void populateComboes();
-    /* Populates data fields with values form record and changes title. */
-    void setData(const QSqlRecord& record);
+    /* Fill combo with data from given builtins' caetgory. */
+    void fillCombo(QComboBox *combo, QString category, unsigned current);
 
-private:
     /* Add contained data to database as new specimen. */
     void acceptAdd();
     /* Update contained specimen. */
@@ -47,10 +54,12 @@ private slots:
 
 private:
     bool isNew;
-    int speciesId;
+    int speciesId, typeId, flavourId, floweringId, frostId;
+
     int oldPhotoes;
     Ui::AddNew *ui;
     ImageCache *ic;
+    BuiltIns *builtins;
     QVector<int> picIds;
 };
 

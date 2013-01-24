@@ -80,7 +80,3 @@ const QString inserts[numInserts] = {
     "INSERT INTO Images VALUES(1, '', 0)"
 };
 
-const QString getTypes = "SELECT * FROM Types";
-const QString getFlavours = "SELECT * FROM Flavour";
-const QString getFrost = "SELECT * FROM Frost";
-const QString getFlowering = "SELECT * FROM Flowering";

@@ -122,7 +122,7 @@ void OMain::addRow()
 {
     if (! addNew)
     {
-        addNew = new AddNew(ic, this);
+        addNew = new AddNew(ic, builtins, this);
         ui->tabWidget->addTab(addNew, QIcon(":/plus"), trUtf8("New specimen"));
     }
 
@@ -166,10 +166,9 @@ void OMain::showDetails(QModelIndex index)
     const QSqlRelationalTableModel *model =
             dynamic_cast<const QSqlRelationalTableModel *> (index.model());
 
-    AddNew *tab = new AddNew(ic, this);
+    AddNew *tab = new AddNew(ic, builtins, this, model->record(index.row()));
     ui->tabWidget->addTab(tab, QIcon(),
                           model->record(index.row()).value("name").toString());
-    tab->setData(model->record(index.row()));
     ui->tabWidget->setCurrentWidget(tab);
     connect(tab, SIGNAL(destroyed()), SLOT(refreshView()));
 }

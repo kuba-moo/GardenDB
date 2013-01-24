@@ -1,4 +1,5 @@
 #include "addnew.h"
+#include "builtins.h"
 #include "ui_addnew.h"
 #include "oqueries.h"
 #include "imagecache.h"
@@ -12,16 +13,20 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-AddNew::AddNew(ImageCache *imageCache, QWidget *parent) :
+AddNew::AddNew(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent,
+               const QSqlRecord &record) :
     QWidget(parent),
     ui(new Ui::AddNew)
 {
     ui->setupUi(this);
-
     setAttribute(Qt::WA_DeleteOnClose);
 
-    isNew = true;
     ic = imageCache;
+    builtins = builtIns;
+
+    resetData();
+    if (!record.isEmpty())
+        setData(record);
     populateComboes();
 
     connect(ui->addPhoto, SIGNAL(clicked()), SLOT(addPhoto()));
@@ -39,49 +44,30 @@ AddNew::~AddNew()
     delete ui;
 }
 
-/* TODO: this is slow, we can't just query it every time. */
-void AddNew::populateComboes()
+void AddNew::resetData()
 {
-    QSqlQuery query(getTypes);
-    ui->type->clear();
-    while (query.next())
-        ui->type->addItem(query.value(1).toString(), query.value(0));
-
-    query.exec(getFlavours);
-    ui->flavour->clear();
-    while (query.next())
-        ui->flavour->addItem(query.value(1).toString(), query.value(0));
-
-    query.exec(getFlowering);
-    ui->flowering->clear();
-    while (query.next())
-        ui->flowering->addItem(query.value(1).toString(), query.value(0));
-
-    query.exec(getFrost);
-    ui->frost->clear();
-    while (query.next())
-        ui->frost->addItem(query.value(1).toString(), query.value(0));
+    isNew = true;
+    speciesId = typeId = flavourId = floweringId = frostId = 0;
 }
 
 void AddNew::setData(const QSqlRecord &record)
 {
-    isNew = false;
-
-    speciesId = record.value("id").toInt();
-    QSqlQuery bareRecord(QString("SELECT * FROM Species WHERE id = %1")
-                         .arg(speciesId));
-    if (! bareRecord.next())
+    int id = record.value("id").toInt();
+    QSqlQuery bareRecord(QString("SELECT * FROM Species WHERE id = %1").arg(id));
+    qDebug() << "Setting data for" << id;
+    if (!bareRecord.next())
         return;
 
+    isNew = false;
+    speciesId = id;
     ui->title->setText(trUtf8("Edit ") + record.value("name").toString());
     ui->name->setText(record.value("name").toString());
-    ui->type->setCurrentIndex(bareRecord.record().value("tp_id").toInt()-1);
+    typeId = bareRecord.record().value("tp_id").toInt();
     ui->flowers->setText(record.value("flowers").toString());
-    ui->flavour->setCurrentIndex(bareRecord.record().value("fl_id").toInt()-1);
-    ui->flowering->setCurrentIndex(
-                bareRecord.record().value("fw_id").toInt()-1);
+    flavourId = bareRecord.record().value("fl_id").toInt();
+    floweringId = bareRecord.record().value("fw_id").toInt();
     ui->bush->setText(record.value("size").toString());
-    ui->frost->setCurrentIndex(bareRecord.record().value("fr_id").toInt()-1);
+    frostId = bareRecord.record().value("fr_id").toInt();
     ui->desc->setText(record.value("desc").toString());
 
     /* Pictures. */
@@ -114,8 +100,33 @@ void AddNew::setData(const QSqlRecord &record)
     }
     oldPhotoes = ui->listWidget->count();
     ui->listWidget->setCurrentRow(mainPhotoIndex);
+    setMainPhoto(mainPhotoIndex);
 
     return;
+}
+
+void AddNew::populateComboes()
+{
+    fillCombo(ui->type, "Types", typeId);
+    fillCombo(ui->flavour, "Flavour", flavourId);
+    fillCombo(ui->flowering, "Flowering", floweringId);
+    fillCombo(ui->frost, "Frost", frostId);
+}
+
+void AddNew::fillCombo(QComboBox *combo, QString category, unsigned current)
+{
+    const QLinkedList<QPair<unsigned, QString> > &values = builtins->getValues(category);
+    int currentIndex = 0;
+
+    combo->clear();
+    QLinkedList<QPair<unsigned, QString> >::const_iterator i;
+    for (i = values.constBegin(); i != values.constEnd(); i++) {
+        if (i->first == current)
+            currentIndex = combo->count();
+
+        combo->addItem(i->second, i->first);
+    }
+    combo->setCurrentIndex(currentIndex);
 }
 
 void AddNew::removePhoto()
