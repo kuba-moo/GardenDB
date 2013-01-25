@@ -1,8 +1,9 @@
 #include "addnew.h"
 #include "builtins.h"
+#include "image.h"
+#include "imagecache.h"
 #include "ui_addnew.h"
 #include "oqueries.h"
-#include "imagecache.h"
 
 #include <QBuffer>
 #include <QDebug>
@@ -74,36 +75,19 @@ void AddNew::setData(const QSqlRecord &record)
     /* Pictures. */
     int mainPhotoIndex = -1;
     int mainPhotoId = bareRecord.record().value("main_photo").toInt();
-    QSqlQuery pictures(QString("SELECT id FROM Images WHERE sp_id = %1")
-                              .arg(speciesId));
-
-    /* We could try to add some kind of prefetch here that would read all
-     * specimen's pictures in one database access, but that would require
-     * regerating images from bigger already in cache (we would prefetch
-     * not-scaled) and somehow checking if images for specimen are not
-     * already in cache (otherwise we would risk prefetch being a slowdown).
-     *
-     * It seem like a wiser idea to fetch images in query above and pass
-     * QByteArrays into cache in case of a miss.
-     *
-     * Perhaps I should move this code over to ImgeCache and add getAllPictures
-     * kind of function.
-     */
-    while (pictures.next())
-    {
-        const int picId = pictures.record().value("id").toInt();
-
-        QPixmap *pixmap = ic->getPixmapGe(picId, QSize(200, 200));
+    const QList<Image *> &images = ic->getAllImages(speciesId);
+    QList<Image *>::const_iterator i;
+    for (i = images.constBegin(); i < images.constEnd(); i++) {
+        QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
-        picIds.push_back(picId);
-        if (mainPhotoId == picId)
+        picIds.push_back((*i)->id());
+        if (mainPhotoId == (*i)->id())
             mainPhotoIndex = ui->listWidget->count()-1;
     }
+
     oldPhotoes = ui->listWidget->count();
     ui->listWidget->setCurrentRow(mainPhotoIndex);
     setMainPhoto(mainPhotoIndex);
-
-    return;
 }
 
 void AddNew::populateComboes()
@@ -209,7 +193,8 @@ void AddNew::magnifyImage(QModelIndex index)
     QLabel *label = new QLabel("");
     label->setAttribute(Qt::WA_DeleteOnClose);
 
-    QPixmap *pixmap = ic->getPixmapGe(picIds[index.row()], QSize(800, 800));
+    QPixmap *pixmap = ic->getPixmapGe(picIds[index.row()], QSize(800, 800),
+                                      ImageCache::None);
     label->setPixmap(*pixmap);
     label->adjustSize();
     label->show();

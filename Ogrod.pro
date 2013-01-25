@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     oqueries.cpp \
     imagerenderer.cpp \
     imagecache.cpp \
-    builtins.cpp
+    builtins.cpp \
+    image.cpp
 
 HEADERS  += omain.h \
     oqueries.h \
@@ -27,7 +28,8 @@ HEADERS  += omain.h \
     addnew.h \
     imagerenderer.h \
     imagecache.h \
-    builtins.h
+    builtins.h \
+    image.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \

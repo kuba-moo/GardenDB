@@ -8,16 +8,19 @@
 #include <QSqlRecord>
 #include <QVariant>
 
+#include "image.h"
 #include "imagecache.h"
 #include "oqueries.h"
 
+const QSize ImageCache::UsableCacheSize(200, 200);
+
 ImageCache::ImageCache(QObject *parent) :
-    QObject(parent),
-    CachedImageSize(400, 400),
-    UsableCacheSize(200, 200),
-    MaxCost(400*1000*1000)
+    QObject(parent)
 {
-    root.resize(128);
+    time.start();
+
+    species.resize(128);
+    spFlags.resize(128);
 }
 
 ImageCache::~ImageCache()
@@ -25,157 +28,153 @@ ImageCache::~ImageCache()
     clear();
 }
 
+bool ImageCache::imageInList(const QList<Image *> &imgs, const int &id)
+{
+    QList<Image *>::const_iterator i;
+    for (i = imgs.constBegin(); i < imgs.constEnd(); i++)
+        if ((*i)->id() == id)
+            return true;
+    return false;
+}
+
 void ImageCache::clear()
 {
-    for (int i = 0; i < root.size(); i++)
-        while (root[i].size())
-            delete root[i].takeFirst();
+    images.clear();
+
+    for (int i = 0; i < species.size(); i++)
+        while (species[i].size())
+            delete species[i].takeFirst();
 }
 
-void ImageCache::insert(const int id, QPixmap *pixmap)
+void ImageCache::insert(Image *image)
 {
-    if (root.size() <= id)
-        root.resize(id*2);
-
-    reserveSpace(pixmap);
-
-    QLinkedList<QPixmap *>::iterator i = root[id].begin();
-    for (; i != root[id].end(); i++)
-        if ((*i)->width() < pixmap->width() && (*i)->height() < pixmap->height())
-            break;
-    root[id].insert(i, pixmap);
-}
-
-void ImageCache::reserveSpace(QPixmap *pixmap)
-{
-    cost += 1000 + pixmap->width()*pixmap->height()*4;
-
-    if (cost > MaxCost) {
-        clear();
-        cost = 1000 + pixmap->width()*pixmap->height()*4;
+    if (species.size() < image->ownerId()) {
+        species.resize(image->ownerId() * 2);
+        spFlags.resize(image->ownerId() * 2);
     }
+    if (imageInList(species[image->ownerId()], image->id()))
+        qDebug() << "Double on secies!!!";
+    species[image->ownerId()].append(image);
+
+    if (images.size() < image->id())
+        images.resize(image->id() * 2);
+    if (images[image->id()])
+        qDebug() << "Double on images!!!";
+    images[image->id()] = image;
 }
 
-void ImageCache::preserve(const int id, QPixmap *fullsize)
+QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size, ReadHint hint)
 {
-    qDebug() << "Preserve" << id;
+    if (images.size() <= imageId || !images[imageId])
+        return loadSlowpath(imageId, size, hint);
 
-    /* If image is to small there is no use in scaling it down. */
-    if (fullsize->size().width() < CachedImageSize.width() ||
-        fullsize->size().height() < CachedImageSize.height())
-        return;
-
-    QSqlQuery insertPicture;
-    insertPicture.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
-
-    QByteArray array;
-    QBuffer buf(&array);
-    QPixmap pixmap = fullsize->scaled(CachedImageSize,
-                                      Qt::KeepAspectRatioByExpanding,
-                                      Qt::SmoothTransformation);
-    buf.open(QIODevice::WriteOnly);
-    pixmap.save(&buf, "PNG");
-
-    insertPicture.bindValue(":id", id);
-    insertPicture.bindValue(":image", array);
-    insertPicture.exec();
-
-    if (insertPicture.lastError().isValid())
-        qDebug() << insertPicture.lastError();
+    return images[imageId]->getScaled(size);
 }
 
-QPixmap *ImageCache::insertError(const int id, const QSize &size)
+QPixmap *ImageCache::getPixmapGe(const int imageId, const QSize &size, ReadHint hint)
 {
-    /* Perhaps we could share empty pixmaps but they should only appear
-     * in abnormal situations so it's not really worth optimizing. */
-    /* Create and fill with zeroes. */
-    QPixmap *pixmap = new QPixmap(size);
-    pixmap->fill();
+    if (images.size() <= imageId || !images[imageId])
+        return loadSlowpath(imageId, size, hint);
 
-    insert(id, pixmap);
-
-    return pixmap;
+    return images[imageId]->getScaledGe(size);
 }
 
-QPixmap *ImageCache::getPixmap(const int id, const QSize &size)
+const QList<Image *> &ImageCache::getAllImages(const int spId)
 {
-    if (id == 1)
-        return insertError(id, size);
+    if (spFlags.size() <= spId || !(spFlags[spId] & ReadAll))
+        getAllSlowpath(spId);
 
-    if (root.size() <= id)
-        return loadSlowpath(id, size);
-
-    /* Search the list. */
-    QLinkedList<QPixmap *>::iterator i = root[id].begin();
-    for (; i != root[id].end(); i++)
-        if (((*i)->width() == size.width() && (*i)->height() <= size.height()) ||
-            ((*i)->width() <= size.width() && (*i)->height() == size.height()))
-            break;
-
-    if (i != root[id].end())
-        return *i;
-
-    return loadSlowpath(id, size);
+    return species[spId];
 }
 
-QPixmap *ImageCache::getPixmapGe(const int id, const QSize &size)
+Image *ImageCache::loadSingle(const int imageId, const QSize &size)
 {
-    QPixmap *ret = NULL;
+    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << imageId << size;
 
-    if (id == 1)
-        return insertError(id, size);
+    /* Fetch from cache if exists. */
+    QSqlQuery fetch(QString("SELECT Images.sp_id,ImagesCache.data FROM Images "
+                            "INNER JOIN ImagesCache ON Images.id=ImagesCache.id "
+                            "WHERE Images.id=%1").arg(imageId));
 
-    if (root.size() <= id)
-        return loadSlowpath(id, size);
+    if (fetch.lastError().isValid())
+        qDebug() << fetch.lastError().text();
 
-    /* Search the list - remember smallest bigger. */
-    QLinkedList<QPixmap *>::iterator i = root[id].begin();
-    for (; i != root[id].end(); i++)
-        if ((*i)->width() >= size.width() || (*i)->height() >= size.height())
-            ret = *i;
+    if (!fetch.next() || fetch.lastError().isValid())
+        return new Image(imageId, this);
 
-    if (ret)
-        return ret;
-
-    return loadSlowpath(id, size);
+    return new Image(imageId, fetch.value(0).toInt(),
+                     fetch.value(1).toByteArray(), this);
 }
 
-QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size)
+QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size, ReadHint hint)
 {
-    QByteArray binaryPhoto;
+    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << id << size << hint;
 
-    qDebug() << "Load" << id << size;
+    if (hint == ReadAll)
+        qDebug() << "ReadAll hint not supported!";
 
-    /* First try to dig it out of the persistent cache. */
-    QSqlQuery searchCache(QString("SELECT data FROM ImagesCache WHERE id = %1").arg(id));
-    if (searchCache.lastError().isValid())
-            qDebug() << searchCache.lastError().text();
+    if (hint == MainPhoto)
+        return loadMainPhoto(id, size);
 
-    if (searchCache.next() && canUsePCache(size))
-            binaryPhoto = searchCache.record().value(0).toByteArray();
-    else { /* Miss, we need to go deeper... */
-        qDebug() << "Miss" << id;
+    qDebug() << "No hint slowread???";
 
-        QSqlQuery readPhoto(QString("SELECT data FROM Images WHERE id = %1").arg(id));
-        if (!readPhoto.next() || readPhoto.lastError().isValid()) {
-            if (readPhoto.lastError().isValid())
-                qDebug() << readPhoto.lastError().text();
-            else
-                qDebug() << "Image not found!";
+    return loadSingle(id, size)->getScaled(size);
+}
 
-            return insertError(id, size);
-        }
+QPixmap *ImageCache::loadMainPhoto(const int imageId, const QSize &size)
+{
+    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << imageId << size;
 
-        binaryPhoto = readPhoto.record().value(0).toByteArray();
+    Image *start = loadSingle(imageId, size);
+    insert(start);
+    QString query = "SELECT Species.id,ImagesCache.id,ImagesCache.data FROM Species "
+                    "LEFT OUTER JOIN ImagesCache ON Species.main_photo=ImagesCache.id "
+                    "WHERE Species.id>%1 AND Species.main_photo>1 LIMIT 4";
+    QSqlQuery fetch(query.arg(start->ownerId()));
+
+    if (fetch.lastError().isValid())
+        qDebug() << fetch.lastError().text();
+
+    while (fetch.next()) {
+        const int spId = fetch.value(0).toInt();
+        const int id = fetch.value(1).toInt();
+
+        if (images.size() > id && images[id])
+            continue;
+
+        insert(new Image(id, spId, fetch.value(2).toByteArray(), this));
     }
 
-    QPixmap tmp, *result = new QPixmap;
-    tmp.loadFromData(binaryPhoto, "PNG");
-    *result = tmp.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    return start->getScaled(size);
+}
 
-    if (!searchCache.isValid())
-        preserve(id, &tmp);
-    insert(id, result);
+void ImageCache::getAllSlowpath(const int spId)
+{
+    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << spId;
 
-    return result;
+    if (species.size() < spId) {
+        species.resize(spId * 2);
+        spFlags.resize(spId * 2);
+    }
+
+    QSqlQuery fetch(QString("SELECT Images.id,ImagesCache.data FROM Images "
+                            "LEFT OUTER JOIN ImagesCache ON Images.id=ImagesCache.id "
+                            "WHERE Images.sp_id=%1").arg(spId));
+
+    while (fetch.next()) {
+        const unsigned id = fetch.value(0).toInt();
+
+        if (imageInList(species[spId], id))
+            continue;
+
+        Image *image;
+        if (fetch.value(1).isNull())
+            image = new Image(id, this);
+        else
+            image = new Image(id, spId, fetch.value(1).toByteArray(), this);
+
+        insert(image);
+    }
+
+    spFlags[spId] |= ReadAll;
 }

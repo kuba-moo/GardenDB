@@ -16,7 +16,8 @@ void ImageRenderer::paint(QPainter *painter,
                                   const QStyleOptionViewItem& option,
                                   const QModelIndex& index) const
 {
-    QPixmap *pixmap = ic->getPixmap(index.data().toInt(), option.rect.size());
+    QPixmap *pixmap = ic->getPixmap(index.data().toInt(), option.rect.size(),
+                                    ImageCache::MainPhoto);
 
     QApplication::style()->drawItemPixmap(painter, option.rect, 0, *pixmap);
 }

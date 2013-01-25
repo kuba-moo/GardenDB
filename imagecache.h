@@ -3,12 +3,15 @@
 
 #include <QLinkedList>
 #include <QObject>
+#include <QTime>
 #include <QVector>
 
 #include "oqueries.h"
 
 class QPixmap;
 class QWidget;
+
+class Image;
 
 /** ImageCache
  *
@@ -28,8 +31,6 @@ class QWidget;
  * All the elements are scaled with Qt::KeepAspectRatio.
  */
 
-/* TODO: regenerate images from those already in cache. */
-
 class ImageCache : public QObject
 {
     Q_OBJECT
@@ -37,45 +38,45 @@ public:
     explicit ImageCache(QObject *parent = 0);
     ~ImageCache();
 
+    enum ReadHint {
+        None = 0,
+        ReadAll = 1,
+        MainPhoto = 2
+    };
+
+    /* Max size of image that can be generated from cached images. */
+    static const QSize UsableCacheSize;
 
     /* Read form cache pixmap of exactly given size. */
-    QPixmap *getPixmap(const int, const QSize &);
+    QPixmap *getPixmap(const int imageId, const QSize &, ReadHint);
     /* Get pixmap greater or equal to given size. */
-    QPixmap *getPixmapGe(const int, const QSize &);
+    QPixmap *getPixmapGe(const int imageId, const QSize &, ReadHint);
+    /* Get all pixmaps of given specimen scaled to at least given size. */
+    const QList<Image *> &getAllImages(const int spId);
 
 private:
-    /* Size of images in ImagesCache table. */
-    const QSize CachedImageSize;
-    /* Max size of image that can be generated from cached images. */
-    const QSize UsableCacheSize;
-
-    /* Can persistent cache be used to generate image. */
-    bool canUsePCache(const QSize &size) const
-    {
-        return size.width() <= UsableCacheSize.width() &&
-               size.height() <= UsableCacheSize.height();
-    }
+    /* Image list contains given image. */
+    inline bool imageInList(const QList<Image *> &imgs, const int &id);
 
     /* Clear cache. */
     void clear();
 
-    /* Insert pixmap into cache. */
-    void insert(const int, QPixmap *);
-    /* Update cost and kick out oldest images if needed. */
-    void reserveSpace(QPixmap *);
-    /* Save image into ImagesCache. */
-    void preserve(const int, QPixmap *);
-
-    /* Insert empty pixmap into cache. */
-    QPixmap *insertError(const int, const QSize &);
+    /* Add image to images vector. */
+    void insert(Image *image);
+    /* Load image from database, preferably from cache. */
+    Image *loadSingle(const int imageId, const QSize &size);
     /* Load from database, resize and insert. */
-    QPixmap *loadSlowpath(const int, const QSize &);
+    QPixmap *loadSlowpath(const int imageId, const QSize &size, ReadHint hint);
+    /* Load given image and try to prefetch adjacent main photoes. */
+    QPixmap *loadMainPhoto(const int imageId, const QSize &size);
+    /* Get all pixmaps of given specimen by reading from database. */
+    void getAllSlowpath(const int spId);
 
+    QVector<QList<Image *> > species;
+    QVector<Image *> images;
+    QVector<unsigned> spFlags;
 
-    QVector<QLinkedList<QPixmap *> > root;
-
-    unsigned cost;
-    const unsigned MaxCost;
+    QTime time;
 };
 
 #endif // IMAGECACHE_H
