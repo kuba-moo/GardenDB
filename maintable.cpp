@@ -1,12 +1,13 @@
 #include "builtins.h"
+#include "imagecache.h"
 #include "maintable.h"
 #include "ui_maintable.h"
 #include "imagerenderer.h"
 
+#include <QDebug>
 #include <QSqlRelationalTableModel>
 #include <QSqlRelationalDelegate>
 #include <QStyledItemDelegate>
-#include <QDebug>
 #include <QMessageBox>
 
 MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent) :
@@ -20,6 +21,7 @@ MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent
     connect(ui->tableView, SIGNAL(doubleClicked(QModelIndex)),
             SIGNAL(rowDetails(QModelIndex)));
     connect(builtIns, SIGNAL(changed()), SLOT(loadData()));
+    connect(imageCache, SIGNAL(changed()), SLOT(loadData()));
 
     loadData();
 
@@ -40,6 +42,8 @@ MainTable::~MainTable()
 
 void MainTable::loadData()
 {
+    qDebug() << "Main table reload";
+
     /* 0     1       2    3    4          5     6     7     8     9*/
     /*id  name flowers size desc main_photo fl_id fw_id fr_id tp_id*/
     QSqlRelationalTableModel *model = new QSqlRelationalTableModel(this);

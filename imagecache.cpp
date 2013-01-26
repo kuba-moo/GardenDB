@@ -17,8 +17,7 @@ const QSize ImageCache::UsableCacheSize(200, 200);
 ImageCache::ImageCache(QObject *parent) :
     QObject(parent)
 {
-    time.start();
-
+    images.resize(128);
     species.resize(128);
     spFlags.resize(128);
 }
@@ -48,18 +47,27 @@ void ImageCache::clear()
 
 void ImageCache::insert(Image *image)
 {
+    insertSpecies(image);
+    insertImages(image);
+}
+
+void ImageCache::insertSpecies(Image *image)
+{
     if (species.size() < image->ownerId()) {
         species.resize(image->ownerId() * 2);
         spFlags.resize(image->ownerId() * 2);
     }
     if (imageInList(species[image->ownerId()], image->id()))
-        qDebug() << "Double on secies!!!";
+        qDebug() << "Double on secies !!!" << image->id();
     species[image->ownerId()].append(image);
+}
 
+void ImageCache::insertImages(Image *image)
+    {
     if (images.size() < image->id())
         images.resize(image->id() * 2);
     if (images[image->id()])
-        qDebug() << "Double on images!!!";
+        qDebug() << "Double on images!!!" << image->id();
     images[image->id()] = image;
 }
 
@@ -87,9 +95,55 @@ const QList<Image *> &ImageCache::getAllImages(const int spId)
     return species[spId];
 }
 
+void ImageCache::setImages(const unsigned spId, const QList<Image *> &valid,
+                           const QList<Image *> &invalid)
+{
+    /* First kick off the write-backs.*/
+    for (int i = 0; i < valid.count(); i++) {
+        if (valid[i]->id() > 0)
+            continue;
+
+        valid[i]->setParent(this);
+        connect(valid[i], SIGNAL(inserted()), SLOT(imageInserted()));
+        valid[i]->beginInsert();
+        insertSpecies(valid[i]);
+    }
+
+    /* Then do the deletes. */
+    int removeCount = 0;
+    QString remove;
+    for (int i = 0; i < invalid.count(); i++) {
+        invalid[i]->sync();
+        remove += QString("%1 id=%2").arg(removeCount++ ? "OR" : "")
+                                     .arg(invalid[i]->id());
+        species[spId].removeAll(invalid[i]);
+        delete invalid[i];
+    }
+
+    if (removeCount) {
+        QSqlQuery removeQuery("DELETE FROM Images WHERE"+remove);
+        if (removeQuery.lastError().isValid())
+            qDebug() << removeQuery.lastError();
+        if (removeQuery.numRowsAffected() != removeCount)
+            qDebug() << "Removing failed" << removeQuery.numRowsAffected() << removeCount;
+        removeQuery.exec("DELETE FROM ImagesCache WHERE"+remove);
+        if (removeQuery.lastError().isValid())
+            qDebug() << removeQuery.lastError();
+        if (removeQuery.numRowsAffected() != removeCount)
+            qDebug() << "Removing failed" << removeQuery.numRowsAffected() << removeCount;
+    }
+}
+
+void ImageCache::imageInserted()
+{
+    Image *image = (Image *)QObject::sender();
+    insertImages(image);
+    emit changed();
+}
+
 Image *ImageCache::loadSingle(const int imageId, const QSize &size)
 {
-    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << imageId << size;
+    qDebug() << "|" << __func__ << imageId << size;
 
     /* Fetch from cache if exists. */
     QSqlQuery fetch(QString("SELECT Images.sp_id,ImagesCache.data FROM Images "
@@ -97,7 +151,7 @@ Image *ImageCache::loadSingle(const int imageId, const QSize &size)
                             "WHERE Images.id=%1").arg(imageId));
 
     if (fetch.lastError().isValid())
-        qDebug() << fetch.lastError().text();
+        qDebug() << fetch.lastError();
 
     if (!fetch.next() || fetch.lastError().isValid())
         return new Image(imageId, this);
@@ -108,7 +162,7 @@ Image *ImageCache::loadSingle(const int imageId, const QSize &size)
 
 QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size, ReadHint hint)
 {
-    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << id << size << hint;
+    qDebug() << "|" << __func__ << id << size << hint;
 
     if (hint == ReadAll)
         qDebug() << "ReadAll hint not supported!";
@@ -123,17 +177,17 @@ QPixmap *ImageCache::loadSlowpath(const int id, const QSize &size, ReadHint hint
 
 QPixmap *ImageCache::loadMainPhoto(const int imageId, const QSize &size)
 {
-    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << imageId << size;
+    qDebug() << "|" << __func__ << imageId << size;
 
     Image *start = loadSingle(imageId, size);
     insert(start);
     QString query = "SELECT Species.id,ImagesCache.id,ImagesCache.data FROM Species "
                     "LEFT OUTER JOIN ImagesCache ON Species.main_photo=ImagesCache.id "
-                    "WHERE Species.id>%1 AND Species.main_photo>1 LIMIT 4";
+                    "WHERE Species.id>%1 AND Species.main_photo>1 LIMIT 5";
     QSqlQuery fetch(query.arg(start->ownerId()));
 
     if (fetch.lastError().isValid())
-        qDebug() << fetch.lastError().text();
+        qDebug() << fetch.lastError();
 
     while (fetch.next()) {
         const int spId = fetch.value(0).toInt();
@@ -150,7 +204,7 @@ QPixmap *ImageCache::loadMainPhoto(const int imageId, const QSize &size)
 
 void ImageCache::getAllSlowpath(const int spId)
 {
-    qDebug() << time.elapsed() << __PRETTY_FUNCTION__ << spId;
+    qDebug() << "|" << __func__ << spId;
 
     if (species.size() < spId) {
         species.resize(spId * 2);

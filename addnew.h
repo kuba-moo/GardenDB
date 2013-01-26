@@ -9,9 +9,11 @@ namespace Ui {
     class AddNew;
 }
 
-class ImageCache;
-class BuiltIns;
 class QComboBox;
+
+class BuiltIns;
+class ImageCache;
+class Image;
 
 class AddNew : public QWidget
 {
@@ -39,6 +41,8 @@ private:
 private slots:
     /* Fills comboBoxes with built-ins. */
     void populateComboes();
+    /* Reload photos list from images. */
+    void reloadPhotos();
     /* Spawn file selection window and append chosen image to images. */
     void addPhoto();
     /* Remove selected photo. */
@@ -52,14 +56,15 @@ private slots:
     void accept();
 
 private:
-    bool isNew;
-    int speciesId, typeId, flavourId, floweringId, frostId;
+    /* This is a new specimen not yet in database. */
+    bool isNew() const { return speciesId < 0; }
 
-    int oldPhotoes;
+    int speciesId, typeId, flavourId, floweringId, frostId, mainPhotoId;
+
     Ui::AddNew *ui;
     ImageCache *ic;
     BuiltIns *builtins;
-    QVector<int> picIds;
+    QList<Image *> images, invalid;
 };
 
 #endif // ADDNEW_H

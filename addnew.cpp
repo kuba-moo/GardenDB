@@ -48,8 +48,8 @@ AddNew::~AddNew()
 
 void AddNew::resetData()
 {
-    isNew = true;
-    speciesId = typeId = flavourId = floweringId = frostId = 0;
+    speciesId = -1;
+    typeId = flavourId = floweringId = frostId = 0;
 }
 
 void AddNew::setData(const QSqlRecord &record)
@@ -60,7 +60,6 @@ void AddNew::setData(const QSqlRecord &record)
     if (!bareRecord.next())
         return;
 
-    isNew = false;
     speciesId = id;
     ui->title->setText(trUtf8("Edit ") + record.value("name").toString());
     ui->name->setText(record.value("name").toString());
@@ -73,19 +72,34 @@ void AddNew::setData(const QSqlRecord &record)
     ui->desc->setText(record.value("desc").toString());
 
     /* Pictures. */
+    mainPhotoId = bareRecord.record().value("main_photo").toInt();
+    images = ic->getAllImages(speciesId);
+    reloadPhotos();
+}
+
+void AddNew::reloadPhotos()
+{
+    ui->listWidget->blockSignals(true);
+    while (ui->listWidget->count())
+        delete ui->listWidget->takeItem(0);
+    ui->listWidget->blockSignals(false);
+
     int mainPhotoIndex = -1;
-    int mainPhotoId = bareRecord.record().value("main_photo").toInt();
-    const QList<Image *> &images = ic->getAllImages(speciesId);
     QList<Image *>::const_iterator i;
     for (i = images.constBegin(); i < images.constEnd(); i++) {
+        /* Sort out invalids so they don't get into way on row->id mapping. */
+        if (!(*i)->isValid()) {
+            if (!(*i)->id() > 0)
+                invalid.append(*i);
+            images.removeAll(*i);
+            continue;
+        }
         QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
-        picIds.push_back((*i)->id());
-        if (mainPhotoId == (*i)->id())
+        if ((*i)->id() == mainPhotoId)
             mainPhotoIndex = ui->listWidget->count()-1;
     }
 
-    oldPhotoes = ui->listWidget->count();
     ui->listWidget->setCurrentRow(mainPhotoIndex);
     setMainPhoto(mainPhotoIndex);
 }
@@ -120,20 +134,8 @@ void AddNew::removePhoto()
     if (row < 0)
         return;
 
-    if (! isNew)
-    {
-        QSqlQuery remove(QString("DELETE FROM Images WHERE id = %1")
-                         .arg(picIds[row]));
-        if (remove.numRowsAffected() != 1)
-            QMessageBox::critical(this, trUtf8("Removing failed"),
-                                  trUtf8("Unspecified error occured during "
-                                         "attempt to remove picture.\n"
-                                         "Please cancel edtition, reopen "
-                                         "tab and try again."));
-        picIds.remove(row);
-    }
-
-    delete ui->listWidget->takeItem(row);
+    images[row]->forRemoval();
+    reloadPhotos();
 }
 
 void AddNew::addPhoto()
@@ -145,46 +147,23 @@ void AddNew::addPhoto()
     if (fileName.isEmpty())
         return;
 
-    QPixmap pixmap;
-    /* Check if image was read successfully. */
-    if (! pixmap.load(fileName))
-        return;
-
-    if (! isNew)
-    {
-        QSqlQuery insertPicture;
-        insertPicture.prepare("INSERT INTO Images VALUES(NULL, :image, :id)");
-
-        QByteArray array;
-        QBuffer buf(&array);
-        buf.open(QIODevice::WriteOnly);
-        pixmap.save(&buf, "PNG");
-
-        insertPicture.bindValue(":id", speciesId);
-        insertPicture.bindValue(":image", array);
-        insertPicture.exec();
-
-        picIds.push_back(insertPicture.lastInsertId().toInt());
-
-        if (insertPicture.lastError().isValid())
-            qDebug() << insertPicture.lastError();
-    }
-
-    QIcon icon(pixmap.scaled(QSize(800, 800), Qt::KeepAspectRatio,
-                             Qt::SmoothTransformation));
-    ui->listWidget->addItem(new QListWidgetItem(icon, ""));
-    ui->listWidget->item(ui->listWidget->count()-1)->setToolTip(fileName);
+    Image *img = new Image(fileName, speciesId, this);
+    images.append(img);
+    connect(img, SIGNAL(changed()), SLOT(reloadPhotos()));
+    reloadPhotos();
 }
 
 void AddNew::setMainPhoto(int n)
 {
     QLabel * const photo = ui->mainPhoto;
 
-    if (n < 0)
+    if (n < 0) {
         photo->setPixmap(QIcon(":/icons/image").pixmap(photo->size()));
-    else {
+        mainPhotoId = 1;
+    } else {
         QListWidgetItem *selected = ui->listWidget->item(n);
         photo->setPixmap(selected->icon().pixmap(photo->size()));
+        mainPhotoId = images[n]->id();
     }
 }
 
@@ -193,8 +172,8 @@ void AddNew::magnifyImage(QModelIndex index)
     QLabel *label = new QLabel("");
     label->setAttribute(Qt::WA_DeleteOnClose);
 
-    QPixmap *pixmap = ic->getPixmapGe(picIds[index.row()], QSize(800, 800),
-                                      ImageCache::None);
+    QPixmap *pixmap = images[index.row()]->getScaledGe(QSize(800, 800));
+
     label->setPixmap(*pixmap);
     label->adjustSize();
     label->show();
@@ -213,62 +192,30 @@ void AddNew::acceptAdd()
             + ", "
             + ui->frost->itemData(ui->frost->currentIndex()).toString() + ", "
             + ui->type->itemData(ui->type->currentIndex()).toString() + ")";
-
     QSqlQuery add(insert);
-
     if (add.lastError().isValid())
         qDebug() << __FILE__ << add.lastError();
 
     speciesId = add.lastInsertId().toInt();
 
-    QListWidgetItem *item;
-    QSqlQuery insertPicture;
-    int mainPhotoId = 1;
-    insertPicture.prepare("INSERT INTO Images VALUES(NULL, :image, :id)");
-    for (int i=0; i < ui->listWidget->count(); i++)
-    {
-        item = ui->listWidget->item(i);
+    while (invalid.count())
+        delete invalid.takeLast();
+    for (int i = 0; i < images.count(); i++)
+        images[i]->setOwner(speciesId);
 
-        QByteArray array;
-        QBuffer buf(&array);
-        QPixmap pixmap;
-        /* Check if image was read successfully. */
-        if (! pixmap.load(item->toolTip())) {
-            qDebug() << "Item is spooky!" << item;
-            continue;
-        }
-        buf.open(QIODevice::WriteOnly);
-        pixmap.save(&buf, "PNG");
-
-        insertPicture.bindValue(":id", speciesId);
-        insertPicture.bindValue(":image", array);
-        insertPicture.exec();
-
-        if (insertPicture.lastError().isValid())
-            qDebug() << insertPicture.lastError();
-
-        if (i == ui->listWidget->currentRow())
-            mainPhotoId = insertPicture.lastInsertId().toInt();
-    }
-
-    QSqlQuery setMain(QString("UPDATE Species SET main_photo=%1 WHERE id=%2")
-                      .arg(mainPhotoId).arg(speciesId));
-
-    if (setMain.lastError().isValid())
-        qDebug() << setMain.lastError();
+    if (ui->listWidget->currentRow() >= 0)
+        images[ui->listWidget->currentRow()]->mainPhoto();
+    ic->setImages(speciesId, images, invalid);
 }
 
 void AddNew::acceptUpdate()
 {
-    int mainPhotoId = (ui->listWidget->currentRow() == -1) ?
-                1 : picIds[ui->listWidget->currentRow()];
-
     QStringList ul;
     ul << "UPDATE Species SET";
     ul << " name='" << ui->name->text() << "'";
     ul << ", flowers='" << ui->flowers->text() << "'";
     ul << ", size='" << ui->bush->text() << "'";
-    ul << ", main_photo='" << QString::number(mainPhotoId) << "'";
+    ul << ", main_photo='" << QString::number(abs(mainPhotoId)) << "'";
     ul << ", desc='" << ui->desc->document()->toPlainText() << "'";
     ul << ", fl_id="
        << QString::number(ui->flavour->itemData(ui->flavour->currentIndex()).toInt());
@@ -282,12 +229,16 @@ void AddNew::acceptUpdate()
 
     QSqlQuery updateQuery(ul.join(""));
     if (updateQuery.lastError().isValid())
-        qDebug() << updateQuery.executedQuery() << "\n" << updateQuery.lastError();
+        qDebug() << updateQuery.lastError().text();
+
+    if (ui->listWidget->currentRow() >= 0)
+        images[ui->listWidget->currentRow()]->mainPhoto();
+    ic->setImages(speciesId, images, invalid);
 }
 
 void AddNew::accept()
 {
-    if (isNew)
+    if (isNew())
         acceptAdd();
     else
         acceptUpdate();

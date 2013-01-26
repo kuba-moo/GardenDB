@@ -3,7 +3,6 @@
 
 #include <QLinkedList>
 #include <QObject>
-#include <QTime>
 #include <QVector>
 
 #include "oqueries.h"
@@ -54,6 +53,17 @@ public:
     /* Get all pixmaps of given specimen scaled to at least given size. */
     const QList<Image *> &getAllImages(const int spId);
 
+    /* Update list of images of a specimen. */
+    void setImages(const unsigned spId, const QList<Image *> &valid,
+                   const QList<Image *> &invalid);
+
+signals:
+    void changed();
+
+private slots:
+    /* Image signals that it's done with database inserts. */
+    void imageInserted();
+
 private:
     /* Image list contains given image. */
     inline bool imageInList(const QList<Image *> &imgs, const int &id);
@@ -63,6 +73,8 @@ private:
 
     /* Add image to images vector. */
     void insert(Image *image);
+    void insertImages(Image *image);
+    void insertSpecies(Image *image);
     /* Load image from database, preferably from cache. */
     Image *loadSingle(const int imageId, const QSize &size);
     /* Load from database, resize and insert. */
@@ -75,8 +87,6 @@ private:
     QVector<QList<Image *> > species;
     QVector<Image *> images;
     QVector<unsigned> spFlags;
-
-    QTime time;
 };
 
 #endif // IMAGECACHE_H

@@ -7,6 +7,9 @@
 
 class QPixmap;
 
+class FileLoader;
+class StoreHelper;
+
 /**
  * Image - image from database with caching of scaled versions.
  *
@@ -25,29 +28,64 @@ class Image : public QObject
 {
     Q_OBJECT
 public:
+    enum Flags {
+        FullRead = 1, /* Full resolution read in, nothing more can be done. */
+        Zombie = 2, /* Image is not present in database. */
+        ForRemoval = 4, /* Editor marked this photo for removal. */
+        NewPhoto = 8, /* Editor added this photo but didn't yet commit. */
+        MainPhoto = 0x10 /* New photo which will be a main one. */
+    };
+
+    /* Size of images in ImagesCache table. */
+    static const QSize CachedImageSize;
+
     /* Create image, read initial data from fullsize. */
     explicit Image(const int id, QObject *parent = 0);
     /* Create image with initial data from ByteArray. */
     explicit Image(const int id, const int ownerId,
                    const QByteArray &rawCache, QObject *parent = 0);
+    /* Create new image from file on disk. */
+    explicit Image(const QString &fileName, const int ownerId,
+                   QObject *parent = 0);
     ~Image();
+
 
     /* Get image id. */
     int id() const {return _id; }
     /* Get image owner's id. */
     int ownerId() const { return _ownerId; }
+    void setOwner(int id) { _ownerId = id; }
+
+    /* Mark photo as owner's main. */
+    void mainPhoto() { flags |= MainPhoto; }
+
+    void forRemoval() { flags |= ForRemoval; }
+    /* Is valid - should be saved and displayed. */
+    bool isValid() const;
+
+    /* Join all worker threads and abort database accesses. */
+    void sync();
+    /* Start adding itself to database. */
+    void beginInsert();
 
     /* Get image scaled to given size. */
     QPixmap *getScaled(const QSize &size);
     /* Get image of at least given size. */
     QPixmap *getScaledGe(const QSize &);
 
-private:
-    /* Size of images in ImagesCache table. */
-    static const QSize CachedImageSize;
 
-    /* Full-size image read from database. */
-    bool isFullRead() { return fullRead && !zombieMode; }
+signals:
+    void changed();
+    void inserted();
+
+private slots:
+    void loaderDone();
+    void storerDone();
+
+private:
+    /* Can attempt to read fullsized image help in finding larger image. */
+    bool canReadFull() { return !(flags & FullRead) || isZombie(); }
+    bool isZombie() const { return flags & Zombie; }
 
     /* Insert pixmap into cache. */
     QPixmap *insert(const QByteArray &raw);
@@ -66,9 +104,10 @@ private:
     { return a.width() < b.width() && a.height() < b.height(); }
 
     int _id, _ownerId;
-    bool fullRead; /* Full resolution read in, nothing more can be done. */
-    bool zombieMode; /* Image is not present in database. */
+    unsigned flags;
     QList<QPixmap *> cache;
+    FileLoader *loader;
+    StoreHelper *storer;
 };
 
 #endif // IMAGE_H
