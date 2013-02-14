@@ -1,19 +1,16 @@
 #include "addnew.h"
 #include "builtins.h"
+#include "database.h"
 #include "omain.h"
 #include "ui_omain.h"
-#include "oqueries.h"
 #include "obuiltinseditor.h"
 #include "maintable.h"
-#include "imagecache.h"
+#include "logger.h"
 
 #include <QFileDialog>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlRelationalTableModel>
-#include <QIcon>
 
 OMain::OMain(QWidget *parent) :
     QMainWindow(parent),
@@ -23,7 +20,7 @@ OMain::OMain(QWidget *parent) :
 
     editor = 0;
     addNew = 0;
-    database = QSqlDatabase::addDatabase("QSQLITE");
+    db = 0;
 
     connect(ui->actionNew_file, SIGNAL(triggered()), SLOT(openFile()));
     connect(ui->actionOpen_file, SIGNAL(triggered()), SLOT(openFile()));
@@ -48,6 +45,7 @@ void OMain::openFile()
     QFileDialog fileDialog(this);
     fileDialog.setFileMode(QFileDialog::AnyFile);
     QString newFileName =
+            /* TODO: this should be getSaveFileName for windows. */
             fileDialog.getOpenFileName(this,
                                        trUtf8("Select garden file"),
                                        QString(),
@@ -55,37 +53,24 @@ void OMain::openFile()
     if (newFileName.isEmpty())
         return;
 
+    if (! newFileName.endsWith(".grd"))
+        newFileName += ".grd";
+
     doOpen(newFileName);
 }
 
 void OMain::doOpen(QString newFileName)
 {
-    fileName = newFileName;
-    if (! fileName.endsWith(".grd"))
-        fileName += ".grd";
-
-    database.setDatabaseName(fileName);
-    database.open();
-
-    QSqlQuery result;
-    for (unsigned i=0; i < numCreates && !result.lastError().isValid(); i++)
-        result = database.exec(creates[i]);
-
-    if (result.lastError().isValid())
-    {
-        QMessageBox::critical(this, trUtf8("Unable to open file"),
-                              trUtf8("Selected file cannot be opened"));
-        qDebug() << result.lastQuery();
-        qDebug() << result.lastError().text();
+    db = new Database(newFileName, this);
+    if (!db->isOk()) {
+        delete db;
+        db = 0;
+        return;
     }
 
-    for (unsigned i=0; i < numInserts && !result.lastError().isValid(); i++)
-        result = database.exec(inserts[i]);
-
     builtins = new BuiltIns(this);
-    ic = new ImageCache;
 
-    mainTable = new MainTable(ic, builtins, this);
+    mainTable = new MainTable(db, builtins, this);
     connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
@@ -109,10 +94,9 @@ void OMain::closeFile()
         editor->close();
 
     delete builtins;
-    delete ic;
 
-    database.close();
-    fileName.clear();
+    delete db;
+    db = 0;
 
     ui->actionEdit_built_ins->setEnabled(false);
     this->setWindowTitle(trUtf8("Garden"));
@@ -122,7 +106,7 @@ void OMain::addRow()
 {
     if (! addNew)
     {
-        addNew = new AddNew(ic, builtins, this);
+        addNew = new AddNew(db, builtins, this);
         ui->tabWidget->addTab(addNew, QIcon(":/plus"), trUtf8("New specimen"));
     }
 
@@ -166,7 +150,7 @@ void OMain::showDetails(QModelIndex index)
     const QSqlRelationalTableModel *model =
             dynamic_cast<const QSqlRelationalTableModel *> (index.model());
 
-    AddNew *tab = new AddNew(ic, builtins, this, model->record(index.row()));
+    AddNew *tab = new AddNew(db, builtins, this, model->record(index.row()));
     ui->tabWidget->addTab(tab, QIcon(),
                           model->record(index.row()).value("name").toString());
     ui->tabWidget->setCurrentWidget(tab);

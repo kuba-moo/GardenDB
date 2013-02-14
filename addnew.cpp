@@ -1,9 +1,9 @@
 #include "addnew.h"
 #include "builtins.h"
+#include "database.h"
 #include "image.h"
 #include "imagecache.h"
 #include "ui_addnew.h"
-#include "oqueries.h"
 
 #include <QBuffer>
 #include <QDebug>
@@ -14,7 +14,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-AddNew::AddNew(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent,
+AddNew::AddNew(Database *db, BuiltIns *builtIns, QWidget *parent,
                const QSqlRecord &record) :
     QWidget(parent),
     ui(new Ui::AddNew)
@@ -22,7 +22,7 @@ AddNew::AddNew(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent,
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ic = imageCache;
+    ic = db->imageCache();
     builtins = builtIns;
 
     resetData();

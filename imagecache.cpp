@@ -10,7 +10,6 @@
 
 #include "image.h"
 #include "imagecache.h"
-#include "oqueries.h"
 
 const QSize ImageCache::UsableCacheSize(200, 200);
 

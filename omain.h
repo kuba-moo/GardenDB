@@ -2,14 +2,13 @@
 #define OMAIN_H
 
 #include <QMainWindow>
-#include <QSqlDatabase>
 #include <QModelIndex>
 
+class Database;
 class OBuiltInsEditor;
 class MainTable;
 class AddNew;
 class BuiltIns;
-class ImageCache;
 
 namespace Ui {
     class OMain;
@@ -57,17 +56,15 @@ private slots:
 
 private:
     /* Some file is currently opened. */
-    bool isFileOpened() { return !fileName.isEmpty(); }
+    bool isFileOpened() { return db; }
 
     Ui::OMain *ui;
-    QSqlDatabase database;
-    QString fileName;    /* If not empty some file is opened. */
 
+    Database *db;
     OBuiltInsEditor* editor;
 
     /* Data objects */
     BuiltIns *builtins;
-    ImageCache *ic;
 
     /* Specific tabs */
     MainTable *mainTable;

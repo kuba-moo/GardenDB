@@ -12,6 +12,7 @@ namespace Ui {
 class QComboBox;
 
 class BuiltIns;
+class Database;
 class ImageCache;
 class Image;
 
@@ -20,8 +21,8 @@ class AddNew : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddNew(ImageCache *imageCache, BuiltIns *builtIns,
-                    QWidget *parent = 0, const QSqlRecord &record = QSqlRecord());
+    explicit AddNew(Database *db, BuiltIns *builtIns,
+                    QWidget *parent, const QSqlRecord &record = QSqlRecord());
     ~AddNew();
 
 private:

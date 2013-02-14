@@ -4,8 +4,7 @@
 #include <QLinkedList>
 #include <QObject>
 #include <QVector>
-
-#include "oqueries.h"
+#include <QSize>
 
 class QPixmap;
 class QWidget;

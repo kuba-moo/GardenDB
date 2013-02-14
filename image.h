@@ -24,6 +24,13 @@ class StoreHelper;
  * returns empty images.
  */
 
+/* TODO: make isNew() dependent on id < 0. (<= 0)?
+ *       perhaps we will need to introduce isNew() and isBacked().
+ */
+/* TODO: get rid of MainPhoto -> ImageCache should decide that -> some kind of back-call.
+ *       No, actually AddNew should take care of all this MainPhoto stuff.
+ */
+
 class Image : public QObject
 {
     Q_OBJECT

@@ -15,16 +15,16 @@ SOURCES += main.cpp\
     obuiltinseditor.cpp \
     maintable.cpp \
     addnew.cpp \
-    oqueries.cpp \
     imagerenderer.cpp \
     imagecache.cpp \
     builtins.cpp \
     image.cpp \
     fileloader.cpp \
-    storehelper.cpp
+    storehelper.cpp \
+    database.cpp \
+    logger.cpp
 
 HEADERS  += omain.h \
-    oqueries.h \
     obuiltinseditor.h \
     maintable.h \
     addnew.h \
@@ -33,7 +33,9 @@ HEADERS  += omain.h \
     builtins.h \
     image.h \
     fileloader.h \
-    storehelper.h
+    storehelper.h \
+    database.h \
+    logger.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \

@@ -1,4 +1,5 @@
 #include "builtins.h"
+#include "database.h"
 #include "imagecache.h"
 #include "maintable.h"
 #include "ui_maintable.h"
@@ -10,7 +11,7 @@
 #include <QStyledItemDelegate>
 #include <QMessageBox>
 
-MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent) :
+MainTable::MainTable(Database *db, BuiltIns *builtIns, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainTable)
 {
@@ -21,7 +22,7 @@ MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent
     connect(ui->tableView, SIGNAL(doubleClicked(QModelIndex)),
             SIGNAL(rowDetails(QModelIndex)));
     connect(builtIns, SIGNAL(changed()), SLOT(loadData()));
-    connect(imageCache, SIGNAL(changed()), SLOT(loadData()));
+    connect(db->imageCache(), SIGNAL(changed()), SLOT(loadData()));
 
     loadData();
 
@@ -29,7 +30,7 @@ MainTable::MainTable(ImageCache *imageCache, BuiltIns *builtIns, QWidget *parent
     ui->tableView->horizontalHeader()->moveSection(5, 1);
     ui->tableView->horizontalHeader()->moveSection(9, 3);
     ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
-    ui->tableView->setItemDelegateForColumn(5, new ImageRenderer(imageCache,
+    ui->tableView->setItemDelegateForColumn(5, new ImageRenderer(db->imageCache(),
                                                                  ui->tableView));
     ui->tableView->setColumnWidth(5, 83);
     ui->tableView->verticalHeader()->setDefaultSectionSize(64);
