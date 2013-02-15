@@ -5,6 +5,7 @@
 #include <QtSql>
 
 class ImageCache;
+class SpecimenModel;
 
 /**
  * @brief The Database File class, UI - business logic proxy
@@ -27,6 +28,7 @@ public:
 
     /* Aggregate accessors. */
     ImageCache *imageCache() const { return ic; }
+    SpecimenModel *specimenModel() const { return sm; }
 
 signals:
 
@@ -48,6 +50,7 @@ private:
 
     QSqlDatabase database;
     ImageCache *ic;
+    SpecimenModel *sm;
 };
 
 #endif // DATABASE_H

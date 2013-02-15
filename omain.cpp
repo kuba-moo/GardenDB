@@ -70,7 +70,7 @@ void OMain::doOpen(QString newFileName)
 
     builtins = new BuiltIns(this);
 
-    mainTable = new MainTable(db, builtins, this);
+    mainTable = new MainTable(db, this);
     connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
     connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
             SLOT(showDetails(QModelIndex)));

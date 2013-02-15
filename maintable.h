@@ -21,7 +21,7 @@ signals:
     void rowDetails(QModelIndex);
 
 public:
-    explicit MainTable(Database *db, BuiltIns *builtIns, QWidget *parent = 0);
+    explicit MainTable(Database *db, QWidget *parent = 0);
     ~MainTable();
 
 public slots:

@@ -15,7 +15,6 @@ SOURCES += main.cpp\
     obuiltinseditor.cpp \
     maintable.cpp \
     addnew.cpp \
-    imagerenderer.cpp \
     imagecache.cpp \
     builtins.cpp \
     image.cpp \
@@ -26,13 +25,13 @@ SOURCES += main.cpp\
     loadercontroller.cpp \
     imageloader.cpp \
     specimen.cpp \
-    specimenmodel.cpp
+    specimenmodel.cpp \
+    specimenrenderer.cpp
 
 HEADERS  += omain.h \
     obuiltinseditor.h \
     maintable.h \
     addnew.h \
-    imagerenderer.h \
     imagecache.h \
     builtins.h \
     image.h \
@@ -43,7 +42,8 @@ HEADERS  += omain.h \
     loadercontroller.h \
     imageloader.h \
     specimen.h \
-    specimenmodel.h
+    specimenmodel.h \
+    specimenrenderer.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \

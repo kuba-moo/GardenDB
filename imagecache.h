@@ -38,12 +38,6 @@ public:
     explicit ImageCache(QObject *parent = 0);
     ~ImageCache();
 
-    enum ReadHint {
-        None = 0,
-        ReadAll = 1,
-        MainPhoto = 2
-    };
-
     /* Max size of image that can be generated from cached images. */
     static const QSize UsableCacheSize;
 
@@ -51,9 +45,9 @@ public:
     bool load();
 
     /* Read form cache pixmap of exactly given size. */
-    QPixmap *getPixmap(const int imageId, const QSize &, ReadHint);
+    QPixmap *getPixmap(const int imageId, const QSize &);
     /* Get pixmap greater or equal to given size. */
-    QPixmap *getPixmapGe(const int imageId, const QSize &, ReadHint);
+    QPixmap *getPixmapGe(const int imageId, const QSize &);
     /* Get all pixmaps of given specimen scaled to at least given size. */
     const QList<Image *> &getAllImages(const int spId);
 
@@ -81,6 +75,12 @@ private:
     void insertImages(Image *image);
     void insertSpecies(Image *image);
 #if 0
+    enum ReadHint {
+        None = 0,
+        ReadAll = 1,
+        MainPhoto = 2
+    };
+
     /* Load image from database, preferably from cache. */
     Image *loadSingle(const int imageId, const QSize &size);
     /* Load from database, resize and insert. */

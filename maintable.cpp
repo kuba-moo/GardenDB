@@ -3,7 +3,8 @@
 #include "imagecache.h"
 #include "maintable.h"
 #include "ui_maintable.h"
-#include "imagerenderer.h"
+#include "specimenmodel.h"
+#include "specimenrenderer.h"
 
 #include <QDebug>
 #include <QSqlRelationalTableModel>
@@ -11,12 +12,15 @@
 #include <QStyledItemDelegate>
 #include <QMessageBox>
 
-MainTable::MainTable(Database *db, BuiltIns *builtIns, QWidget *parent) :
+MainTable::MainTable(Database *db, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainTable)
 {
     ui->setupUi(this);
 
+    ui->listView->setModel(db->specimenModel());
+    ui->listView->setItemDelegate(new SpecimenRenderer(db));
+    /*
     connect(ui->add, SIGNAL(clicked()), SIGNAL(addRow()));
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
     connect(ui->tableView, SIGNAL(doubleClicked(QModelIndex)),
@@ -34,6 +38,7 @@ MainTable::MainTable(Database *db, BuiltIns *builtIns, QWidget *parent) :
                                                                  ui->tableView));
     ui->tableView->setColumnWidth(5, 83);
     ui->tableView->verticalHeader()->setDefaultSectionSize(64);
+    */
 }
 
 MainTable::~MainTable()
@@ -63,14 +68,16 @@ void MainTable::loadData()
     model->setHeaderData(9, Qt::Horizontal, trUtf8("Type"));
     model->setRelation(9, QSqlRelation("Types", "id", "name"));
     model->select();
-
+/*
     QAbstractItemModel *oldModel =  ui->tableView->model();
     ui->tableView->setModel(model);
     delete oldModel;
+*/
 }
 
 void MainTable::removeRow()
 {
+    /*
     int ret = QMessageBox::question(this, trUtf8("Remove row"),
                                     trUtf8("Are you sure you want to remove\n"
                                            "this row?\n"
@@ -82,4 +89,5 @@ void MainTable::removeRow()
         int row = ui->tableView->selectionModel()->currentIndex().row();
         ui->tableView->model()->removeRow(row);
     }
+    */
 }

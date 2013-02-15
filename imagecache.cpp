@@ -96,7 +96,7 @@ bool ImageCache::load()
     return true;
 }
 
-QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size, ReadHint hint)
+QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size)
 {
     if (images.size() <= imageId || !images[imageId]) {
         if (imageId)
@@ -107,7 +107,7 @@ QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size, ReadHint hi
     return images[imageId]->getScaled(size);
 }
 
-QPixmap *ImageCache::getPixmapGe(const int imageId, const QSize &size, ReadHint hint)
+QPixmap *ImageCache::getPixmapGe(const int imageId, const QSize &size)
 {
     if (images.size() <= imageId || !images[imageId]) {
         if (imageId)

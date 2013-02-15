@@ -2,6 +2,7 @@
 #include "image.h" /* For cache size. */
 #include "imagecache.h"
 #include "logger.h"
+#include "specimenmodel.h"
 
 #include <QApplication>
 #include <QTime>
@@ -154,6 +155,13 @@ Database::Database(QString filename, QObject *parent) :
 
     ic = new ImageCache(this);
     if (!ic->load()) {
+        database.close();
+        return;
+    }
+
+    sm = new SpecimenModel(this);
+    if (!sm->load()) {
+        Log(UserError) << "Unable to read species from database";
         database.close();
         return;
     }
