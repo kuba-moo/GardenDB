@@ -22,7 +22,11 @@ SOURCES += main.cpp\
     fileloader.cpp \
     storehelper.cpp \
     database.cpp \
-    logger.cpp
+    logger.cpp \
+    loadercontroller.cpp \
+    imageloader.cpp \
+    specimen.cpp \
+    specimenmodel.cpp
 
 HEADERS  += omain.h \
     obuiltinseditor.h \
@@ -35,7 +39,11 @@ HEADERS  += omain.h \
     fileloader.h \
     storehelper.h \
     database.h \
-    logger.h
+    logger.h \
+    loadercontroller.h \
+    imageloader.h \
+    specimen.h \
+    specimenmodel.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \

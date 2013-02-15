@@ -23,6 +23,7 @@ AddNew::AddNew(Database *db, BuiltIns *builtIns, QWidget *parent,
     setAttribute(Qt::WA_DeleteOnClose);
 
     ic = db->imageCache();
+    connect(ic, SIGNAL(changed()), SLOT(reloadPhotos()));
     builtins = builtIns;
 
     resetData();
@@ -73,12 +74,13 @@ void AddNew::setData(const QSqlRecord &record)
 
     /* Pictures. */
     mainPhotoId = bareRecord.record().value("main_photo").toInt();
-    images = ic->getAllImages(speciesId);
     reloadPhotos();
 }
 
 void AddNew::reloadPhotos()
 {
+    images = ic->getAllImages(speciesId);
+
     ui->listWidget->blockSignals(true);
     while (ui->listWidget->count())
         delete ui->listWidget->takeItem(0);
@@ -87,13 +89,6 @@ void AddNew::reloadPhotos()
     int mainPhotoIndex = -1;
     QList<Image *>::const_iterator i;
     for (i = images.constBegin(); i < images.constEnd(); i++) {
-        /* Sort out invalids so they don't get into way on row->id mapping. */
-        if (!(*i)->isValid()) {
-            if (!(*i)->id() > 0)
-                invalid.append(*i);
-            images.removeAll(*i);
-            continue;
-        }
         QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
         if ((*i)->id() == mainPhotoId)
@@ -128,16 +123,6 @@ void AddNew::fillCombo(QComboBox *combo, const QString &category, const unsigned
     combo->setCurrentIndex(currentIndex);
 }
 
-void AddNew::removePhoto()
-{
-    int row = ui->listWidget->currentRow();
-    if (row < 0)
-        return;
-
-    images[row]->forRemoval();
-    reloadPhotos();
-}
-
 void AddNew::addPhoto()
 {
     QString fileName =
@@ -147,14 +132,22 @@ void AddNew::addPhoto()
     if (fileName.isEmpty())
         return;
 
-    Image *img = new Image(fileName, speciesId, this);
-    images.append(img);
-    connect(img, SIGNAL(changed()), SLOT(reloadPhotos()));
-    reloadPhotos();
+    ic->addImage(speciesId, fileName);
 }
 
-void AddNew::setMainPhoto(int n)
+void AddNew::removePhoto()
 {
+    int row = ui->listWidget->currentRow();
+    if (row < 0)
+        return;
+
+    ic->removeImage(images[row]->id());
+}
+
+void AddNew::setMainPhoto(int)
+{
+    /* TODO: implement AddNew::setMainPhoto */
+#if 0
     QLabel * const photo = ui->mainPhoto;
 
     if (n < 0) {
@@ -165,6 +158,7 @@ void AddNew::setMainPhoto(int n)
         photo->setPixmap(selected->icon().pixmap(photo->size()));
         mainPhotoId = images[n]->id();
     }
+#endif
 }
 
 void AddNew::magnifyImage(QModelIndex index)
@@ -181,6 +175,7 @@ void AddNew::magnifyImage(QModelIndex index)
 
 void AddNew::acceptAdd()
 {
+#if 0
     QString insert = "INSERT INTO Species VALUES("
             "NULL, '" + ui->name->text() + "', '" + ui->flowers->text() + "', "
             "'" + ui->bush->text() + "', '"
@@ -206,10 +201,12 @@ void AddNew::acceptAdd()
     if (ui->listWidget->currentRow() >= 0)
         images[ui->listWidget->currentRow()]->mainPhoto();
     ic->setImages(speciesId, images, invalid);
+#endif
 }
 
 void AddNew::acceptUpdate()
 {
+#if 0
     QStringList ul;
     ul << "UPDATE Species SET";
     ul << " name='" << ui->name->text() << "'";
@@ -234,6 +231,7 @@ void AddNew::acceptUpdate()
     if (ui->listWidget->currentRow() >= 0)
         images[ui->listWidget->currentRow()]->mainPhoto();
     ic->setImages(speciesId, images, invalid);
+#endif
 }
 
 void AddNew::accept()

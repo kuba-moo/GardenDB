@@ -3,6 +3,7 @@
 
 #include <QImage>
 #include <QThread>
+#include <QByteArray>
 
 class FileLoader : public QThread
 {
@@ -12,11 +13,14 @@ public:
     
     void run();
 
+    const QString &filename() { return _filename; }
+    const QByteArray &raw() { return _raw; }
     const QImage &fullsize() { return _fullsize; }
     const QImage &scaled() { return _scaled; }
 
 private:
-    QString fileName;
+    QString _filename;
+    QByteArray _raw;
     QImage _fullsize, _scaled;
 };
 

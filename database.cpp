@@ -4,6 +4,7 @@
 #include "logger.h"
 
 #include <QApplication>
+#include <QTime>
 
 const int Database::version = 1;
 
@@ -101,13 +102,10 @@ Database::Database(QString filename, QObject *parent) :
 {
     bool newFile = !QFileInfo(filename).exists();
 
-    if (!QSqlDatabase::database().isValid()) {
-        qDebug() << "        add";
+    if (!QSqlDatabase::database().isValid())
         database = QSqlDatabase::addDatabase("QSQLITE");
-    } else {
-        qDebug() << "        there is";
+    else
         database = QSqlDatabase::database();
-    }
     database.setDatabaseName(filename);
     database.open();
 
@@ -147,7 +145,19 @@ Database::Database(QString filename, QObject *parent) :
         return;
     }
 
+    if (!heal()) {
+        Logger::log(UserError, trUtf8("Unable to open database: fixing data"
+                                      " format has failed"));
+        database.close();
+        return;
+    }
+
     ic = new ImageCache(this);
+    if (!ic->load()) {
+        database.close();
+        return;
+    }
+
     /* TODO: create all the aggregate objects. */
 }
 
@@ -209,12 +219,15 @@ int Database::getVersion()
 
 bool Database::upgrade(QSqlDatabase &db, const int from)
 {
-    Logger::log(Debug, QString("upgrade database from %1 to %2")
-                       .arg(from).arg(version));
+    Log(Debug) << "upgrade database from" << from << "to" << version;
+    Log(UserInfo) << trUtf8("Database format needs to be "
+                            "upgraded please press ok and wait");
 
     if (from != 0)
         return false;
 
+    QTime t;
+    t.start();
     /* We can leave it hanging on failure - close will rollback. */
     if (!db.transaction()) {
         Logger::log(Error, "upgrade can't begin");
@@ -295,15 +308,15 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         int sp_id = update.record().value("sp_id").toInt();
         QByteArray data = update.record().value("data").toByteArray();
 
-        /* Skip first '1' - it will be reinserted as '0'. */
-        if (id == 1)
+        /* Skip first '0' and '1' - '0' will be reinserted later. */
+        if (!id || id == 1)
             continue;
 
         QSqlQuery insert(QString("INSERT INTO ImagesIndex VALUES(%1, %2)")
                          .arg(id).arg(sp_id));
         if (insert.lastError().isValid()) {
-            Logger::log(Error, QString("upgrade v0 ImagesIndex insert: %1")
-                               .arg(insert.lastError().text()));
+            Log(Error) << "upgrade v0 ImagesIndex insert:"
+                       << insert.lastError().text();
             return false;
         }
 
@@ -313,7 +326,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         QByteArray array;
         QBuffer buf(&array);
         buf.open(QIODevice::WriteOnly);
-        pixmap.save(&buf, "JPG", 100);
+        pixmap.save(&buf, "JPG", Image::Quality);
 
         insert.prepare("INSERT INTO Images VALUES(:id, :image)");
         insert.bindValue(":id", id);
@@ -332,7 +345,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         array.clear();
         QBuffer buf2(&array);
         buf2.open(QIODevice::WriteOnly);
-        cache.save(&buf2, "JPG", 100);
+        cache.save(&buf2, "JPG", Image::CacheQuality);
 
         insert.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
         insert.bindValue(":id", id);
@@ -343,6 +356,13 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
                                .arg(insert.lastError().text()));
             return false;
         }
+    }
+
+    update.exec("UPDATE Species SET main_photo=0 WHERE main_photo=1");
+    if (update.lastError().isValid()) {
+        Logger::log(Error, QString("upgrade v0 Species not 1: %1")
+                           .arg(update.lastError().text()));
+        return false;
     }
 
     update.exec("DROP TABLE Images_v0");
@@ -414,6 +434,23 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         Logger::log(Error, "upgrade commit");
         return false;
     }
+
+    Log(Performance) << "DB upgrade took" << t.elapsed() << "ms";
+    return true;
+}
+
+bool Database::heal()
+{
+    QSqlQuery query("UPDATE Species SET main_photo=0 "
+                    "WHERE main_photo NOT IN (SELECT id FROM ImagesIndex)");
+    if (query.lastError().isValid()) {
+        Log(Error) << "heal species" << query.lastError().text();
+        return false;
+    }
+    if (query.numRowsAffected())
+        Log(Warning) << "heal species affected" << query.numRowsAffected();
+
+    /* TODO: heal other stuff as well */
 
     return true;
 }

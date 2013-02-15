@@ -16,6 +16,8 @@ class Database;
 class ImageCache;
 class Image;
 
+/* TODO: isNew cannot depend on spId, 'cause spId must be valid. */
+
 class AddNew : public QWidget
 {
     Q_OBJECT
@@ -49,7 +51,7 @@ private slots:
     /* Remove selected photo. */
     void removePhoto();
     /* Set main photo to nth photo in listWidget. */
-    void setMainPhoto(int n);
+    void setMainPhoto(int);
     /* Show image in separate, bigger window. */
     void magnifyImage(QModelIndex);
 
@@ -65,7 +67,7 @@ private:
     Ui::AddNew *ui;
     ImageCache *ic;
     BuiltIns *builtins;
-    QList<Image *> images, invalid;
+    QList<Image *> images;
 };
 
 #endif // ADDNEW_H

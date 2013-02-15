@@ -1,10 +1,11 @@
 #include "image.h"
 #include "fileloader.h"
-#include "storehelper.h"
+#include "logger.h"
 
 #include <QBuffer>
 #include <QByteArray>
 #include <QDebug>
+#include <QFile>
 #include <QPixmap>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -12,130 +13,164 @@
 #include <QVariant>
 
 const QSize Image::CachedImageSize(400, 400);
+const int Image::Quality = 75;
+const int Image::CacheQuality = 100;
 
-Image::Image(const int id, QObject *parent) :
-    QObject(parent), _id(id), _ownerId(0), flags(0), loader(0), storer(0)
+Image::Image(const int id, const int ownerId, QObject *parent) :
+    QObject(parent), _id(id), _ownerId(ownerId), flags(0), loader(0)
 {
-    if (id == 1) {
-        flags |= Zombie;
-        return;
-    }
-
-    const QByteArray raw = readFullResolution();
-    /* Failed to read? */
-    if (isZombie())
-        return;
-    preserve(insert(raw));
+    cache.append(new QPixmap(":/icons/image"));
 }
 
-Image::Image(const int id, const int ownerId,
-             const QByteArray &rawCache, QObject *parent) :
-    QObject(parent), _id(id), _ownerId(ownerId), flags(0), loader(0), storer(0)
-{
-    insert(rawCache);
-}
-
-Image::Image(const QString &fileName, const int ownerId, QObject *parent) :
-    QObject(parent), _id(-1), _ownerId(ownerId), flags(0), storer(0)
+Image::Image(const int id, const int ownerId, const QString &fileName, QObject *parent) :
+    QObject(parent), _id(id), _ownerId(ownerId), flags(NewPhoto), loader(0)
 {
     loader = new FileLoader(fileName, this);
     connect(loader, SIGNAL(finished()), SLOT(loaderDone()));
     loader->start();
+
     cache.append(new QPixmap(":/icons/image"));
 }
 
 Image::~Image()
 {
-    sync();
+    if (loaderRunning())
+        Log(Assert) << "Loader still running in image" << _id;
+
+    if (isModified() && touchesDB())
+        Log(Assert) << "Image" << _id << "removed while dirty";
 
     while (cache.count())
         delete cache.takeFirst();
 }
 
-void Image::sync()
-{
-    if (loader) {
-        loader->blockSignals(true);
-        loader->wait();
-        delete loader;
-    }
-
-    if (storer) {
-        storer->blockSignals(true);
-        storer->wait();
-        delete storer;
-    }
-}
-
-void Image::beginInsert()
-{
-    if (loader)
-        loader->wait();
-    storer = new StoreHelper(cache.first()->toImage(), this);
-    connect(storer, SIGNAL(finished()), SLOT(storerDone()));
-    storer->start();
-}
-
-
 void Image::loaderDone()
 {
-    QPixmap *fullsize = new QPixmap(QPixmap::fromImage(loader->fullsize()));
-    QPixmap *scaled = new QPixmap(QPixmap::fromImage(loader->scaled()));
-    delete cache.takeFirst();
+    QString filename = loader->filename();
+    if (filename.endsWith(".jpg", Qt::CaseInsensitive))
+        raw = loader->raw();
+
+    fullsize = QImage(loader->fullsize());
+    cached = QImage(loader->scaled());
+
     delete loader;
     loader = 0;
 
     /* Check if image was read successfully. */
-    if (fullsize->isNull()) {
-        flags |= Zombie;
-        delete fullsize;
-        delete scaled;
+    if (fullsize.isNull()) {
+        Logger::log(UserError, "Loading file " + filename + " failed");
+        flags |= ForRemoval | Failed;
+        emit fileLoadFailed(_id);
         return;
     }
 
-    flags |= FullRead;
-    insert(fullsize);
-    insert(scaled);
+    while (cache.count())
+        delete cache.takeFirst();
+
+    flags |= CacheLoaded | FullRequested;
+    insert(new QPixmap(QPixmap::fromImage(fullsize)));
+    insert(new QPixmap(QPixmap::fromImage(cached)));
 
     emit changed();
 }
 
-void Image::storerDone()
+bool Image::save()
 {
-    QSqlQuery insertPicture;
-    insertPicture.prepare("INSERT INTO Images VALUES(NULL, :image, :id)");
+    if (!isModified())
+        return true;
 
-    insertPicture.bindValue(":id", ownerId());
-    insertPicture.bindValue(":image", storer->fullsize());
-    insertPicture.exec();
-    if (insertPicture.lastError().isValid())
-        qDebug() << insertPicture.lastError();
-    _id = insertPicture.lastInsertId().toInt();
+    if (loader)
+        loader->wait();
 
-    insertPicture.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
-
-    insertPicture.bindValue(":id", id());
-    insertPicture.bindValue(":image", storer->cache());
-    insertPicture.exec();
-    if (insertPicture.lastError().isValid())
-        qDebug() << insertPicture.lastError();
-
-    if (flags & MainPhoto) {
-        QSqlQuery setMain(QString("UPDATE Species SET main_photo=%1 WHERE id=%2")
-                          .arg(id()).arg(ownerId()));
-        if (setMain.lastError().isValid())
-            qDebug() << setMain.lastError();
+    if (!touchesDB()) {
+        Log(Assert) << "Photo" << _id << "is new and removed";
+        return false;
     }
 
-    emit inserted();
+    if (flags & NewPhoto)
+        return store();
+    else if (flags & ForRemoval)
+        return drop();
+
+    return true;
 }
 
-bool Image::isValid() const
+bool Image::remove()
 {
-    if (flags & ForRemoval)
+    flags |= ForRemoval;
+
+    if (flags & NewPhoto)
         return false;
 
-    return !(isZombie() && (flags & NewPhoto));
+    return true;
+}
+
+bool Image::store()
+{
+    if (raw.isEmpty()) {
+        QBuffer buf(&raw);
+        buf.open(QIODevice::WriteOnly);
+        fullsize.save(&buf, "JPG", Quality);
+    }
+
+    QSqlDatabase::database().transaction();
+
+    QString ins("INSERT INTO ImagesIndex VALUES(%1, %2)");
+    QSqlQuery insertPicture(ins.arg(_id).arg(_ownerId));
+    if (insertPicture.lastError().isValid()) {
+        Logger::log(Error, "Image save index: " +
+                           insertPicture.lastError().text());
+        QSqlDatabase::database().rollback();
+        return true;
+    }
+
+    insertPicture.prepare("INSERT INTO Images VALUES(:id, :image)");
+    insertPicture.bindValue(":id", _id);
+    insertPicture.bindValue(":image", raw);
+    insertPicture.exec();
+    if (insertPicture.lastError().isValid()) {
+        Logger::log(Error, "Image save image: " +
+                           insertPicture.lastError().text());
+        QSqlDatabase::database().rollback();
+        return true;
+    }
+
+    QByteArray cacheData;
+    QBuffer buf(&cacheData);
+    buf.open(QIODevice::WriteOnly);
+    cached.save(&buf, "JPG", CacheQuality);
+
+    insertPicture.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
+    insertPicture.bindValue(":id", _id);
+    insertPicture.bindValue(":image", cacheData);
+    insertPicture.exec();
+    if (insertPicture.lastError().isValid()) {
+        Logger::log(Error, "Image save imageCache: " +
+                           insertPicture.lastError().text());
+        QSqlDatabase::database().rollback();
+        return true;
+    }
+
+    if (!QSqlDatabase::database().commit()) {
+        Logger::log(Error, "Image save commit: " +
+                           insertPicture.lastError().text());
+        return true;
+    }
+
+    flags ^= NewPhoto;
+    return true;
+}
+
+bool Image::drop()
+{
+    /* TODO: see if this removes Cache and Image. */
+    QSqlQuery dropQ(QString("DELETE FROM ImagesIndex WHERE id=%1").arg(_id));
+    if (dropQ.lastError().isValid()) {
+        Logger::log(Error, "Image drop: " + dropQ.lastError().text());
+        return false;
+    }
+
+    return false;
 }
 
 QPixmap *Image::getScaled(const QSize &size)
@@ -144,17 +179,10 @@ QPixmap *Image::getScaled(const QSize &size)
     QPixmap *doubleSize = 0;
     QList<QPixmap *>::iterator i;
 
-    if (loader)
-        return cache.first();
-
-    /* Cache can be empty in zombies. */
-    if (cache.empty() || sizeSmaller(cache.first()->size(), size)) {
+    if (sizeSmaller(cache.first()->size(), size)) {
         if (canReadFull())
-            return insertFullResolution(size);
-        else {
-            qDebug() << "|" << __func__ << "Image undersized!";
-            return cache.first();
-        }
+            requestFull();
+        return cache.first();
     }
 
     /* Search the list. */
@@ -176,16 +204,15 @@ QPixmap *Image::getScaled(const QSize &size)
         return insertScaled(doubleSize, size);
 
     if (canReadFull())
-        return insertFullResolution(size);
+        requestFull();
+    else if (!loaderRunning() && flags & CacheLoaded)
+        qDebug() << "|" << __func__ << "Image strangely undersized!";
 
-    qDebug() << "|" << __func__ << "Image strangely undersized!";
-    return cache.first();
+    return insertScaled(cache.first(), size);
 }
 
 QPixmap *Image::getScaledGe(const QSize &size)
 {
-    if (loader)
-        return cache.first();
 
     QList<QPixmap *>::iterator i;
     /* Break on smallest bigger. */
@@ -195,15 +222,25 @@ QPixmap *Image::getScaledGe(const QSize &size)
     if (i != cache.begin())
         return *--i;
 
-    return insertFullResolution(size);
+    if (canReadFull())
+        requestFull();
+
+    return cache.first();
 }
 
-QPixmap *Image::insert(const QByteArray &raw)
+void Image::setCached(const QImage &image)
 {
-    QPixmap *pixmap = new QPixmap;
-    pixmap->loadFromData(raw, "PNG");
+    while (cache.size())
+        delete cache.takeFirst();
 
-    return insert(pixmap);
+    cache.insert(0, new QPixmap(QPixmap::fromImage(image)));
+
+    flags |= CacheLoaded;
+}
+
+void Image::setFullsize(const QImage &image)
+{
+    cache.insert(0, new QPixmap(QPixmap::fromImage(image)));
 }
 
 QPixmap *Image::insert(QPixmap *pixmap)
@@ -223,16 +260,49 @@ QPixmap *Image::insertScaled(QPixmap *pixmap, const QSize &size)
                                              Qt::SmoothTransformation)));
 }
 
-QPixmap *Image::insertFullResolution(const QSize &size)
+
+
+
+
+/*
+Image::Image(const int id, QObject *parent) :
+    QObject(parent), _id(id), _ownerId(0), flags(0), loader(0), storer(0)
 {
-    if (isZombie()) {
-        QPixmap *empty = new QPixmap(size);
-        empty->fill();
-        return insert(empty);
+    if (id == 1) {
+        flags |= Zombie;
+        return;
     }
 
-    QPixmap *full = insert(readFullResolution());
-    return insertScaled(full, size);
+    const QByteArray raw = readFullResolution();
+
+    if (isZombie())
+        return;
+    preserve(insert(raw));
+}
+
+Image::Image(const int id, const int ownerId,
+             const QByteArray &rawCache, QObject *parent) :
+    QObject(parent), _id(id), _ownerId(ownerId), flags(0), loader(0), storer(0)
+{
+    insert(rawCache);
+}
+
+Image::Image(const QString &fileName, const int ownerId, QObject *parent) :
+    QObject(parent), _id(-1), _ownerId(ownerId), flags(0), storer(0)
+{
+    loader = new FileLoader(fileName, this);
+    connect(loader, SIGNAL(finished()), SLOT(loaderDone()));
+    loader->start();
+    cache.append(new QPixmap(":/icons/image"));
+}
+
+
+bool Image::isValid() const
+{
+    if (flags & ForRemoval)
+        return false;
+
+    return !(isZombie() && (flags & NewPhoto));
 }
 
 QByteArray Image::readFullResolution()
@@ -256,30 +326,4 @@ QByteArray Image::readFullResolution()
 
     return read.value(0).toByteArray();
 }
-
-void Image::preserve(QPixmap *fullsize)
-{
-    QSqlQuery insertPicture;
-    insertPicture.prepare("INSERT INTO ImagesCache VALUES(:id, :image)");
-
-    QPixmap cached;
-    /* If image is to small there is no use in scaling it down. */
-    if (fullsize->size().width() < CachedImageSize.width() ||
-        fullsize->size().height() < CachedImageSize.height())
-        cached = QPixmap(*fullsize);
-    else
-        cached = fullsize->scaled(CachedImageSize,
-                                  Qt::KeepAspectRatioByExpanding,
-                                  Qt::SmoothTransformation);
-    QByteArray array;
-    QBuffer buf(&array);
-    buf.open(QIODevice::WriteOnly);
-    cached.save(&buf, "PNG");
-
-    insertPicture.bindValue(":id", _id);
-    insertPicture.bindValue(":image", array);
-    insertPicture.exec();
-
-    if (insertPicture.lastError().isValid())
-        qDebug() << insertPicture.lastError();
-}
+*/

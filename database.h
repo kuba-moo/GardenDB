@@ -36,13 +36,15 @@ private:
     /* Current database format version.*/
     static const int version;
 
-    /* Try to initialize new database, return true on success. */
-    bool init();
-
     /* Figure out and return format used in the database loaded. */
     int getVersion();
+
+    /* Try to initialize new database, return true on success. */
+    bool init();
     /* Change format of database to current, return true on success. */
     bool upgrade(QSqlDatabase &db, const int from);
+    /* Find and fix errors in database. */
+    bool heal();
 
     QSqlDatabase database;
     ImageCache *ic;

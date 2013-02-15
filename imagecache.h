@@ -6,9 +6,11 @@
 #include <QVector>
 #include <QSize>
 
+class QImage;
 class QPixmap;
 class QWidget;
 
+class LoaderController;
 class Image;
 
 /** ImageCache
@@ -45,6 +47,9 @@ public:
     /* Max size of image that can be generated from cached images. */
     static const QSize UsableCacheSize;
 
+    /* Load images, return true on success. */
+    bool load();
+
     /* Read form cache pixmap of exactly given size. */
     QPixmap *getPixmap(const int imageId, const QSize &, ReadHint);
     /* Get pixmap greater or equal to given size. */
@@ -52,28 +57,30 @@ public:
     /* Get all pixmaps of given specimen scaled to at least given size. */
     const QList<Image *> &getAllImages(const int spId);
 
-    /* Update list of images of a specimen. */
-    void setImages(const unsigned spId, const QList<Image *> &valid,
-                   const QList<Image *> &invalid);
+    /* Add new image for specimen. */
+    void addImage(const int spId, const QString &filename);
 
 signals:
     void changed();
 
+public slots:
+    /* Remove image from database and specimen. */
+    void removeImage(const int id);
+
 private slots:
-    /* Image signals that it's done with database inserts. */
-    void imageInserted();
+    void loadFull();
+    void doneCached(int id, QImage *img);
+    void doneFullsize(int id, QImage *img);
 
 private:
     /* Image list contains given image. */
-    inline bool imageInList(const QList<Image *> &imgs, const int &id);
-
-    /* Clear cache. */
-    void clear();
+    inline bool imageInList(const QList<Image *> &imgs, const int &id) const;
 
     /* Add image to images vector. */
-    void insert(Image *image);
+    int insert(Image *image);
     void insertImages(Image *image);
     void insertSpecies(Image *image);
+#if 0
     /* Load image from database, preferably from cache. */
     Image *loadSingle(const int imageId, const QSize &size);
     /* Load from database, resize and insert. */
@@ -82,10 +89,13 @@ private:
     QPixmap *loadMainPhoto(const int imageId, const QSize &size);
     /* Get all pixmaps of given specimen by reading from database. */
     void getAllSlowpath(const int spId);
+#endif
+    int nextInsertId;
 
+    LoaderController *loaderController;
     QVector<QList<Image *> > species;
     QVector<Image *> images;
-    QVector<unsigned> spFlags;
+    QList<Image *> removed;
 };
 
 #endif // IMAGECACHE_H
