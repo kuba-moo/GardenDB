@@ -1,4 +1,4 @@
-#include "addnew.h"
+#include "editor.h"
 #include "builtins.h"
 #include "database.h"
 #include "omain.h"
@@ -18,12 +18,13 @@ OMain::OMain(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    builtinsEditor = 0;
     editor = 0;
-    addNew = 0;
     db = 0;
 
     connect(ui->actionNew_file, SIGNAL(triggered()), SLOT(openFile()));
     connect(ui->actionOpen_file, SIGNAL(triggered()), SLOT(openFile()));
+    connect(ui->actionSpecies, SIGNAL(triggered()), SLOT(goToTable()));
     connect(ui->actionEdit_built_ins,SIGNAL(triggered()),SLOT(editBuiltIns()));
     connect(ui->actionClose_file, SIGNAL(triggered()), SLOT(closeFile()));
     connect(ui->actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -70,94 +71,72 @@ void OMain::doOpen(QString newFileName)
 
     builtins = new BuiltIns(this);
 
-    mainTable = new MainTable(db, this);
-    connect(mainTable, SIGNAL(addRow()), SLOT(addRow()));
-    connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
-            SLOT(showDetails(QModelIndex)));
-    ui->tabWidget->addTab(mainTable, QIcon(), trUtf8("Garden"));
-
+    ui->actionSpecies->setEnabled(true);
     ui->actionEdit_built_ins->setEnabled(true);
+    ui->actionClose_file->setEnabled(true);
+    ui->actionSave->setEnabled(true);
     this->setWindowTitle(trUtf8("Garden") + " - " + QFileInfo(newFileName).baseName());
+
+    goToTable();
 }
 
 void OMain::closeFile()
 {
-    while (ui->tabWidget->count())
-    {
-        QWidget *widget = ui->tabWidget->widget(ui->tabWidget->count()-1);
-        ui->tabWidget->removeTab(ui->tabWidget->count()-1);
-        widget->close();
-        widget->deleteLater();
-    }
-
-    if (editor)
-        editor->close();
+    goToTable();
 
     delete builtins;
 
     delete db;
     db = 0;
 
+    ui->actionEdit_built_ins->setChecked(false);
+    ui->actionSpecies->setChecked(false);
+    ui->actionSpecies->setEnabled(false);
     ui->actionEdit_built_ins->setEnabled(false);
+    ui->actionClose_file->setEnabled(false);
+    ui->actionSave->setEnabled(false);
     this->setWindowTitle(trUtf8("Garden"));
-}
-
-void OMain::addRow()
-{
-    if (! addNew)
-    {
-        addNew = new AddNew(db, builtins, this);
-        ui->tabWidget->addTab(addNew, QIcon(":/plus"), trUtf8("New specimen"));
-    }
-
-    ui->tabWidget->setCurrentWidget(addNew);
-    connect(addNew, SIGNAL(destroyed()), SLOT(addRowClosed()));
-}
-
-void OMain::addRowClosed()
-{
-    addNew = 0;
-    mainTable->loadData();
 }
 
 void OMain::editBuiltIns()
 {
-    if (! editor)
-    {
-        editor = new OBuiltInsEditor(builtins);
+    ui->actionEdit_built_ins->setChecked(true);
+    ui->actionSpecies->setChecked(false);
 
-        connect(editor, SIGNAL(destroyed()), SLOT(builtInsClosed()));
+    if (centralWidget() == builtinsEditor)
+        return;
 
-        editor->show();
-    }
+    builtinsEditor = new OBuiltInsEditor(builtins);
+    connect(builtinsEditor, SIGNAL(finished()), SLOT(goToTable()));
 
-    editor->raise();
-}
-
-void OMain::builtInsClosed()
-{
-    editor = 0;
-}
-
-void OMain::showGarden()
-{
-    if (mainTable)
-        ui->tabWidget->setCurrentWidget(mainTable);
+    setCentralWidget(builtinsEditor);
 }
 
 void OMain::showDetails(QModelIndex index)
 {
-    const QSqlRelationalTableModel *model =
-            dynamic_cast<const QSqlRelationalTableModel *> (index.model());
+    ui->actionEdit_built_ins->setChecked(false);
+    ui->actionSpecies->setChecked(false);
 
-    AddNew *tab = new AddNew(db, builtins, this, model->record(index.row()));
-    ui->tabWidget->addTab(tab, QIcon(),
-                          model->record(index.row()).value("name").toString());
-    ui->tabWidget->setCurrentWidget(tab);
-    connect(tab, SIGNAL(destroyed()), SLOT(refreshView()));
+    if (centralWidget() == editor) {
+        Log(Assert) << "OMain editor exists";
+        return;
+    }
+
+    editor = new Editor(db, builtins, index, this);
+    setCentralWidget(editor);
+    connect(editor, SIGNAL(finished()), SLOT(goToTable()));
 }
 
-void OMain::refreshView()
+void OMain::goToTable()
 {
-    mainTable->loadData();
+    ui->actionEdit_built_ins->setChecked(false);
+    ui->actionSpecies->setChecked(true);
+
+    if (centralWidget() == mainTable)
+        return;
+
+    mainTable = new MainTable(db, this);
+    connect(mainTable, SIGNAL(rowDetails(QModelIndex)),
+            SLOT(showDetails(QModelIndex)));
+    setCentralWidget(mainTable);
 }

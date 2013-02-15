@@ -8,6 +8,8 @@
  * @brief The Specimen class holds information about single specimen
  */
 
+/* TODO: implement saving. */
+
 class Specimen : public QObject
 {
     Q_OBJECT
@@ -15,9 +17,8 @@ public:
     explicit Specimen(const int id, const int no, QObject *parent);
     explicit Specimen(QSqlRecord rec, QObject *parent);
     
+    /* True if specimen needs to be saved. */
     bool isModified() const { return state != Unmodified; }
-    bool save();
-    bool remove();
 
     /* Getters */
     int getId() const { return id; }
@@ -33,19 +34,20 @@ public:
     const QString &getSize() const { return size; }
     const QString &getDesc() const { return desc; }
 
+public slots:
     /* Setters */
-    void setNo(int _no) { no = _no; markModified(); }
-    void setMainPhotoId(int _main_photo) { main_photo = _main_photo; markModified(); }
-    void setFlavourId(int _fl_id) { fl_id = _fl_id; markModified(); }
-    void setFloweringId(int _fw_id) { fw_id = _fw_id; markModified(); }
-    void setFrostId(int _fr_id) { fr_id = _fr_id; markModified(); }
-    void setTypeId(int _tp_id) { tp_id = _tp_id; markModified(); }
-    void setName(const QString & _name) { name = _name; markModified(); }
-    void setGrower(const QString & _grower) { grower = _grower; markModified(); }
-    void setFlowers(const QString & _flowers) { flowers = _flowers; markModified(); }
-    void setSize(const QString & _size) { size = _size; markModified(); }
-    void setDesc(const QString & _desc) { desc = _desc; markModified(); }
-    
+    void setNo(int _no) { if (no == _no) return; no = _no; markModified(); }
+    void setMainPhotoId(int _main_photo) { if (main_photo == _main_photo) return; main_photo = _main_photo; markModified(); }
+    void setFlavourId(int _fl_id) { if (fl_id == _fl_id) return; fl_id = _fl_id; markModified(); }
+    void setFloweringId(int _fw_id) { if (fw_id == _fw_id) return; fw_id = _fw_id; markModified(); }
+    void setFrostId(int _fr_id) { if (fr_id == _fr_id) return; fr_id = _fr_id; markModified(); }
+    void setTypeId(int _tp_id) { if (tp_id == _tp_id) return; tp_id = _tp_id; markModified(); }
+    void setName(const QString & _name) { if (name == _name) return; name = _name; markModified(); }
+    void setGrower(const QString & _grower) { if (grower == _grower) return; grower = _grower; markModified(); }
+    void setFlowers(const QString & _flowers) { if (flowers == _flowers) return; flowers = _flowers; markModified(); }
+    void setSize(const QString & _size) { if (size == _size) return; size = _size; markModified(); }
+    void setDesc(const QString & _desc) { if (desc == _desc) return; desc = _desc; markModified(); }
+
 private:
     void markModified();
 

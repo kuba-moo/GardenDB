@@ -40,6 +40,16 @@ void SpecimenRenderer::paint(QPainter *painter,
 
     if (option.state & QStyle::State_Selected)
         painter->drawEllipse(5, option.rect.top() + 5, 50, 50);
+
+/*  ui->tableView->setColumnHidden(0, true);
+    ui->tableView->horizontalHeader()->moveSection(5, 1);
+    ui->tableView->horizontalHeader()->moveSection(9, 3);
+    ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
+    ui->tableView->setItemDelegateForColumn(5, new ImageRenderer(db->imageCache(),
+                                                                 ui->tableView));
+    ui->tableView->setColumnWidth(5, 83);
+    ui->tableView->verticalHeader()->setDefaultSectionSize(64);
+*/
 }
 
 QSize SpecimenRenderer::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

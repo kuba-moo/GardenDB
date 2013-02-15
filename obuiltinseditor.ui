@@ -97,38 +97,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>close</sender>
-   <signal>clicked()</signal>
-   <receiver>OBuiltInsEditor</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>477</x>
-     <y>518</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>529</x>
-     <y>464</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>close</sender>
-   <signal>clicked()</signal>
-   <receiver>OBuiltInsEditor</receiver>
-   <slot>deleteLater()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>497</x>
-     <y>517</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>527</x>
-     <y>453</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

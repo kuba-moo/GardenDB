@@ -7,7 +7,7 @@
 class Database;
 class OBuiltInsEditor;
 class MainTable;
-class AddNew;
+class Editor;
 class BuiltIns;
 
 namespace Ui {
@@ -35,24 +35,12 @@ private slots:
      * associated with them. */
     void closeFile();
 
-    /* Spawns row addition tab. Note: only one addition tab can be in use. */
-    void addRow();
-    /* Callback called on closing rowAdd. */
-    void addRowClosed();
-
     /* Opens built-ins-editor or raise exisiting one. */
     void editBuiltIns();
-    /* Callback registered on built-ins-editor destruction. */
-    void builtInsClosed();
-
-    /* Opens and sets focus to Garden (main tab). */
-    void showGarden();
-
     /* Opens and sets focus to details page about selected row. */
     void showDetails(QModelIndex);
-
-    /* Reloads data to table. */
-    void refreshView();
+    /* Handle destruction of central widget. */
+    void goToTable();
 
 private:
     /* Some file is currently opened. */
@@ -60,15 +48,14 @@ private:
 
     Ui::OMain *ui;
 
-    Database *db;
-    OBuiltInsEditor* editor;
-
     /* Data objects */
     BuiltIns *builtins;
+    Database *db;
 
-    /* Specific tabs */
+    /* Specific tabs - removed when setCentralWidget changes widgets. */
     MainTable *mainTable;
-    AddNew *addNew;
+    Editor *editor;
+    OBuiltInsEditor* builtinsEditor;
 };
 
 #endif // OMAIN_H

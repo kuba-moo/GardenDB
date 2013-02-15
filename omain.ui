@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>751</width>
-    <height>450</height>
+    <width>1270</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,16 +21,6 @@
     <property name="margin">
      <number>0</number>
     </property>
-    <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="tabPosition">
-       <enum>QTabWidget::West</enum>
-      </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -52,7 +42,9 @@
    <addaction name="actionNew_file"/>
    <addaction name="actionOpen_file"/>
    <addaction name="actionClose_file"/>
+   <addaction name="actionSave"/>
    <addaction name="separator"/>
+   <addaction name="actionSpecies"/>
    <addaction name="actionEdit_built_ins"/>
    <addaction name="separator"/>
    <addaction name="actionQuit"/>
@@ -82,12 +74,15 @@
    </property>
   </action>
   <action name="actionEdit_built_ins">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="app.qrc">
-     <normaloff>:/icons/Icons/insert-table.png</normaloff>:/icons/Icons/insert-table.png</iconset>
+     <normaloff>:/icons/Icons/run-build-file.png</normaloff>:/icons/Icons/run-build-file.png</iconset>
    </property>
    <property name="text">
     <string>Edit built-ins</string>
@@ -97,12 +92,18 @@
    </property>
   </action>
   <action name="actionClose_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="app.qrc">
      <normaloff>:/icons/Icons/document-close.png</normaloff>:/icons/Icons/document-close.png</iconset>
    </property>
    <property name="text">
     <string>Close file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -115,6 +116,45 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="app.qrc">
+     <normaloff>:/icons/Icons/document-save.png</normaloff>:/icons/Icons/document-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save changes to disk</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSpecies">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="app.qrc">
+     <normaloff>:/icons/Icons/format-list-ordered.png</normaloff>:/icons/Icons/format-list-ordered.png</iconset>
+   </property>
+   <property name="text">
+    <string>Species</string>
+   </property>
+   <property name="toolTip">
+    <string>Show main table</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>

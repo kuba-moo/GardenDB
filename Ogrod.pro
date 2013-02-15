@@ -14,41 +14,39 @@ SOURCES += main.cpp\
         omain.cpp \
     obuiltinseditor.cpp \
     maintable.cpp \
-    addnew.cpp \
     imagecache.cpp \
     builtins.cpp \
     image.cpp \
     fileloader.cpp \
-    storehelper.cpp \
     database.cpp \
     logger.cpp \
     loadercontroller.cpp \
     imageloader.cpp \
     specimen.cpp \
     specimenmodel.cpp \
-    specimenrenderer.cpp
+    specimenrenderer.cpp \
+    editor.cpp
 
 HEADERS  += omain.h \
     obuiltinseditor.h \
     maintable.h \
-    addnew.h \
     imagecache.h \
     builtins.h \
     image.h \
     fileloader.h \
-    storehelper.h \
     database.h \
     logger.h \
     loadercontroller.h \
     imageloader.h \
     specimen.h \
     specimenmodel.h \
-    specimenrenderer.h
+    specimenrenderer.h \
+    editor.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \
     maintable.ui \
-    addnew.ui
+    editor.ui
 
 RESOURCES += \
     app.qrc

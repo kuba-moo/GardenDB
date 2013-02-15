@@ -7,9 +7,11 @@
         <file>Icons/document-close.png</file>
         <file>Icons/document-new.png</file>
         <file>Icons/document-open.png</file>
-        <file>Icons/insert-table.png</file>
         <file>Icons/application-exit.png</file>
         <file>Icons/image-missing.png</file>
+        <file>Icons/document-save.png</file>
+        <file>Icons/run-build-file.png</file>
+        <file>Icons/format-list-ordered.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="pl">garden_pl.qm</file>

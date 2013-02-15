@@ -12,18 +12,20 @@ SpecimenModel::SpecimenModel(QObject *parent) :
 
 bool SpecimenModel::load()
 {
-    QSqlQuery query("SELECT * FROM Species");
+    QSqlQuery query("SELECT * FROM Species ORDER BY no,id");
     if (query.lastError().isValid()) {
         Log(Error) << "SpecimenModel load" << query.lastError().text();
         return false;
     }
 
+    nextInsertId = 0;
     while (query.next()) {
         Specimen *spec = new Specimen(query.record(), this);
-        if (spec->getNo() != specs.size())
-            spec->setNo(specs.size());
+        spec->setNo(specs.size());
         specs.append(spec);
+        nextInsertId = qMax(nextInsertId, spec->getId());
     }
+    nextInsertId++;
 
     return true;
 }
@@ -61,7 +63,7 @@ int SpecimenModel::columnCount(const QModelIndex &parent) const
 
 QVariant SpecimenModel::data(const QModelIndex &index, int role) const
 {
-    if (index.row() < 0 || index.row() > specs.size() || index.column() > 0)
+    if (index.row() < 0 || index.row() >= specs.size() || index.column() > 0)
         return QVariant();
 
     if (role != Qt::DisplayRole)
@@ -94,15 +96,15 @@ bool SpecimenModel::setData(const QModelIndex &index, const QVariant &value, int
 
 bool SpecimenModel::insertRows(int row, int count, const QModelIndex &parent)
 {
-    qDebug() << "insertRows" << row << count << parent;
-
     if (count < 1 || row < 0 || row > rowCount(parent))
         return false;
 
     beginInsertRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r)
-        specs.insert(row, 0);
+        specs.insert(row+r, new Specimen(nextInsertId++, row+r, this));
+
+    Log(Debug) << "SpecimenModel insert" << specs[row]->getId() << "at" << row;
 
     endInsertRows();
 
@@ -111,10 +113,10 @@ bool SpecimenModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool SpecimenModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    qDebug() << "removeRows" << row << count << parent;
-
     if (count <= 0 || row < 0 || (row + count) > rowCount(parent))
         return false;
+
+    Log(Debug) << "SpecimenModel remove" << specs[row]->getId() << "at" << row;
 
     beginRemoveRows(QModelIndex(), row, row + count - 1);
 

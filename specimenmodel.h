@@ -11,6 +11,7 @@ class SpecimenModel : public QAbstractItemModel
 public:
     explicit SpecimenModel(QObject *parent = 0);
 
+    /* Load information from database, return true on success. */
     bool load();
 
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -35,6 +36,7 @@ public:
                       int row, int column, const QModelIndex &parent);
 
 private:
+    int nextInsertId;
     QList<Specimen *> specs;
 };
 

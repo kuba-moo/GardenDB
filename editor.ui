@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AddNew</class>
- <widget class="QWidget" name="AddNew">
+ <class>Editor</class>
+ <widget class="QWidget" name="Editor">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>744</height>
+    <width>1270</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
-   <property name="spacing">
-    <number>25</number>
-   </property>
-   <property name="margin">
-    <number>15</number>
-   </property>
    <item>
     <widget class="QLabel" name="title">
      <property name="font">
@@ -162,10 +156,10 @@
         <enum>QFormLayout::ExpandingFieldsGrow</enum>
        </property>
        <property name="horizontalSpacing">
-        <number>10</number>
+        <number>15</number>
        </property>
        <property name="verticalSpacing">
-        <number>5</number>
+        <number>4</number>
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="label_3">
@@ -188,63 +182,78 @@
         <widget class="QComboBox" name="type"/>
        </item>
        <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Grower</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="grower"/>
+       </item>
+       <item row="3" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
           <string>Flowers:</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QLineEdit" name="flowers"/>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Flavour:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QComboBox" name="flavour"/>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="label_7">
          <property name="text">
           <string>Flowering time:</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QComboBox" name="flowering"/>
        </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
           <string>Bush size:</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QLineEdit" name="bush"/>
        </item>
-       <item row="6" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="label_9">
          <property name="text">
           <string>Frost resistance:</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="7" column="1">
         <widget class="QComboBox" name="frost"/>
        </item>
-       <item row="7" column="0">
+       <item row="9" column="1">
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout"/>
+        </widget>
+       </item>
+       <item row="8" column="0">
         <widget class="QLabel" name="label_10">
          <property name="text">
           <string>Description:</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="8" column="1">
         <widget class="QTextBrowser" name="desc">
          <property name="sizeIncrement">
           <size>
@@ -257,21 +266,33 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
-        <widget class="QWidget" name="widget" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout"/>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QPushButton" name="backToTable">
+       <property name="text">
+        <string>&lt; Back to the table</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -287,7 +308,6 @@
   <tabstop>bush</tabstop>
   <tabstop>frost</tabstop>
   <tabstop>desc</tabstop>
-  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
   <include location="app.qrc"/>

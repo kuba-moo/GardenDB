@@ -19,6 +19,9 @@ public:
     explicit OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent = 0);
     ~OBuiltInsEditor();
 
+signals:
+    void finished();
+
 private slots:
     /* Reload tables and values from BuiltIns. */
     void reload();

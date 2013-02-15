@@ -17,22 +17,20 @@ class MainTable : public QWidget
     Q_OBJECT
 
 signals:
-    void addRow();
     void rowDetails(QModelIndex);
 
 public:
     explicit MainTable(Database *db, QWidget *parent = 0);
     ~MainTable();
 
-public slots:
-    /* Called after row has been added. */
-    void loadData();
-
 private slots:
+    /* Add new row to model and scroll to it. */
+    void addRow();
     /* Ask if user is sure and remove row from model. */
     void removeRow();
 
 private:
+    Database *database;
     Ui::MainTable *ui;
 };
 

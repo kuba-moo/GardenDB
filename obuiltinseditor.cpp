@@ -12,8 +12,6 @@ OBuiltInsEditor::OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     builtins = builtIns;
     lastRowId = 0;
     blockEdits = true;
@@ -24,6 +22,7 @@ OBuiltInsEditor::OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent) :
     connect(builtins, SIGNAL(changed()), SLOT(reload()));
     connect(ui->values, SIGNAL(itemChanged(QListWidgetItem*)),
             SLOT(edit(QListWidgetItem*)));
+    connect(ui->close, SIGNAL(clicked()), SIGNAL(finished()));
 
     reload();
 }
