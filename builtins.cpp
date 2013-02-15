@@ -38,13 +38,19 @@ void BuiltIns::readTable(const QString &name)
     while (records.next()) {
         const unsigned id = records.value(0).toInt();
         const QString value = records.value(1).toString();
-        tables[name].append(QPair<unsigned, QString>(id, value));
+        if (id)
+            tables[name].append(QPair<unsigned, QString>(id, value));
     }
 }
 
 QStringList BuiltIns::getCategories()
 {
     return tableNames.keys();
+}
+
+QString BuiltIns::getValueTr(const QString &engCategory, const unsigned id)
+{
+
 }
 
 unsigned BuiltIns::addValue(const QString &category, const QString &value)

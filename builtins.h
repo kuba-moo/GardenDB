@@ -19,9 +19,9 @@ public:
     /* Get values from sepcified category. */
     const QLinkedList<QPair<unsigned, QString> > &getValues(const QString &category);
 
+    QString getValueTr(const QString &engCategory, const unsigned id);
     /* Adds new value to given category, return id of added value or zero
-     * on error. Change is propagated by emitting signal changed.
-     */
+     * on error. Change is propagated by emitting signal changed. */
     unsigned addValue(const QString &category, const QString &value = trUtf8("New value"));
     /* Return number of species which have given value. */
     unsigned countSpecies(const QString &category, const unsigned id);

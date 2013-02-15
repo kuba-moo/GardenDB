@@ -65,13 +65,12 @@ void Editor::fillCombo(QComboBox *combo, const QString &category, const unsigned
 
     combo->clear();
     QLinkedList<QPair<unsigned, QString> >::const_iterator i;
-    for (i = values.constBegin(); i != values.constEnd(); i++)
-        if (i->first) {
-            if (i->first == current)
-                currentIndex = combo->count();
+    for (i = values.constBegin(); i != values.constEnd(); i++) {
+        if (i->first == current)
+            currentIndex = combo->count();
 
-            combo->addItem(i->second, i->first);
-        }
+        combo->addItem(i->second, i->first);
+    }
     combo->setCurrentIndex(currentIndex);
 
     connect(combo, SIGNAL(currentIndexChanged(int)), SLOT(handleCombo(int)));
