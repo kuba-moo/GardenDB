@@ -12,6 +12,8 @@
         <file>Icons/document-save.png</file>
         <file>Icons/run-build-file.png</file>
         <file>Icons/format-list-ordered.png</file>
+        <file>Icons/go-previous.png</file>
+        <file>Icons/go-next.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="pl">garden_pl.qm</file>

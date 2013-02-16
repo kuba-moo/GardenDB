@@ -33,13 +33,12 @@ bool ImageCache::load()
     t.start();
     QSqlQuery fetchAll("SELECT * FROM ImagesIndex");
     if (fetchAll.lastError().isValid()) {
-        Logger::log(Error, QString("ImageCache fetch all: %1")
-                           .arg(fetchAll.lastError().text()));
+        Log(Error) << "ImageCache fetch all: " << fetchAll.lastError().text();
         return false;
     }
     QSqlQuery fetchMain("SELECT id,main_photo FROM Species");
     if (fetchMain.lastError().isValid()) {
-        Log(Error) << "ImageCache fetch all:" << fetchMain.lastError().text();
+        Log(Error) << "ImageCache fetch main:" << fetchMain.lastError().text();
         return false;
     }
 
@@ -63,8 +62,9 @@ bool ImageCache::load()
             photoIds.push_back(id);
     }
 
-    images.resize(max_photo * 2);
-    species.resize(max_specimen * 2);
+    /* '1 +' cause if there are none we need the "fake ones" to return now and then. */
+    images.resize(1 + max_photo * 2);
+    species.resize(1 + max_specimen * 2);
     nextInsertId = max_photo + 1;
 
     fetchAll.seek(-1);
@@ -96,6 +96,50 @@ bool ImageCache::load()
     return true;
 }
 
+bool ImageCache::isModified()
+{
+    if (removed.size())
+        return true;
+
+    for (int i = 0; i < images.size(); i++)
+        if (images[i] && images[i]->isModified())
+            return true;
+
+    return false;
+}
+
+int ImageCache::countModified()
+{
+    int count = removed.size();
+
+    for (int i = 0; i < images.size(); i++)
+        if (images[i] && images[i]->isModified())
+            count++;
+
+    return count;
+}
+
+bool ImageCache::save(QSqlDatabase &db)
+{
+    while (removed.size()) {
+        Image *img = removed.takeFirst();
+        if (!img->save(db))
+            return false;
+        emit oneSaved();
+        delete img;
+    }
+
+    for (int i = 0; i < images.size(); i++)
+        if (images[i] && images[i]->isModified()) {
+            if (!images[i]->save(db))
+                return false;
+
+            emit oneSaved();
+        }
+
+    return true;
+}
+
 QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size)
 {
     if (images.size() <= imageId || !images[imageId]) {
@@ -121,7 +165,7 @@ QPixmap *ImageCache::getPixmapGe(const int imageId, const QSize &size)
 
 const QList<Image *> &ImageCache::getAllImages(const int spId)
 {
-    if (species.size() < spId)
+    if (species.size() <= spId)
         return species[0];
 
     return species[spId];
@@ -132,6 +176,7 @@ void ImageCache::addImage(const int spId, const QString &filename)
     const int id = insert(new Image(nextInsertId++, spId, filename, this));
 
     connect(images[id], SIGNAL(fileLoadFailed(int)), SLOT(removeImage(int)));
+    connect(images[id], SIGNAL(wantFull()), SLOT(loadFull()));
 
     emit changed();
 }
@@ -196,7 +241,7 @@ void ImageCache::insertSpecies(Image *image)
     if (species.size() < image->ownerId())
         species.resize(image->ownerId() * 2);
     if (imageInList(species[image->ownerId()], image->id()))
-        Logger::log(Error, QString("Double on species: %1").arg(image->id()));
+        Log(Error) << "Double on species: " << image->id();
     species[image->ownerId()].append(image);
 }
 
@@ -205,7 +250,7 @@ void ImageCache::insertImages(Image *image)
     if (images.size() < image->id())
         images.resize(image->id() * 2);
     if (images[image->id()])
-        Logger::log(Error, QString("Double on images: %1").arg(image->id()));
+        Log(Error) << "Double on images: " << image->id();
     images[image->id()] = image;
 }
 

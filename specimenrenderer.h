@@ -3,6 +3,7 @@
 
 #include <QStyledItemDelegate>
 
+class Builtins;
 class Database;
 class ImageCache;
 
@@ -20,7 +21,12 @@ signals:
 public slots:
     
 private:
+    void sizeToFit(QPainter *painter, QRectF target, const QString &value) const;
+    void fitName(QPainter *painter, QRect target, const QString &name) const;
+    void fitThree(QPainter *painter, QRect target, const QString l[], const QString t[]) const;
+
     ImageCache *ic;
+    Builtins *bi;
 };
 
 #endif // SPECIMENRENDERER_H

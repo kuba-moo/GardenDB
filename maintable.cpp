@@ -3,6 +3,7 @@
 #include "imagecache.h"
 #include "maintable.h"
 #include "ui_maintable.h"
+#include "specimen.h"
 #include "specimenmodel.h"
 #include "specimenrenderer.h"
 
@@ -25,10 +26,9 @@ MainTable::MainTable(Database *db, QWidget *parent) :
 
     connect(ui->add, SIGNAL(clicked()), SLOT(addRow()));
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
-//  connect(builtIns, SIGNAL(changed()), ui->listView, SLOT(update()));
     connect(db->imageCache(), SIGNAL(changed()), ui->listView, SLOT(update()));
     connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)),
-            SIGNAL(rowDetails(QModelIndex)));;
+            SLOT(doubleClicked(QModelIndex)));;
 }
 
 MainTable::~MainTable()
@@ -65,4 +65,19 @@ void MainTable::removeRow()
         int row = view->selectionModel()->currentIndex().row();
         view->model()->removeRow(row);
     }
+}
+
+void MainTable::doubleClicked(const QModelIndex &index)
+{
+    QPoint mouse = ui->listView->mapFromGlobal(cursor().pos());
+
+    if (mouse.x() < 100) {
+        Specimen *s = (Specimen *)index.data().toULongLong();
+        if (s && s->getMainPhotoId()) {
+            emit requestGallery(index);
+            return;
+        }
+    }
+
+    emit requestEditor(index);
 }

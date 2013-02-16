@@ -9,6 +9,7 @@
 class QImage;
 class QPixmap;
 class QWidget;
+class QSqlDatabase;
 
 class LoaderController;
 class Image;
@@ -44,6 +45,10 @@ public:
     /* Load images, return true on success. */
     bool load();
 
+    bool isModified();
+    int countModified();
+    bool save(QSqlDatabase &);
+
     /* Read form cache pixmap of exactly given size. */
     QPixmap *getPixmap(const int imageId, const QSize &);
     /* Get pixmap greater or equal to given size. */
@@ -56,6 +61,7 @@ public:
 
 signals:
     void changed();
+    void oneSaved();
 
 public slots:
     /* Remove image from database and specimen. */

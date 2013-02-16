@@ -42,8 +42,8 @@
    <addaction name="actionNew_file"/>
    <addaction name="actionOpen_file"/>
    <addaction name="actionClose_file"/>
-   <addaction name="actionSave"/>
    <addaction name="separator"/>
+   <addaction name="actionSave"/>
    <addaction name="actionSpecies"/>
    <addaction name="actionEdit_built_ins"/>
    <addaction name="separator"/>
@@ -119,6 +119,9 @@
    </property>
   </action>
   <action name="actionSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -148,7 +151,7 @@
      <normaloff>:/icons/Icons/format-list-ordered.png</normaloff>:/icons/Icons/format-list-ordered.png</iconset>
    </property>
    <property name="text">
-    <string>Species</string>
+    <string>Species table</string>
    </property>
    <property name="toolTip">
     <string>Show main table</string>

@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 
 class Specimen;
+class QSqlDatabase;
 
 class SpecimenModel : public QAbstractItemModel
 {
@@ -13,6 +14,10 @@ public:
 
     /* Load information from database, return true on success. */
     bool load();
+
+    bool isModified();
+    int countModified();
+    bool save(QSqlDatabase &db);
 
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &child) const;
@@ -35,9 +40,12 @@ public:
     bool dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent);
 
+signals:
+    void oneSaved();
+
 private:
     int nextInsertId;
-    QList<Specimen *> specs;
+    QList<Specimen *> specs, removed;
 };
 
 #endif // SPECIMENMODEL_H

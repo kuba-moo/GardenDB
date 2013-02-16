@@ -52,16 +52,15 @@ void LoaderController::tryToPostWork()
         return;
 
     if (!fulls.empty()) {
-        Log(Debug) << "Posting fulls";
         QMetaObject::invokeMethod(loader, "getFullsize", Q_ARG(int, fulls.takeFirst()));
+        idle = false;
     } else if (!caches.empty()) {
         QVector<int> v;
         for (int i = 0; i < 8 && !caches.empty(); i++)
             v.append(caches.takeFirst());
         QMetaObject::invokeMethod(loader, "getCached", Q_ARG(QVector<int>, v));
+        idle = false;
     }
-
-    idle = false;
 }
 
 void LoaderController::loaderIdle()

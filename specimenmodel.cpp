@@ -30,6 +30,50 @@ bool SpecimenModel::load()
     return true;
 }
 
+bool SpecimenModel::isModified()
+{
+    if (removed.size())
+        return true;
+
+    for (int i = 0; i < specs.size(); i++)
+        if (specs[i]->isModified())
+            return true;
+
+    return false;
+}
+
+int SpecimenModel::countModified()
+{
+    int modified = removed.size();
+
+    for (int i = 0; i < specs.size(); i++)
+        if (specs[i]->isModified())
+            modified++;
+
+    return modified;
+}
+
+bool SpecimenModel::save(QSqlDatabase &db)
+{
+    while (removed.size()) {
+        Specimen *spec = removed.takeFirst();
+        if (!spec->save(db))
+            return false;
+        emit oneSaved();
+        delete spec;
+    }
+
+    for (int i = 0; i < specs.size(); i++)
+        if (specs[i]->isModified()) {
+            if (!specs[i]->save(db))
+                return false;
+
+            emit oneSaved();
+        }
+
+    return true;
+}
+
 QModelIndex SpecimenModel::index(int row, int column, const QModelIndex &parent) const
 {
     return hasIndex(row, column, parent) ? createIndex(row, column, 0) : QModelIndex();
@@ -65,6 +109,9 @@ QVariant SpecimenModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() < 0 || index.row() >= specs.size() || index.column() > 0)
         return QVariant();
+
+    //if (role == Qt::ToolTipRole)
+        //return specs[index.row()]->getDesc();
 
     if (role != Qt::DisplayRole)
         return QVariant();
@@ -121,7 +168,10 @@ bool SpecimenModel::removeRows(int row, int count, const QModelIndex &parent)
     beginRemoveRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r) {
-        delete specs[row];
+        if (specs[row]->remove())
+            removed.push_back(specs[row]);
+        else
+            delete specs[row];
         specs.removeAt(row);
     }
 

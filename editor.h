@@ -10,7 +10,7 @@ namespace Ui {
 
 class QComboBox;
 
-class BuiltIns;
+class Builtins;
 class Database;
 class ImageCache;
 class Image;
@@ -25,17 +25,17 @@ class Editor : public QWidget
     Q_OBJECT
 
 public:
-    explicit Editor(Database *db, BuiltIns *builtIns, const QModelIndex &index,
-                    QWidget *parent);
+    explicit Editor(Database *db, const QModelIndex &index, QWidget *parent);
     ~Editor();
 
 signals:
+    void requestGallery(Specimen *);
     void finished();
 
 private:
     /* Initialization. */
     /* Fill combo with data from given builtins' category. */
-    void fillCombo(QComboBox *combo, const QString &category, const unsigned current);
+    void fillCombo(QComboBox *combo, const QString &category, const int current);
 
 private slots:
     /* Set specimen description. */
@@ -52,14 +52,14 @@ private slots:
     void removePhoto();
     /* Set main photo to nth photo in listWidget. */
     void setMainPhoto(int n);
-    /* Show image in separate, bigger window. */
-    void magnifyImage(QModelIndex);
+    void emitRequestGallery();
 
 private:
     Ui::Editor *ui;
+    const QModelIndex &originalIndex;
     Specimen *specimen;
     ImageCache *ic;
-    BuiltIns *builtins;
+    Builtins *builtins;
     QList<Image *> images;
 };
 

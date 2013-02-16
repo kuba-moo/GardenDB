@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtSql>
 
+class Builtins;
 class ImageCache;
 class SpecimenModel;
 
@@ -26,7 +27,10 @@ public:
     /* True if database was opened and loaded successfully. */
     bool isOk() { return database.isOpen(); }
 
+    bool isModified();
+
     /* Aggregate accessors. */
+    Builtins *builtins() const { return bi; }
     ImageCache *imageCache() const { return ic; }
     SpecimenModel *specimenModel() const { return sm; }
 
@@ -49,6 +53,7 @@ private:
     bool heal();
 
     QSqlDatabase database;
+    Builtins *bi;
     ImageCache *ic;
     SpecimenModel *sm;
 };

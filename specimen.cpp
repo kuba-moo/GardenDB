@@ -1,6 +1,8 @@
 #include "specimen.h"
+#include "logger.h"
 
-#include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QVariant>
 
 Specimen::Specimen(const int _id, const int _no, QObject *parent) :
@@ -33,70 +35,73 @@ Specimen::Specimen(QSqlRecord rec, QObject *parent) :
     tp_id = rec.value("tp_id").toInt();
 }
 
+bool Specimen::remove()
+{
+    if (state == New)
+        return false;
+
+    state = Removed;
+    return true;
+}
+
+bool Specimen::save(QSqlDatabase &db)
+{
+    QString str;
+
+    if (state == New)
+        str = "INSERT INTO Species(id,no,name,grower,flowers,size,desc,"
+                "main_photo,fl_id,fw_id,fr_id,tp_id) VALUES(" +
+                QString::number(id) + "," +
+                QString::number(no) + "," +
+                "'" + name + "'," +
+                "'" + grower + "'," +
+                "'" + flowers + "'," +
+                "'" + size + "'," +
+                "'" + desc + "'," +
+                QString::number(main_photo) + "," +
+                QString::number(fl_id) + "," +
+                QString::number(fw_id) + "," +
+                QString::number(fr_id) + "," +
+                QString::number(tp_id) + ')';
+    else if (state == Modified)
+        str = "UPDATE Species SET "
+                "no=" + QString::number(no) + ","
+                "name='" + name + "',"
+                "grower='" + grower + "',"
+                "flowers='" + flowers + "',"
+                "size='" + size + "',"
+                "desc='" + desc + "',"
+                "main_photo=" + QString::number(main_photo) + ","
+                "fl_id=" + QString::number(fl_id) + ","
+                "fw_id=" + QString::number(fw_id) + ","
+                "fr_id=" + QString::number(fr_id) + ","
+                "tp_id=" + QString::number(tp_id) +
+                " WHERE id=" + QString::number(id);
+    else if (state == Removed)
+        str = "DELETE FROM Species WHERE id=" + QString::number(id);
+    else
+        Log(Assert) << "Someone saved unmodified Specimen";
+
+    QSqlQuery query(str, db);
+    if (query.lastError().isValid()) {
+        Log(Error) << query.lastError().text() << " | " << query.lastQuery();
+        return false;
+    }
+    if (query.numRowsAffected() != 1)
+        Log(Warning) << "Specimen save Rows affected"
+                     << query.numRowsAffected() << "state" << state;
+
+    if (state != Removed)
+        state = Unmodified;
+    return true;
+}
+
 void Specimen::markModified()
 {
+    if (state == Removed)
+        qDebug() << "Huh?? Removed species alive?";
     if (state == Unmodified) {
         state = Modified;
         qDebug() << "Specimen" << id << "changed";
     }
 }
-
-
-#if 0
-void Editor::acceptAdd()
-{
-    QString insert = "INSERT INTO Species VALUES("
-            "NULL, '" + ui->name->text() + "', '" + ui->flowers->text() + "', "
-            "'" + ui->bush->text() + "', '"
-            + ui->desc->document()->toPlainText()
-            +"',0 , "
-            + ui->flavour->itemData(ui->flavour->currentIndex()).toString()
-            + ", "
-            + ui->flowering->itemData(ui->flowering->currentIndex()).toString()
-            + ", "
-            + ui->frost->itemData(ui->frost->currentIndex()).toString() + ", "
-            + ui->type->itemData(ui->type->currentIndex()).toString() + ")";
-    QSqlQuery add(insert);
-    if (add.lastError().isValid())
-        qDebug() << __FILE__ << add.lastError();
-
-    speciesId = add.lastInsertId().toInt();
-
-    while (invalid.count())
-        delete invalid.takeLast();
-    for (int i = 0; i < images.count(); i++)
-        images[i]->setOwner(speciesId);
-
-    if (ui->listWidget->currentRow() >= 0)
-        images[ui->listWidget->currentRow()]->mainPhoto();
-    ic->setImages(speciesId, images, invalid);
-}
-
-void Editor::acceptUpdate()
-{
-    QStringList ul;
-    ul << "UPDATE Species SET";
-    ul << " name='" << ui->name->text() << "'";
-    ul << ", flowers='" << ui->flowers->text() << "'";
-    ul << ", size='" << ui->bush->text() << "'";
-    ul << ", main_photo='" << QString::number(abs(mainPhotoId)) << "'";
-    ul << ", desc='" << ui->desc->document()->toPlainText() << "'";
-    ul << ", fl_id="
-       << QString::number(ui->flavour->itemData(ui->flavour->currentIndex()).toInt());
-    ul << ", fw_id="
-       << QString::number(ui->flowering->itemData(ui->flowering->currentIndex()).toInt());
-    ul << ", fr_id="
-       << QString::number(ui->frost->itemData(ui->frost->currentIndex()).toInt());
-    ul << ", tp_id="
-       << QString::number(ui->type->itemData(ui->type->currentIndex()).toInt());
-    ul << " WHERE id=" << QString::number(speciesId);
-
-    QSqlQuery updateQuery(ul.join(""));
-    if (updateQuery.lastError().isValid())
-        qDebug() << updateQuery.lastError().text();
-
-    if (ui->listWidget->currentRow() >= 0)
-        images[ui->listWidget->currentRow()]->mainPhoto();
-    ic->setImages(speciesId, images, invalid);
-}
-#endif

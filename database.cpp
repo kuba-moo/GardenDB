@@ -1,5 +1,5 @@
+#include "builtins.h"
 #include "database.h"
-#include "image.h" /* For cache size. */
 #include "imagecache.h"
 #include "logger.h"
 #include "specimenmodel.h"
@@ -111,14 +111,14 @@ Database::Database(QString filename, QObject *parent) :
     database.open();
 
     if (database.isOpenError()) {
-        Logger::log(UserError, QString(trUtf8("Unable to open database: %1"))
-                    .arg(database.lastError().text()));
+        Log(UserError) << trUtf8("Unable to open database:")
+                       << database.lastError().text();
         return;
     }
 
     /* Init database - if new. */
     if (newFile && !init()) {
-        Logger::log(UserError, trUtf8("Unable to initialize new database"));
+        Log(UserError) << trUtf8("Unable to initialize new database");
         database.close();
         return;
     }
@@ -126,29 +126,35 @@ Database::Database(QString filename, QObject *parent) :
     /* Handle DB versions. */
     int dbVersion = getVersion();
     if (dbVersion < 0) {
-        Logger::log(UserError, trUtf8("Unable to open database:"
-                                      " unknown version"));
+        Log(UserError) << trUtf8("Unable to open database: unknown version");
         database.close();
         return;
     }
     if (dbVersion > version) {
-        Logger::log(UserError, trUtf8("Unable to open database: it was created"
-                                      " with a newer version of the program"));
+        Log(UserError) << trUtf8("Unable to open database: it was created"
+                                 " with a newer version of the program");
         database.close();
         return;
     }
 
     if (dbVersion < version && !upgrade(database, dbVersion)) {
-        Logger::log(UserError, trUtf8("Unable to open database: it was created"
-                                      " with an older version of the program"
-                                      " and upgrade had failed"));
+        Log(UserError) << trUtf8("Unable to open database: it was created"
+                                 " with an older version of the program"
+                                 " and upgrade had failed");
         database.close();
         return;
     }
 
     if (!heal()) {
-        Logger::log(UserError, trUtf8("Unable to open database: fixing data"
-                                      " format has failed"));
+        Log(UserError) << trUtf8("Unable to open database: fixing data"
+                                 " format has failed");
+        database.close();
+        return;
+    }
+
+    bi = new Builtins(this);
+    if (!bi->load()) {
+        Log(UserError) << "Unable to read builtin values from database";
         database.close();
         return;
     }
@@ -165,8 +171,6 @@ Database::Database(QString filename, QObject *parent) :
         database.close();
         return;
     }
-
-    /* TODO: create all the aggregate objects. */
 }
 
 Database::~Database()
@@ -175,9 +179,17 @@ Database::~Database()
         database.close();
 }
 
+bool Database::isModified()
+{
+    if (bi->isModified() || ic->isModified() || sm->isModified())
+        return true;
+
+    return false;
+}
+
 bool Database::init()
 {
-    Logger::log(Debug, "init database");
+    Log(Debug) << "init database";
 
     QSqlQuery result;
     for (unsigned i=0; i < numCreates && !result.lastError().isValid(); i++)
@@ -187,9 +199,8 @@ bool Database::init()
         result = database.exec(inserts[i]);
 
     if (result.lastError().isValid()) {
-        Logger::log(Error, QString("init %1: %2")
-                           .arg(result.lastQuery())
-                           .arg(result.lastError().text()));
+        Log(Error) << "init" << result.lastQuery() << " | "
+                   << result.lastError().text();
         return false;
     }
 
@@ -202,8 +213,7 @@ int Database::getVersion()
 {
     QSqlQuery check("SELECT name FROM sqlite_master WHERE type='table' AND name='Version'");
     if (check.lastError().isValid()) {
-        Logger::log(Error, QString("getVersion check: %1")
-                           .arg(check.lastError().text()));
+        Log(Error) <<  "getVersion check:" << check.lastError().text();
         return -1;
     }
 
@@ -213,17 +223,18 @@ int Database::getVersion()
 
     check.exec("SELECT * FROM Version");
     if (check.lastError().isValid()) {
-        Logger::log(Error, QString("getVersion get version: %1")
-                           .arg(check.lastError().text()));
+        Log(Error) << "getVersion get version:" << check.lastError().text();
         return -1;
     }
     if (!check.next()) {
-        Logger::log(Error, "getVersion Version empty");
+        Log(Error) << "getVersion Version empty";
         return -1;
     }
 
     return check.record().value("version").toInt();
 }
+
+#include "image.h" /* For cache size. */
 
 bool Database::upgrade(QSqlDatabase &db, const int from)
 {
@@ -238,37 +249,33 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
     t.start();
     /* We can leave it hanging on failure - close will rollback. */
     if (!db.transaction()) {
-        Logger::log(Error, "upgrade can't begin");
+        Log(Error) << "upgrade can't begin";
         return false;
     }
 
     /* Species */
     QSqlQuery update("ALTER TABLE Species ADD no INT");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Species addNo: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Species addNo:" << update.lastError().text();
         return false;
     }
 
     update.exec("ALTER TABLE Species ADD grower TEXT");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Species addGrower: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Species addGrower:" << update.lastError().text();
         return false;
     }
 
     /* Images */
     update.exec("ALTER TABLE Images RENAME TO Images_v0");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Images mv: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Images mv:" << update.lastError().text();
         return false;
     }
 
     update.exec("ALTER TABLE ImagesCache RENAME TO ImagesCache_v0");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 ImagesCache mv: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 ImagesCache mv:" << update.lastError().text();
         return false;
     }
 
@@ -278,8 +285,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
                 "FOREIGN KEY(sp_id) REFERENCES Species(id) ON DELETE CASCADE"
             ")");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 ImagesIndex create: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 ImagesIndex create:" << update.lastError().text();
         return false;
     }
 
@@ -289,8 +295,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
                 "FOREIGN KEY(id) REFERENCES ImagesIndex(id) ON DELETE CASCADE"
             ")");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Images create: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Images create:" << update.lastError().text();
         return false;
     }
 
@@ -300,15 +305,13 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
                 "FOREIGN KEY(id) REFERENCES ImagesIndex(id) ON DELETE CASCADE"
             ")");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 ImagesCache create: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 ImagesCache create:" << update.lastError().text();
         return false;
     }
 
     update.exec("SELECT * FROM Images_v0");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Images read: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Images read:" << update.lastError().text();
         return false;
     }
     while (update.next()) {
@@ -341,8 +344,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         insert.bindValue(":image", array);
         insert.exec();
         if (insert.lastError().isValid()) {
-            Logger::log(Error, QString("upgrade v0 Images insert: %1")
-                               .arg(insert.lastError().text()));
+            Log(Error) << "upgrade v0 Images insert:" << insert.lastError().text();
             return false;
         }
 
@@ -360,86 +362,75 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
         insert.bindValue(":image", array);
         insert.exec();
         if (insert.lastError().isValid()) {
-            Logger::log(Error, QString("upgrade v0 Images insert: %1")
-                               .arg(insert.lastError().text()));
+            Log(Error) << "upgrade v0 Images insert:" << insert.lastError().text();
             return false;
         }
     }
 
     update.exec("UPDATE Species SET main_photo=0 WHERE main_photo=1");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Species not 1: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Species not 1:" << update.lastError().text();
         return false;
     }
 
     update.exec("DROP TABLE Images_v0");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Images rm: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Images rm:" << update.lastError().text();
         return false;
     }
 
     update.exec("DROP TABLE ImagesCache_v0");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 ImagesCache rm: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 ImagesCache rm:" << update.lastError().text();
         return false;
     }
 
     /* Insert NULL-values. */
     update.exec("INSERT INTO Types VALUES(0, '')");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Types add zero: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Types add zero:" << update.lastError().text();
         return false;
     }
 
     update.exec("INSERT INTO Flavour VALUES(0, '')");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Flavour add zero: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Flavour add zero:" << update.lastError().text();
         return false;
     }
 
     update.exec("INSERT INTO Flowering VALUES(0, '')");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Flowering add zero: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Flowering add zero:" << update.lastError().text();
         return false;
     }
 
     update.exec("INSERT INTO Frost VALUES(0, '')");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Frost add zero: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Frost add zero:" << update.lastError().text();
         return false;
     }
 
     update.exec("INSERT INTO ImagesIndex VALUES(0, 0)");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 ImagesIndex add zero: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 ImagesIndex add zero:" << update.lastError().text();
         return false;
     }
 
     /* Create version table. */
     update.exec("CREATE TABLE Version (version INTEGER)");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Version create: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Version create:" << update.lastError().text();
         return false;
     }
 
     update.exec("INSERT INTO Version VALUES(1)");
     if (update.lastError().isValid()) {
-        Logger::log(Error, QString("upgrade v0 Version add: %1")
-                           .arg(update.lastError().text()));
+        Log(Error) << "upgrade v0 Version add:" << update.lastError().text();
         return false;
     }
 
     if (!db.commit()) {
-        Logger::log(Error, "upgrade commit");
+        Log(Error) << "upgrade commit";
         return false;
     }
 

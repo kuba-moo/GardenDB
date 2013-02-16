@@ -25,7 +25,11 @@ SOURCES += main.cpp\
     specimen.cpp \
     specimenmodel.cpp \
     specimenrenderer.cpp \
-    editor.cpp
+    editor.cpp \
+    builtinvalue.cpp \
+    savingthread.cpp \
+    savingwidget.cpp \
+    gallery.cpp
 
 HEADERS  += omain.h \
     obuiltinseditor.h \
@@ -41,12 +45,18 @@ HEADERS  += omain.h \
     specimen.h \
     specimenmodel.h \
     specimenrenderer.h \
-    editor.h
+    editor.h \
+    builtinvalue.h \
+    savingthread.h \
+    savingwidget.h \
+    gallery.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \
     maintable.ui \
-    editor.ui
+    editor.ui \
+    savingwidget.ui \
+    gallery.ui
 
 RESOURCES += \
     app.qrc

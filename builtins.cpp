@@ -1,11 +1,12 @@
 #include "builtins.h"
+#include "logger.h"
 
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
 
-BuiltIns::BuiltIns(QObject *parent) :
+Builtins::Builtins(QObject *parent) :
     QObject(parent)
 {
     /* Without this tmp thing keys don't get translated... */
@@ -20,94 +21,188 @@ BuiltIns::BuiltIns(QObject *parent) :
     fieldNames[trUtf8("Flavour")] = "fl_id";
     fieldNames[trUtf8("Frost resistance")] = "fr_id";
     fieldNames[trUtf8("Flowering time")] = "fw_id";
-
-    reload();
 }
 
-void BuiltIns::reload()
+bool Builtins::load()
 {
     foreach (QString category, tableNames.values())
-        readTable(category);
+        if (!readTable(category))
+            return false;
+
+    return true;
 }
 
-void BuiltIns::readTable(const QString &name)
+bool Builtins::isModified()
+{
+    if (removed.size())
+        return true;
+
+    foreach (QString category, tableNames.values()) {
+        const QLinkedList<BuiltinValue *> &table = tables[category];
+
+        QLinkedList<BuiltinValue *>::const_iterator i;
+        for (i = table.begin(); i != table.end(); i++)
+            if ((*i)->isModified())
+                return true;
+    }
+
+    return false;
+}
+
+int Builtins::countModified()
+{
+    int modified = removed.size();
+
+    foreach (QString category, tableNames.values()) {
+        const QLinkedList<BuiltinValue *> &table = tables[category];
+
+        QLinkedList<BuiltinValue *>::const_iterator i;
+        for (i = table.begin(); i != table.end(); i++)
+            if ((*i)->isModified())
+                modified++;
+    }
+
+    return modified;
+}
+
+bool Builtins::save(QSqlDatabase &db)
+{
+    while (removed.size()) {
+        BuiltinValue *biv = removed.takeFirst();
+        if (!biv->save(db))
+            return false;
+        emit oneSaved();
+        delete biv;
+    }
+
+    foreach (QString category, tableNames.values()) {
+        const QLinkedList<BuiltinValue *> &table = tables[category];
+
+        QLinkedList<BuiltinValue *>::const_iterator i;
+        for (i = table.begin(); i != table.end(); i++)
+            if ((*i)->isModified()) {
+                if (!(*i)->save(db))
+                    return false;
+
+                emit oneSaved();
+            }
+    }
+
+    return true;
+}
+
+bool Builtins::readTable(const QString &name)
 {
     QSqlQuery records("SELECT * FROM " + name);
+    if (records.lastError().isValid()) {
+        Log(Error) << "Builtins unable to read table" << name
+                   << ":" << records.lastError().text();
+        return false;
+    }
 
-    tables[name] = QLinkedList<QPair<unsigned, QString> >();
+    tables[name] = QLinkedList<BuiltinValue *>();
     while (records.next()) {
-        const unsigned id = records.value(0).toInt();
+        const int id = records.value(0).toInt();
         const QString value = records.value(1).toString();
         if (id)
-            tables[name].append(QPair<unsigned, QString>(id, value));
+            tables[name].append(new BuiltinValue(name, id, value, false, this));
     }
+
+    /* Can't do usual "find max" thing here, because species may point to items
+     * after last existing, if last items where removed. */
+    QSqlQuery seq("SELECT seq FROM sqlite_sequence WHERE name='" + name + "'");
+    if (seq.lastError().isValid()) {
+        Log(Error) << "Builtins unable to read sequence for table" << name
+                   << ":" << seq.lastError().text();
+        return false;
+    }
+    while (seq.next())
+        lastInsertId[name] = seq.value(0).toInt();
+
+    return true;
 }
 
-QStringList BuiltIns::getCategories()
+QStringList Builtins::getCategories()
 {
     return tableNames.keys();
 }
 
-QString BuiltIns::getValueTr(const QString &engCategory, const unsigned id)
+QString Builtins::getValue(const QString &category, const int id)
 {
+    const QLinkedList<BuiltinValue *> &table = tables[category];
 
+    QLinkedList<BuiltinValue *>::const_iterator i;
+    for (i = table.begin(); i != table.end(); i++)
+        if (**i == id)
+            return **i;
+
+    return QString();
 }
 
-unsigned BuiltIns::addValue(const QString &category, const QString &value)
+unsigned Builtins::addValueTr(const QString &localCategory, const QString &value)
 {
-    QSqlQuery add(QString("INSERT INTO %1 VALUES(NULL, '%2')")
-                    .arg(tableNames[category]).arg(value));
+    const QString &category = tableNames[localCategory];
+    QLinkedList<BuiltinValue *> &table = tables[category];
 
-    reload();
+    QLinkedList<BuiltinValue *>::const_iterator i;
+    for (i = table.constBegin(); i != table.constEnd(); i++)
+        if (value == **i) {
+            Log(UserError) << trUtf8("Duplicated value");
+            return 0;
+        }
+
+    tables[category].append(new BuiltinValue(category, ++lastInsertId[category],
+                                             value, true, this));
     emit changed();
-
-    if (add.lastError().isValid())
-            qDebug() << add.lastError().text();
-
-    return add.lastInsertId().toInt();
+    return lastInsertId[category];
 }
 
-unsigned BuiltIns::countSpecies(const QString &category, const unsigned id)
+void Builtins::removeValueTr(const QString &localCategory, const int id)
 {
-    QSqlQuery count(QString("SELECT Count(*) FROM Species WHERE %1 = %2")
-                    .arg(fieldNames[category]).arg(id));
+    const QString &category = tableNames[localCategory];
+    QLinkedList<BuiltinValue *> &table = tables[category];
 
-    if (!count.next())
-        return 998;
 
-    if (count.lastError().isValid()) {
-            qDebug() << count.lastError().text();
-            return 999;
-    }
+    QLinkedList<BuiltinValue *>::iterator i;
+    for (i = table.begin(); i != table.end(); i++)
+        if (id == **i) {
+            if ((*i)->remove())
+                removed.append(*i);
 
-    return count.value(0).toInt();
+            tables[category].removeOne(*i);
+
+            emit changed();
+            break;
+        }
 }
 
-void BuiltIns::removeValue(const QString &category, const unsigned id)
+void Builtins::setValueTr(const QString &localCategory, const int id, const QString &newValue)
 {
-    QSqlQuery remove(QString("DELETE FROM %1 WHERE id = %2")
-                    .arg(tableNames[category]).arg(id));
+    const QString &category = tableNames[localCategory];
+    QLinkedList<BuiltinValue *> &table = tables[category];
 
-    reload();
+    QLinkedList<BuiltinValue *>::iterator i;
+    for (i = table.begin(); i != table.end(); i++)
+        if (newValue == **i) {
+            Log(UserError) << trUtf8("Duplicated value");
+            return;
+        }
+
+    for (i = table.begin(); i != table.end(); i++)
+        if (id == **i) {
+            (*i)->setValue(newValue);
+            break;
+        }
+
     emit changed();
-
-    if (remove.lastError().isValid())
-        qDebug() << remove.lastError().text();
 }
 
-void BuiltIns::setValue(const QString &category, const unsigned id, const QString &value)
+const QLinkedList<BuiltinValue *> &Builtins::getValues(const QString &category)
 {
-    QSqlQuery update(QString("UPDATE %1 SET name='%2' WHERE id=%3")
-                            .arg(tableNames[category]).arg(value).arg(id));
-
-    reload();
-    emit changed();
-
-    if (update.lastError().isValid())
-        qDebug() << update.lastError().text();
+    return tables[category];
 }
 
-const QLinkedList<QPair<unsigned, QString> > &BuiltIns::getValues(const QString &category)
+const QLinkedList<BuiltinValue *> &Builtins::getValuesTr(const QString &localCategory)
 {
-    return tables[tableNames[category]];
+    return getValues(tableNames[localCategory]);
 }

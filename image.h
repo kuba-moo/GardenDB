@@ -7,6 +7,7 @@
 #include <QSize>
 
 class QPixmap;
+class QSqlDatabase;
 
 class FileLoader;
 
@@ -51,10 +52,10 @@ public:
 
     /* True if image needs to be saved. */
     bool isModified() const { return flags & (NewPhoto | ForRemoval); }
-    /* Save changes to the database, return true if photo is still needed. */
-    bool save();
     /* Remove photo, return true if photo needs to be kept until save time. */
     bool remove();
+    /* Save changes to the database, return true on success. */
+    bool save(QSqlDatabase &db);
 
     /* Get image scaled to given size. */
     QPixmap *getScaled(const QSize &size);
@@ -78,9 +79,9 @@ private slots:
 
 private:
     /* Write image to database. [non-GUI thread] */
-    bool store();
+    bool store(QSqlDatabase &db);
     /* Remove image from database. [non-GUI thread] */
-    bool drop();
+    bool drop(QSqlDatabase &db);
 
     /* Image is or will be stored in database. */
     bool touchesDB() const

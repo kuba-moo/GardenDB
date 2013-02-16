@@ -17,7 +17,8 @@ class MainTable : public QWidget
     Q_OBJECT
 
 signals:
-    void rowDetails(QModelIndex);
+    void requestGallery(QModelIndex);
+    void requestEditor(QModelIndex);
 
 public:
     explicit MainTable(Database *db, QWidget *parent = 0);
@@ -28,6 +29,8 @@ private slots:
     void addRow();
     /* Ask if user is sure and remove row from model. */
     void removeRow();
+    /* Item was double clicked - request details or gallery. */
+    void doubleClicked(const QModelIndex &index);
 
 private:
     Database *database;

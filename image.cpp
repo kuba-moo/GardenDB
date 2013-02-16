@@ -58,7 +58,7 @@ void Image::loaderDone()
 
     /* Check if image was read successfully. */
     if (fullsize.isNull()) {
-        Logger::log(UserError, "Loading file " + filename + " failed");
+        Log(UserError) << "Loading file" << filename << "failed";
         flags |= ForRemoval | Failed;
         emit fileLoadFailed(_id);
         return;
@@ -74,7 +74,7 @@ void Image::loaderDone()
     emit changed();
 }
 
-bool Image::save()
+bool Image::save(QSqlDatabase &db)
 {
     if (!isModified())
         return true;
@@ -84,13 +84,13 @@ bool Image::save()
 
     if (!touchesDB()) {
         Log(Assert) << "Photo" << _id << "is new and removed";
-        return false;
+        return true;
     }
 
     if (flags & NewPhoto)
-        return store();
+        return store(db);
     else if (flags & ForRemoval)
-        return drop();
+        return drop(db);
 
     return true;
 }
@@ -105,7 +105,7 @@ bool Image::remove()
     return true;
 }
 
-bool Image::store()
+bool Image::store(QSqlDatabase &db)
 {
     if (raw.isEmpty()) {
         QBuffer buf(&raw);
@@ -113,15 +113,15 @@ bool Image::store()
         fullsize.save(&buf, "JPG", Quality);
     }
 
-    QSqlDatabase::database().transaction();
+    db.transaction();
 
     QString ins("INSERT INTO ImagesIndex VALUES(%1, %2)");
     QSqlQuery insertPicture(ins.arg(_id).arg(_ownerId));
     if (insertPicture.lastError().isValid()) {
-        Logger::log(Error, "Image save index: " +
-                           insertPicture.lastError().text());
-        QSqlDatabase::database().rollback();
-        return true;
+        Log(Error) << "Image save index" << insertPicture.lastError().text()
+                   << " | " << insertPicture.lastQuery();
+        db.rollback();
+        return false;
     }
 
     insertPicture.prepare("INSERT INTO Images VALUES(:id, :image)");
@@ -129,10 +129,10 @@ bool Image::store()
     insertPicture.bindValue(":image", raw);
     insertPicture.exec();
     if (insertPicture.lastError().isValid()) {
-        Logger::log(Error, "Image save image: " +
-                           insertPicture.lastError().text());
-        QSqlDatabase::database().rollback();
-        return true;
+        Log(Error) << "Image save image" << insertPicture.lastError().text()
+                   << " | " << insertPicture.lastQuery();
+        db.rollback();
+        return false;
     }
 
     QByteArray cacheData;
@@ -145,32 +145,41 @@ bool Image::store()
     insertPicture.bindValue(":image", cacheData);
     insertPicture.exec();
     if (insertPicture.lastError().isValid()) {
-        Logger::log(Error, "Image save imageCache: " +
-                           insertPicture.lastError().text());
-        QSqlDatabase::database().rollback();
-        return true;
+        Log(Error) << "Image save cache" << insertPicture.lastError().text()
+                   << " | " << insertPicture.lastQuery();
+        db.rollback();
+        return false;
     }
 
-    if (!QSqlDatabase::database().commit()) {
-        Logger::log(Error, "Image save commit: " +
-                           insertPicture.lastError().text());
-        return true;
+    if (!db.commit()) {
+        Log(Error) << "Image save commit: " << insertPicture.lastError().text();
+        return false;
     }
 
     flags ^= NewPhoto;
     return true;
 }
 
-bool Image::drop()
+bool Image::drop(QSqlDatabase &db)
 {
-    /* TODO: see if this removes Cache and Image. */
-    QSqlQuery dropQ(QString("DELETE FROM ImagesIndex WHERE id=%1").arg(_id));
+    QSqlQuery dropQ(QString("DELETE FROM ImagesIndex WHERE id=%1").arg(_id), db);
     if (dropQ.lastError().isValid()) {
-        Logger::log(Error, "Image drop: " + dropQ.lastError().text());
+        Log(Error) << "Image drop index" << dropQ.lastError().text();
+        return false;
+    }
+    dropQ.exec(QString("DELETE FROM ImagesCache WHERE id=%1").arg(_id));
+    if (dropQ.lastError().isValid()) {
+        Log(Error) << "Image drop cache" << dropQ.lastError().text();
+        return false;
+    }
+    dropQ.exec(QString("DELETE FROM Images WHERE id=%1").arg(_id));
+    if (dropQ.lastError().isValid()) {
+        Log(Error) << "Image drop" << dropQ.lastError().text();
         return false;
     }
 
-    return false;
+    flags ^= ForRemoval;
+    return true;
 }
 
 QPixmap *Image::getScaled(const QSize &size)
@@ -241,6 +250,7 @@ void Image::setCached(const QImage &image)
 void Image::setFullsize(const QImage &image)
 {
     cache.insert(0, new QPixmap(QPixmap::fromImage(image)));
+    emit changed();
 }
 
 QPixmap *Image::insert(QPixmap *pixmap)

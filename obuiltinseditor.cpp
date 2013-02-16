@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QSqlTableModel>
 
-OBuiltInsEditor::OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent) :
+OBuiltInsEditor::OBuiltInsEditor(Builtins *builtIns, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OBuiltInsEditor)
 {
@@ -48,26 +48,26 @@ void OBuiltInsEditor::setTable(int row_id)
     lastRowId = row_id;
 
     blockEdits = true;
-
-    const QLinkedList<QPair<unsigned, QString> > &values =
-            builtins->getValues(ui->categories->item(row_id)->text());
+    const QLinkedList<BuiltinValue *> &values =
+            builtins->getValuesTr(ui->categories->item(row_id)->text());
     ui->values->clear();
     ids.clear();
-    QLinkedList<QPair<unsigned, QString> >::const_iterator i;
+    QLinkedList<BuiltinValue *>::const_iterator i;
     for (i = values.constBegin(); i != values.constEnd(); i++) {
-        ui->values->addItem(i->second);
+        ui->values->addItem((*i)->value());
         /* Make item editable. */
         QListWidgetItem * item = ui->values->item(ui->values->count()-1);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
-        ids[item] = i->first;
+        ids[item] = (*i)->id();
     }
-
     blockEdits = false;
 }
 
 void OBuiltInsEditor::addRow()
 {
-    builtins->addValue(ui->categories->item(lastRowId)->text());
+    builtins->addValueTr(ui->categories->item(lastRowId)->text());
+    int rows = ui->values->model()->rowCount();
+    ui->values->edit(ui->values->model()->index(rows-1, 0));
 }
 
 void OBuiltInsEditor::removeRow()
@@ -75,15 +75,12 @@ void OBuiltInsEditor::removeRow()
     if (ui->categories->currentRow() < 0 || ui->values->currentRow() < 0)
         return;
 
-    unsigned count = builtins->countSpecies(ui->categories->currentItem()->text(),
-                                            ids[ui->values->currentItem()]);
-    if (count)
-        QMessageBox::warning(this, trUtf8("Remove value"),
-                             trUtf8("Cannot remove value because it is used "
-                                    "by %1 species.").arg(count));
-    else
-        builtins->removeValue(ui->categories->currentItem()->text(),
-                              ids[ui->values->currentItem()]);
+    int ret = QMessageBox::question(this, trUtf8("Remove row"),
+                                    trUtf8("Sure you want to remove this row?"),
+                                    QMessageBox::Yes, QMessageBox::No);
+    if (ret == QMessageBox::Yes)
+        builtins->removeValueTr(ui->categories->currentItem()->text(),
+                                ids[ui->values->currentItem()]);
 }
 
 void OBuiltInsEditor::edit(QListWidgetItem *item)
@@ -91,5 +88,5 @@ void OBuiltInsEditor::edit(QListWidgetItem *item)
     if (blockEdits)
         return;
 
-    builtins->setValue(ui->categories->currentItem()->text(), ids[item], item->text());
+    builtins->setValueTr(ui->categories->currentItem()->text(), ids[item], item->text());
 }

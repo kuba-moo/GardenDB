@@ -135,29 +135,58 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
 <context>
     <name>BuiltIns</name>
     <message>
-        <location filename="builtins.cpp" line="13"/>
+        <source>Types</source>
+        <translation type="obsolete">Typy</translation>
+    </message>
+    <message>
+        <source>Flavour</source>
+        <translation type="obsolete">Zapach</translation>
+    </message>
+    <message>
+        <source>Frost resistance</source>
+        <translation type="obsolete">Mrozoodporność</translation>
+    </message>
+    <message>
+        <source>Flowering time</source>
+        <translation type="obsolete">Pora kwitnienia</translation>
+    </message>
+    <message>
+        <source>New value</source>
+        <translation type="obsolete">Nowa wartość</translation>
+    </message>
+</context>
+<context>
+    <name>Builtins</name>
+    <message>
+        <location filename="builtins.cpp" line="14"/>
         <source>Types</source>
         <translation type="unfinished">Typy</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="13"/>
+        <location filename="builtins.cpp" line="14"/>
         <source>Flavour</source>
         <translation type="unfinished">Zapach</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="14"/>
+        <location filename="builtins.cpp" line="15"/>
         <source>Frost resistance</source>
         <translation type="unfinished">Mrozoodporność</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="14"/>
+        <location filename="builtins.cpp" line="15"/>
         <source>Flowering time</source>
         <translation type="unfinished">Pora kwitnienia</translation>
     </message>
     <message>
-        <location filename="builtins.h" line="25"/>
+        <location filename="builtins.cpp" line="81"/>
+        <location filename="builtins.cpp" line="114"/>
+        <source>Duplicated value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="builtins.h" line="31"/>
         <source>New value</source>
-        <translation>Nowa wartość</translation>
+        <translation type="unfinished">Nowa wartość</translation>
     </message>
 </context>
 <context>
@@ -193,7 +222,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="database.cpp" line="231"/>
+        <location filename="database.cpp" line="238"/>
         <source>Database format needs to be upgraded please press ok and wait</source>
         <translation type="unfinished"></translation>
     </message>
@@ -282,33 +311,40 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     </message>
     <message>
         <location filename="editor.ui" line="278"/>
-        <source>&lt; Back to table</source>
+        <source>&lt; Back to the table</source>
+        <oldsource>&lt; Back to table</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="31"/>
+        <location filename="editor.cpp" line="29"/>
         <source>Edit </source>
         <translation type="unfinished">Edycja </translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="84"/>
+        <location filename="editor.cpp" line="133"/>
+        <source>Select garden file</source>
+        <translation type="unfinished">Wybierz plik z ogrodem</translation>
+    </message>
+    <message>
+        <location filename="editor.cpp" line="135"/>
+        <source>Images (*.png *.jpg *.bmp)</source>
+        <translation type="unfinished">Obrazy (*.png *.jpg *.bmp)</translation>
+    </message>
+    <message>
         <source>Types</source>
-        <translation type="unfinished">Typy</translation>
+        <translation type="obsolete">Typy</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="85"/>
         <source>Flavour</source>
-        <translation type="unfinished">Zapach</translation>
+        <translation type="obsolete">Zapach</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="86"/>
         <source>Flowering time</source>
-        <translation type="unfinished">Pora kwitnienia</translation>
+        <translation type="obsolete">Pora kwitnienia</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="87"/>
         <source>Frost resistance</source>
-        <translation type="unfinished">Mrozoodporność</translation>
+        <translation type="obsolete">Mrozoodporność</translation>
     </message>
 </context>
 <context>
@@ -453,23 +489,20 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Nazwa</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="82"/>
         <source>Remove value</source>
-        <translation>Usuń wartość</translation>
+        <translation type="obsolete">Usuń wartość</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="83"/>
         <source>Cannot remove value because it is used by %1 species.</source>
-        <translation>Nie można usunąć wartości, ponieważ jest ona ustawiona w %1 gatunkach.</translation>
+        <translation type="obsolete">Nie można usunąć wartości, ponieważ jest ona ustawiona w %1 gatunkach.</translation>
     </message>
 </context>
 <context>
     <name>OMain</name>
     <message>
         <location filename="omain.ui" line="14"/>
-        <location filename="omain.cpp" line="78"/>
-        <location filename="omain.cpp" line="81"/>
-        <location filename="omain.cpp" line="103"/>
+        <location filename="omain.cpp" line="77"/>
+        <location filename="omain.cpp" line="96"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -482,52 +515,87 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Opcje</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="66"/>
+        <location filename="omain.ui" line="58"/>
         <source>Open file</source>
         <translation>Otwórz plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="69"/>
+        <location filename="omain.ui" line="61"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="78"/>
+        <location filename="omain.ui" line="70"/>
         <source>New file</source>
         <translation>Nowy plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="81"/>
+        <location filename="omain.ui" line="73"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="93"/>
+        <location filename="omain.ui" line="88"/>
         <source>Edit built-ins</source>
         <translation>Edytuj wartości wbudowane</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="96"/>
+        <location filename="omain.ui" line="91"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="105"/>
+        <location filename="omain.ui" line="103"/>
         <source>Close file</source>
         <translation>Zamknij plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="114"/>
+        <location filename="omain.ui" line="106"/>
+        <source>Ctrl+W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="115"/>
         <source>Quit</source>
         <translation>Wyjście</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="117"/>
+        <location filename="omain.ui" line="118"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="50"/>
+        <location filename="omain.ui" line="130"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="133"/>
+        <source>Save changes to disk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="136"/>
+        <source>Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="151"/>
+        <source>Species</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="154"/>
+        <source>Show main table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.ui" line="157"/>
+        <source>Ctrl+M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="omain.cpp" line="52"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>

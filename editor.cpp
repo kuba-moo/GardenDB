@@ -13,20 +13,21 @@
 #include <QMessageBox>
 #include <QStringList>
 
-Editor::Editor(Database *db, BuiltIns *builtIns, const QModelIndex &index, QWidget *parent) :
+Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Editor)
+    ui(new Ui::Editor),
+    originalIndex(index)
 {
     ui->setupUi(this);
 
     ic = db->imageCache();
     connect(ic, SIGNAL(changed()), SLOT(reloadPhotos()));
-    builtins = builtIns;
+    builtins = db->builtins();
     specimen = (Specimen *)db->specimenModel()->data(index, Qt::DisplayRole).toULongLong();
     if (!specimen)
         Log(Assert) << "Editor wants to edit empty specimen";
 
-    ui->title->setText(trUtf8("Edit ") + specimen->getName());
+    ui->title->setText(specimen->getName());
 
     ui->name->setText(specimen->getName());
     connect(ui->name, SIGNAL(textEdited(QString)), specimen, SLOT(setName(QString)));
@@ -47,7 +48,9 @@ Editor::Editor(Database *db, BuiltIns *builtIns, const QModelIndex &index, QWidg
     connect(ui->listWidget, SIGNAL(currentRowChanged(int)),
             SLOT(setMainPhoto(int)));
     connect(ui->listWidget, SIGNAL(doubleClicked(QModelIndex)),
-            SLOT(magnifyImage(QModelIndex)));
+            SLOT(emitRequestGallery()));
+    connect(ui->mainPhoto, SIGNAL(clicked()),
+            SLOT(emitRequestGallery()));
     connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
     reloadPhotos();
@@ -58,18 +61,18 @@ Editor::~Editor()
     delete ui;
 }
 
-void Editor::fillCombo(QComboBox *combo, const QString &category, const unsigned current)
+void Editor::fillCombo(QComboBox *combo, const QString &category, const int current)
 {
-    const QLinkedList<QPair<unsigned, QString> > &values = builtins->getValues(category);
+    const QLinkedList<BuiltinValue *> &values = builtins->getValues(category);
     int currentIndex = -1;
 
     combo->clear();
-    QLinkedList<QPair<unsigned, QString> >::const_iterator i;
+    QLinkedList<BuiltinValue *>::const_iterator i;
     for (i = values.constBegin(); i != values.constEnd(); i++) {
-        if (i->first == current)
+        if ((*i)->id() == current)
             currentIndex = combo->count();
 
-        combo->addItem(i->second, i->first);
+        combo->addItem((*i)->value(), (*i)->id());
     }
     combo->setCurrentIndex(currentIndex);
 
@@ -83,10 +86,10 @@ void Editor::setDescription()
 
 void Editor::populateComboes()
 {
-    fillCombo(ui->type, trUtf8("Types"), specimen->getTypeId());
-    fillCombo(ui->flavour, trUtf8("Flavour"), specimen->getFlavourId());
-    fillCombo(ui->flowering, trUtf8("Flowering time"), specimen->getFloweringId());
-    fillCombo(ui->frost, trUtf8("Frost resistance"), specimen->getFrostId());
+    fillCombo(ui->type, "Types", specimen->getTypeId());
+    fillCombo(ui->flavour, "Flavour", specimen->getFlavourId());
+    fillCombo(ui->flowering, "Flowering", specimen->getFloweringId());
+    fillCombo(ui->frost, "Frost", specimen->getFrostId());
 }
 
 void Editor::handleCombo(int n)
@@ -122,6 +125,8 @@ void Editor::reloadPhotos()
             mainPhotoIndex = ui->listWidget->count();
         QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
         ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
+
+        connect(*i, SIGNAL(changed()), SLOT(reloadPhotos()));
     }
 
     ui->listWidget->setCurrentRow(mainPhotoIndex);
@@ -145,30 +150,26 @@ void Editor::removePhoto()
     if (row < 0)
         return;
 
+    if (specimen->getMainPhotoId() == images[row]->id())
+        setMainPhoto(-1);
     ic->removeImage(images[row]->id());
 }
 
 void Editor::setMainPhoto(int n)
 {
-    QLabel * const photo = ui->mainPhoto;
+    QPushButton * const photo = ui->mainPhoto;
 
     if (n < 0) {
-        photo->setPixmap(QIcon(":/icons/image").pixmap(photo->size()));
+        photo->setIcon(QIcon(":/icons/image"));
         specimen->setMainPhotoId(0);
     } else {
-        photo->setPixmap(*images[n]->getScaled(photo->size()));
+        photo->setIconSize(photo->size());
+        photo->setIcon(QIcon(*images[n]->getScaled(photo->size())));
         specimen->setMainPhotoId(images[n]->id());
     }
 }
 
-void Editor::magnifyImage(QModelIndex index)
+void Editor::emitRequestGallery()
 {
-    QLabel *label = new QLabel("");
-    label->setAttribute(Qt::WA_DeleteOnClose);
-
-    QPixmap *pixmap = images[index.row()]->getScaledGe(QSize(800, 800));
-
-    label->setPixmap(*pixmap);
-    label->adjustSize();
-    label->show();
+    emit requestGallery(specimen);
 }

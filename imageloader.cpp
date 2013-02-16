@@ -46,17 +46,21 @@ void ImageLoader::getCached(QVector<int> v)
 
 void ImageLoader::getFullsize(int id)
 {
-    QSqlQuery query(QString("SELECT * FROM ImagesCache WHERE id=%1").arg(id));
+    QSqlQuery query(QString("SELECT * FROM Images WHERE id=%1").arg(id));
     if (query.lastError().isValid()) {
         Log(Error) << "getFull" << query.lastError().text();
         emit idle();
         return;
     }
 
+    if (!query.next())
+        Log(Error) << "Fullsize image load failed for image" << id
+                   << "query was empty";
     QByteArray data = query.record().value("data").toByteArray();
 
     QImage *img = new QImage();
-    img->loadFromData(data, "JPG");
+    if (!img->loadFromData(data))
+        Log(Error) << "Fullsize image load failed for image" << id;
 
     emit doneFullsize(id, img);
 

@@ -8,7 +8,7 @@ namespace Ui {
     class OBuiltInsEditor;
 }
 
-class BuiltIns;
+class Builtins;
 class QListWidgetItem;
 
 class OBuiltInsEditor : public QWidget
@@ -16,7 +16,7 @@ class OBuiltInsEditor : public QWidget
     Q_OBJECT
 
 public:
-    explicit OBuiltInsEditor(BuiltIns *builtIns, QWidget *parent = 0);
+    explicit OBuiltInsEditor(Builtins *builtIns, QWidget *parent = 0);
     ~OBuiltInsEditor();
 
 signals:
@@ -35,7 +35,7 @@ private slots:
 private:
     Ui::OBuiltInsEditor *ui;
     int lastRowId;
-    BuiltIns *builtins;
+    Builtins *builtins;
     QMap<QListWidgetItem *, unsigned> ids;
     /* Indicate that ui->values are modified programaticaly. */
     bool blockEdits;

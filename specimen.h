@@ -4,11 +4,11 @@
 #include <QObject>
 #include <QSqlRecord>
 
+class QSqlDatabase;
+
 /**
  * @brief The Specimen class holds information about single specimen
  */
-
-/* TODO: implement saving. */
 
 class Specimen : public QObject
 {
@@ -19,6 +19,9 @@ public:
     
     /* True if specimen needs to be saved. */
     bool isModified() const { return state != Unmodified; }
+    /* True if specimen needs to be kept for saving. */
+    bool remove();
+    bool save(QSqlDatabase &db);
 
     /* Getters */
     int getId() const { return id; }
