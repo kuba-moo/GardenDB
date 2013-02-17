@@ -75,8 +75,8 @@ bool ImageListModel::setData(const QModelIndex &index, const QVariant &value, in
 
     beginInsertRows(QModelIndex(), imgs.size(), imgs.size());
 
-    ic->addImage(id, value.toString());
-    connect(imgs[imgs.size()-1], SIGNAL(changed()), SIGNAL(imageLoaded()));
+    Image *img = ic->addImage(id, value.toString());
+    connect(img, SIGNAL(changed()), SIGNAL(imageLoaded()));
 
     endInsertRows();
 
@@ -91,7 +91,7 @@ Qt::DropActions ImageListModel::supportedDropActions() const
 QStringList ImageListModel::mimeTypes() const
 {
     QStringList l;
-    l << "application/x-qt-image" << "text/plain";
+    l << "application/x-qt-image" << "text/uri-list";
     return l;
 }
 
@@ -106,16 +106,24 @@ bool ImageListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
     Log(Debug) << "Image dropped in with formats" << data->formats();
 
-    if (!data->hasFormat("text/plain"))
+    if (!data->hasFormat("text/uri-list"))
         return false;
 
-    QUrl url(data->data("text/plain"));
-    if (!url.isLocalFile())
-        return false;
+    QStringList list = QString(data->data("text/uri-list"))
+            .replace("\n", " ").replace("\r", " ")
+            .split(" ", QString::SkipEmptyParts);
+    foreach (QString item, list) {
+        QUrl url(item);
+        if (!url.isLocalFile())
+            return false;
 
-    QFileInfo fi(url.toLocalFile());
-    if (!fi.exists() || !fi.isReadable())
-        return false;
+        QFileInfo fi(url.toLocalFile());
+        if (!fi.exists() || !fi.isReadable())
+            return false;
 
-    return setData(QModelIndex(), fi.filePath(), Qt::DisplayRole);
+        if (!setData(QModelIndex(), fi.filePath(), Qt::DisplayRole))
+            return false;
+    }
+
+    return true;
 }

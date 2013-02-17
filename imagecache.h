@@ -57,7 +57,7 @@ public:
     const QList<Image *> &getAllImages(const int spId);
 
     /* Add new image for specimen. */
-    void addImage(const int spId, const QString &filename);
+    Image *addImage(const int spId, const QString &filename);
 
 signals:
     void changed();
@@ -80,22 +80,7 @@ private:
     int insert(Image *image);
     void insertImages(Image *image);
     void insertSpecies(Image *image);
-#if 0
-    enum ReadHint {
-        None = 0,
-        ReadAll = 1,
-        MainPhoto = 2
-    };
 
-    /* Load image from database, preferably from cache. */
-    Image *loadSingle(const int imageId, const QSize &size);
-    /* Load from database, resize and insert. */
-    QPixmap *loadSlowpath(const int imageId, const QSize &size, ReadHint hint);
-    /* Load given image and try to prefetch adjacent main photoes. */
-    QPixmap *loadMainPhoto(const int imageId, const QSize &size);
-    /* Get all pixmaps of given specimen by reading from database. */
-    void getAllSlowpath(const int spId);
-#endif
     int nextInsertId;
 
     LoaderController *loaderController;

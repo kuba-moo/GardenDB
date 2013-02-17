@@ -108,7 +108,7 @@ void OMain::quit()
 
 void OMain::openFile()
 {
-    QAction *action = dynamic_cast<QAction *>(QObject::sender());
+    QAction *action = qobject_cast<QAction *>(QObject::sender());
 
     if (isFileOpened())
         closeFile();

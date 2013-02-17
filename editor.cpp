@@ -101,7 +101,7 @@ void Editor::populateComboes()
 
 void Editor::handleCombo(int n)
 {
-    QComboBox *combo = dynamic_cast<QComboBox *>(QObject::sender());
+    QComboBox *combo = qobject_cast<QComboBox *>(QObject::sender());
     int id = combo->itemData(n).toInt();
 
     if (combo == ui->type)

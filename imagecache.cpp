@@ -62,9 +62,8 @@ bool ImageCache::load()
             photoIds.push_back(id);
     }
 
-    /* '1 +' cause if there are none we need the "fake ones" to return now and then. */
-    images.resize(1 + max_photo * 2);
-    species.resize(1 + max_specimen * 2);
+    images.resize(max_photo * 2);
+    species.resize(max_specimen * 2);
     nextInsertId = max_photo + 1;
 
     fetchAll.seek(-1);
@@ -166,12 +165,12 @@ QPixmap *ImageCache::getPixmapGe(const int imageId, const QSize &size)
 const QList<Image *> &ImageCache::getAllImages(const int spId)
 {
     if (species.size() <= spId)
-        return species[0];
+        species.resize(spId * 2 + 1);
 
     return species[spId];
 }
 
-void ImageCache::addImage(const int spId, const QString &filename)
+Image *ImageCache::addImage(const int spId, const QString &filename)
 {
     const int id = insert(new Image(nextInsertId++, spId, filename, this));
 
@@ -179,6 +178,8 @@ void ImageCache::addImage(const int spId, const QString &filename)
     connect(images[id], SIGNAL(wantFull()), SLOT(loadFull()));
 
     emit changed();
+
+    return images[id];
 }
 
 void ImageCache::removeImage(const int id)
