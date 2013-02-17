@@ -127,7 +127,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="QListView" name="listView">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -137,7 +137,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>120</height>
+       <height>130</height>
       </size>
      </property>
      <property name="editTriggers">

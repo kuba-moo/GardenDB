@@ -42,12 +42,13 @@ public:
     Severity getLevel() const { return level; }
 
     Log &operator <<(const QString &string);
+    Log &operator <<(const QStringList &list);
     Log &operator <<(const int &number);
     Log &operator <<(const unsigned long long &number);
 
 private:
     Severity level;
-    QString list;
+    QStringList list;
 };
 
 #endif // LOGGER_H

@@ -12,8 +12,6 @@ class QComboBox;
 
 class Builtins;
 class Database;
-class ImageCache;
-class Image;
 class Specimen;
 
 /**
@@ -44,23 +42,23 @@ private slots:
     void populateComboes();
     /* Handle change in one of the comboes. */
     void handleCombo(int);
-    /* Reload photos list from images. */
-    void reloadPhotos();
+    /* Image (possibly main) was loaded from disk. */
+    void imageLoaded();
     /* Spawn file selection window and append chosen image to images. */
     void addPhoto();
     /* Remove selected photo. */
     void removePhoto();
     /* Set main photo to nth photo in listWidget. */
-    void setMainPhoto(int n);
+    void setMainPhoto(const QModelIndex &index);
     void emitRequestGallery();
 
 private:
+    /* Reload photos list from images. */
+    void reloadPhotos();
+
     Ui::Editor *ui;
-    const QModelIndex &originalIndex;
     Specimen *specimen;
-    ImageCache *ic;
     Builtins *builtins;
-    QList<Image *> images;
 };
 
 #endif // EDITOR_H

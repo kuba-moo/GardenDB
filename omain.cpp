@@ -108,17 +108,24 @@ void OMain::quit()
 
 void OMain::openFile()
 {
+    QAction *action = dynamic_cast<QAction *>(QObject::sender());
+
     if (isFileOpened())
         closeFile();
 
     QFileDialog fileDialog(this);
     fileDialog.setFileMode(QFileDialog::AnyFile);
-    QString newFileName =
-            /* TODO: this should be getSaveFileName for windows. */
-            fileDialog.getOpenFileName(this,
-                                       trUtf8("Select garden file"),
-                                       QString(),
-                                       QString("Garden files (*.grd)"));
+    QString newFileName;
+    if (action == ui->actionOpen_file)
+        newFileName = fileDialog.getOpenFileName(this,
+                                                 trUtf8("Select garden file"),
+                                                 QString(),
+                                                 QString("Garden files (*.grd)"));
+    else
+        newFileName = fileDialog.getSaveFileName(this,
+                                                 trUtf8("Select garden file"),
+                                                 QString(),
+                                                 QString("Garden files (*.grd)"));
     if (newFileName.isEmpty())
         return;
 

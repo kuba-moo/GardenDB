@@ -21,6 +21,8 @@ signals:
 public slots:
     
 private:
+    static const int MinWidth;
+
     void sizeToFit(QPainter *painter, QRectF target, const QString &value) const;
     void fitName(QPainter *painter, QRect target, const QString &name) const;
     void fitThree(QPainter *painter, QRect target, const QString l[], const QString t[]) const;

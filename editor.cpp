@@ -3,6 +3,8 @@
 #include "database.h"
 #include "image.h"
 #include "imagecache.h"
+#include "imagelistmodel.h"
+#include "imagelistrenderer.h"
 #include "logger.h"
 #include "specimen.h"
 #include "specimenmodel.h"
@@ -15,19 +17,22 @@
 
 Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Editor),
-    originalIndex(index)
+    ui(new Ui::Editor)
 {
     ui->setupUi(this);
 
-    ic = db->imageCache();
-    connect(ic, SIGNAL(changed()), SLOT(reloadPhotos()));
+    //connect(ic, SIGNAL(changed()), SLOT(reloadPhotos()));
     builtins = db->builtins();
     specimen = (Specimen *)db->specimenModel()->data(index, Qt::DisplayRole).toULongLong();
     if (!specimen)
         Log(Assert) << "Editor wants to edit empty specimen";
 
     ui->title->setText(specimen->getName());
+    ImageListModel *iml = new ImageListModel(db->imageCache(),
+                                             specimen->getId(), this);
+    ui->listView->setModel(iml);
+    connect(iml, SIGNAL(imageLoaded()), SLOT(imageLoaded()));
+    ui->listView->setItemDelegate(new ImageListRenderer(100, this));
 
     ui->name->setText(specimen->getName());
     connect(ui->name, SIGNAL(textEdited(QString)), specimen, SLOT(setName(QString)));
@@ -45,15 +50,17 @@ Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
     connect(builtins, SIGNAL(changed()), SLOT(populateComboes()));
     connect(ui->addPhoto, SIGNAL(clicked()), SLOT(addPhoto()));
     connect(ui->removePhoto, SIGNAL(clicked()), SLOT(removePhoto()));
-    connect(ui->listWidget, SIGNAL(currentRowChanged(int)),
-            SLOT(setMainPhoto(int)));
-    connect(ui->listWidget, SIGNAL(doubleClicked(QModelIndex)),
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)),
+            SLOT(setMainPhoto(QModelIndex)));
+    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)),
             SLOT(emitRequestGallery()));
     connect(ui->mainPhoto, SIGNAL(clicked()),
             SLOT(emitRequestGallery()));
     connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
     reloadPhotos();
+
+    ui->listView->setAcceptDrops(true);
 }
 
 Editor::~Editor()
@@ -111,25 +118,21 @@ void Editor::handleCombo(int n)
 
 void Editor::reloadPhotos()
 {
-    images = ic->getAllImages(specimen->getId());
+    QAbstractItemModel *model = ui->listView->model();
 
-    ui->listWidget->blockSignals(true);
-    while (ui->listWidget->count())
-        delete ui->listWidget->takeItem(0);
-    ui->listWidget->blockSignals(false);
-
-    int mainPhotoIndex = -1;
-    QList<Image *>::const_iterator i;
-    for (i = images.constBegin(); i < images.constEnd(); i++) {
-        if ((*i)->id() == specimen->getMainPhotoId())
-            mainPhotoIndex = ui->listWidget->count();
-        QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
-        ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
-
-        connect(*i, SIGNAL(changed()), SLOT(reloadPhotos()));
+    for (int i = 0; i < model->rowCount(); i++) {
+        Image *img = (Image *)model->data(model->index(i, 0)).toULongLong();
+        if (img->id() == specimen->getMainPhotoId()) {
+            setMainPhoto(model->index(i, 0));
+            break;
+        }
     }
+}
 
-    ui->listWidget->setCurrentRow(mainPhotoIndex);
+void Editor::imageLoaded()
+{
+    setMainPhoto(ui->listView->currentIndex());
+    ui->listView->repaint();
 }
 
 void Editor::addPhoto()
@@ -141,32 +144,50 @@ void Editor::addPhoto()
     if (fileName.isEmpty())
         return;
 
-    ic->addImage(specimen->getId(), fileName);
+    ui->listView->model()->setData(QModelIndex(), fileName);
+
+    QModelIndex current = ui->listView->selectionModel()->currentIndex();
+    if (!current.isValid())
+        setMainPhoto(ui->listView->model()->index(0, 0));
 }
 
 void Editor::removePhoto()
-{
-    int row = ui->listWidget->currentRow();
-    if (row < 0)
+{    
+    QModelIndex current = ui->listView->selectionModel()->currentIndex();
+    const int row = current.row();
+    Image *img = (Image *)current.data().toULongLong();
+    if (!img)
         return;
 
-    if (specimen->getMainPhotoId() == images[row]->id())
-        setMainPhoto(-1);
-    ic->removeImage(images[row]->id());
+    ui->listView->model()->removeRows(current.row(), 1, current.parent());
+
+    if (row > 0)
+        setMainPhoto(ui->listView->model()->index(row-1, 0));
+    else if (row < ui->listView->model()->rowCount())
+        setMainPhoto(ui->listView->model()->index(row, 0));
+    else
+        setMainPhoto(QModelIndex());
 }
 
-void Editor::setMainPhoto(int n)
+void Editor::setMainPhoto(const QModelIndex &index)
 {
     QPushButton * const photo = ui->mainPhoto;
+    Image *img = (Image *)index.data().toULongLong();
 
-    if (n < 0) {
+    ui->listView->selectionModel()->clear();
+
+    if (!index.isValid() || !img) {
         photo->setIcon(QIcon(":/icons/image"));
         specimen->setMainPhotoId(0);
-    } else {
-        photo->setIconSize(photo->size());
-        photo->setIcon(QIcon(*images[n]->getScaled(photo->size())));
-        specimen->setMainPhotoId(images[n]->id());
+        return;
     }
+
+    photo->setIconSize(photo->size());
+    photo->setIcon(QIcon(*img->getScaled(photo->size())));
+    specimen->setMainPhotoId(img->id());
+
+    ui->listView->selectionModel()->select(index, QItemSelectionModel::Select);
+    ui->listView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
 }
 
 void Editor::emitRequestGallery()

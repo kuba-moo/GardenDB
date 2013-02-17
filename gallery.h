@@ -9,7 +9,6 @@ class Gallery;
 }
 
 class Database;
-class Image;
 class Specimen;
 class QResizeEvent;
 
@@ -36,7 +35,6 @@ private slots:
 private:
     Ui::Gallery *ui;
     int current;
-    QList<Image *> images;
 };
 
 #endif // GALLERY_H

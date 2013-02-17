@@ -32,23 +32,29 @@ Log::Log(Severity lvl)
 
 Log::~Log()
 {
-    Logger::instance()->log(level, list);
+    Logger::instance()->log(level, list.join(" "));
 }
 
 Log &Log::operator <<(const QString &string)
 {
-    list.append(" ").append(string);
+    list << string;
+    return *this;
+}
+
+Log &Log::operator <<(const QStringList &l)
+{
+    list.append(l);
     return *this;
 }
 
 Log &Log::operator <<(const int &number)
 {
-    list.append(" ").append(QString::number(number));
+    list << QString::number(number);
     return *this;
 }
 
 Log &Log::operator <<(const unsigned long long &number)
 {
-    list.append(" ").append(QString::number(number));
+    list << QString::number(number);
     return *this;
 }

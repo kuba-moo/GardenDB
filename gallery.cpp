@@ -2,6 +2,8 @@
 #include "gallery.h"
 #include "image.h"
 #include "imagecache.h"
+#include "imagelistmodel.h"
+#include "imagelistrenderer.h"
 #include "logger.h"
 #include "specimen.h"
 #include "ui_gallery.h"
@@ -15,16 +17,13 @@ Gallery::Gallery(Database *db, Specimen *specimen, QWidget *parent) :
     connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
     ui->title->setText(specimen->getName());
-    images = db->imageCache()->getAllImages(specimen->getId());
+    ImageListModel *iml = new ImageListModel(db->imageCache(),
+                                             specimen->getId(), this);
+    ui->listView->setItemDelegate(new ImageListRenderer(124, this));
+    ui->listView->setModel(iml);
+    connect(iml, SIGNAL(imageLoaded()), SLOT(setPicture()));
 
-    QList<Image *>::const_iterator i;
-    for (i = images.constBegin(); i < images.constEnd(); i++) {
-        QPixmap *pixmap = (*i)->getScaledGe(QSize(200, 200));
-        ui->listWidget->addItem(new QListWidgetItem(QIcon(*pixmap), ""));
-        connect(*i, SIGNAL(changed()), SLOT(setPicture()));
-    }
-
-    connect(ui->listWidget, SIGNAL(clicked(QModelIndex)),
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)),
             SLOT(setPicture(QModelIndex)));
     connect(ui->next, SIGNAL(clicked()), SLOT(next()));
     connect(ui->previous, SIGNAL(clicked()), SLOT(previous()));
@@ -40,18 +39,18 @@ Gallery::~Gallery()
 
 void Gallery::resizeEvent(QResizeEvent *ev)
 {
-    setPicture(ui->listWidget->model()->index(current, 0));
+    setPicture(ui->listView->model()->index(current, 0));
 
     QWidget::resizeEvent(ev);
 }
 
 void Gallery::next()
 {
-    if (ui->listWidget->model()->rowCount()-1 > current) {
+    if (ui->listView->model()->rowCount()-1 > current) {
         current++;
         setPicture();
         /* Force update for previous, cause it will not get repainted w/o selection. */
-        ui->listWidget->update(ui->listWidget->model()->index(current-1, 0));
+        ui->listView->update(ui->listView->model()->index(current-1, 0));
     }
 }
 
@@ -61,20 +60,20 @@ void Gallery::previous()
         current--;
         setPicture();
         /* Force update for next, cause it will not get repainted w/o selection. */
-        ui->listWidget->update(ui->listWidget->model()->index(current+1, 0));
+        ui->listView->update(ui->listView->model()->index(current+1, 0));
     }
 }
 
 void Gallery::setPicture()
 {
-    QModelIndex index = ui->listWidget->model()->index(current, 0);
-    QItemSelectionModel *selection = new QItemSelectionModel(ui->listWidget->model());
+    QModelIndex index = ui->listView->model()->index(current, 0);
+    QItemSelectionModel *selection = new QItemSelectionModel(ui->listView->model());
     selection->select(index, QItemSelectionModel::Select);
     //selection->setCurrentIndex(index, QItemSelectionModel::Select);
-    ui->listWidget->setSelectionModel(selection);
-    ui->listWidget->scrollTo(index);
-    ui->listWidget->update(index);
-    ui->listWidget->repaint();
+    ui->listView->setSelectionModel(selection);
+    ui->listView->scrollTo(index);
+    ui->listView->update(index);
+    ui->listView->repaint();
     setPicture(index);
 }
 
@@ -82,18 +81,19 @@ void Gallery::setPicture(const QModelIndex &index)
 {
     if (index.isValid())
         current = index.row();
-    if (current >= images.size())
+    if (current >= ui->listView->model()->rowCount())
         return;
 
     QSize size = frameSize();
-    size.setWidth(size.width() - 100);
-    size.setHeight(size.height() - 190);
-    ui->picture->setPixmap(QPixmap(*images[current]->getScaled(size)));
+    size.setWidth(size.width() - 145);
+    size.setHeight(size.height() - 200);
+    Image *img = (Image *)ui->listView->model()->index(current, 0).data().toULongLong();
+    ui->picture->setPixmap(QPixmap(*img->getScaled(size)));
 
     ui->next->setEnabled(true);
     ui->previous->setEnabled(true);
     if (current == 0)
         ui->previous->setEnabled(false);
-    if (current == images.size()-1)
+    if (current == ui->listView->model()->rowCount()-1)
         ui->next->setEnabled(false);
 }

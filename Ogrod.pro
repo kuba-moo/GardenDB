@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     builtinvalue.cpp \
     savingthread.cpp \
     savingwidget.cpp \
-    gallery.cpp
+    gallery.cpp \
+    imagelistrenderer.cpp \
+    imagelistmodel.cpp
 
 HEADERS  += omain.h \
     obuiltinseditor.h \
@@ -49,7 +51,9 @@ HEADERS  += omain.h \
     builtinvalue.h \
     savingthread.h \
     savingwidget.h \
-    gallery.h
+    gallery.h \
+    imagelistrenderer.h \
+    imagelistmodel.h
 
 FORMS    += omain.ui \
     obuiltinseditor.ui \

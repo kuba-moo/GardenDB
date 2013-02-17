@@ -123,7 +123,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QListWidget" name="listWidget">
+           <widget class="QListView" name="listView">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -131,10 +131,16 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>Click on image to set as main. Double click to enlarge.</string>
+             <string>Choose main photo for this specimen, double click to go to gallery.</string>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::DropOnly</enum>
+            </property>
+            <property name="defaultDropAction">
+             <enum>Qt::TargetMoveAction</enum>
             </property>
             <property name="iconSize">
              <size>
@@ -352,7 +358,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>listWidget</tabstop>
   <tabstop>addPhoto</tabstop>
   <tabstop>removePhoto</tabstop>
   <tabstop>name</tabstop>

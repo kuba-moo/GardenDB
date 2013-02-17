@@ -6,7 +6,8 @@
 #include "specimenrenderer.h"
 
 #include <QPainter>
-#include <QLabel>
+
+const int SpecimenRenderer::MinWidth = 1000;
 
 SpecimenRenderer::SpecimenRenderer(Database *db, QObject *parent) :
     QStyledItemDelegate(parent)
@@ -30,6 +31,8 @@ void SpecimenRenderer::paint(QPainter *painter,
     painter->setRenderHint(QPainter::Antialiasing);
 
     QRect target(option.rect);
+    if (target.width() < MinWidth)
+        target.setWidth(MinWidth);
     int fieldWidth;
     target.setWidth(82);
     target.setHeight(62);
@@ -81,7 +84,7 @@ void SpecimenRenderer::paint(QPainter *painter,
 QSize SpecimenRenderer::sizeHint(const QStyleOptionViewItem &, const QModelIndex &index) const
 {
     if (index.isValid())
-        return QSize(150,64);
+        return QSize(MinWidth,64);
 
     return QSize(0, 0);
 }

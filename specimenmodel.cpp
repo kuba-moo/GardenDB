@@ -129,7 +129,7 @@ Qt::ItemFlags SpecimenModel::flags(const QModelIndex &index) const
 
 bool SpecimenModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    qDebug() << "setData" << index << value << role;
+    qDebug() << "SpecimenModel setData" << index << value << role;
 
     if (index.row() >= 0 && index.row() < specs.size()
         && (role == Qt::EditRole || role == Qt::DisplayRole)) {
@@ -199,7 +199,8 @@ Qt::DropActions SpecimenModel::supportedDropActions() const
     return QAbstractItemModel::supportedDropActions() | Qt::MoveAction;
 }
 
-bool SpecimenModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+bool SpecimenModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+                                 int row, int column, const QModelIndex &parent)
 {
     //qDebug() << "dropMimeData" << data << action << row << column << parent;
     if (row < 0 || column != 0 || parent.isValid())
