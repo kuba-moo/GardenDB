@@ -43,7 +43,7 @@ private slots:
     /* Handle change in one of the comboes. */
     void handleCombo(int);
     /* Image (possibly main) was loaded from disk. */
-    void imageLoaded();
+    void imageChanged(const QModelIndex &,const QModelIndex &);
     /* Spawn file selection window and append chosen image to images. */
     void addPhoto();
     /* Remove selected photo. */

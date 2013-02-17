@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Garden</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="app.qrc">
+    <normaloff>:/icons/Icons/Gifts/128/rose.png</normaloff>:/icons/Icons/Gifts/128/rose.png</iconset>
+  </property>
   <property name="locale">
    <locale language="Polish" country="Poland"/>
   </property>

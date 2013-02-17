@@ -34,6 +34,9 @@ public:
 signals:
     void imageLoaded();
 
+private slots:
+    void imageChanged();
+
 private:
     ImageCache *ic;
     int id;

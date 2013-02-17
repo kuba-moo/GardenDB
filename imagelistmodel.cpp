@@ -8,7 +8,7 @@ ImageListModel::ImageListModel(ImageCache *imageCache, const int spId, QObject *
     imgs(imageCache->getAllImages(spId))
 {
     for (int i = 0; i < imgs.size(); i++)
-        connect(imgs[i], SIGNAL(changed()), SIGNAL(imageLoaded()));
+        connect(imgs[i], SIGNAL(changed()), SLOT(imageChanged()));
 }
 
 int ImageListModel::rowCount(const QModelIndex &parent) const
@@ -76,7 +76,7 @@ bool ImageListModel::setData(const QModelIndex &index, const QVariant &value, in
     beginInsertRows(QModelIndex(), imgs.size(), imgs.size());
 
     Image *img = ic->addImage(id, value.toString());
-    connect(img, SIGNAL(changed()), SIGNAL(imageLoaded()));
+    connect(img, SIGNAL(changed()), SLOT(imageChanged()));
 
     endInsertRows();
 
@@ -126,4 +126,15 @@ bool ImageListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     }
 
     return true;
+}
+
+void ImageListModel::imageChanged()
+{
+    Image *img = qobject_cast<Image *>(QObject::sender());
+    int row = imgs.indexOf(img);
+    if (row < 0)
+        return;
+    QModelIndex i = index(imgs.indexOf(img), 0);
+
+    emit dataChanged(i, i);
 }

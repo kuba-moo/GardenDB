@@ -31,7 +31,8 @@ Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
     ImageListModel *iml = new ImageListModel(db->imageCache(),
                                              specimen->getId(), this);
     ui->listView->setModel(iml);
-    connect(iml, SIGNAL(imageLoaded()), SLOT(imageLoaded()));
+    connect(iml, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            SLOT(imageChanged(QModelIndex,QModelIndex)));
     ui->listView->setItemDelegate(new ImageListRenderer(100, this));
 
     ui->name->setText(specimen->getName());
@@ -129,10 +130,14 @@ void Editor::reloadPhotos()
     }
 }
 
-void Editor::imageLoaded()
+void Editor::imageChanged(const QModelIndex &index,const QModelIndex &)
 {
-    setMainPhoto(ui->listView->currentIndex());
-    ui->listView->repaint();
+    QModelIndex current = ui->listView->selectionModel()->currentIndex();
+
+    if (!current.isValid())
+        setMainPhoto(ui->listView->model()->index(0, 0));
+    else if (current.row() == index.row())
+        setMainPhoto(current);
 }
 
 void Editor::addPhoto()

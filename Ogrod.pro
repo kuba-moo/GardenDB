@@ -9,7 +9,6 @@ QT       += core gui sql
 TARGET = Ogrod
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         omain.cpp \
     obuiltinseditor.cpp \
@@ -67,4 +66,8 @@ RESOURCES += \
 
 TRANSLATIONS = garden_pl.ts
 
+OTHER_FILES += \
+    win_app.rc \
+    garden-install.nsi
 
+win32:RC_FILE = win_app.rc
