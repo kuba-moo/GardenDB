@@ -9,6 +9,8 @@ QT       += core gui sql
 TARGET = garden
 TEMPLATE = app
 
+CONFIG += rtti
+
 SOURCES += main.cpp\
         omain.cpp \
     obuiltinseditor.cpp \
