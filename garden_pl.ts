@@ -160,175 +160,189 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="builtins.cpp" line="14"/>
         <source>Types</source>
-        <translation type="unfinished">Typy</translation>
+        <translation>Typy</translation>
     </message>
     <message>
         <location filename="builtins.cpp" line="14"/>
         <source>Flavour</source>
-        <translation type="unfinished">Zapach</translation>
+        <translation>Zapach</translation>
     </message>
     <message>
         <location filename="builtins.cpp" line="15"/>
         <source>Frost resistance</source>
-        <translation type="unfinished">Mrozoodporność</translation>
+        <translation>Mrozoodporność</translation>
     </message>
     <message>
         <location filename="builtins.cpp" line="15"/>
         <source>Flowering time</source>
-        <translation type="unfinished">Pora kwitnienia</translation>
+        <translation>Pora kwitnienia</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="81"/>
-        <location filename="builtins.cpp" line="114"/>
+        <location filename="builtins.cpp" line="150"/>
+        <location filename="builtins.cpp" line="187"/>
         <source>Duplicated value</source>
-        <translation type="unfinished"></translation>
+        <translation>Powtórzona wartość, wartości muszą być unikatowe</translation>
     </message>
     <message>
-        <location filename="builtins.h" line="31"/>
+        <location filename="builtins.h" line="37"/>
         <source>New value</source>
-        <translation type="unfinished">Nowa wartość</translation>
+        <translation>Nowa wartość</translation>
     </message>
 </context>
 <context>
     <name>Database</name>
     <message>
         <location filename="database.cpp" line="114"/>
-        <source>Unable to open database: %1</source>
-        <translation type="unfinished"></translation>
+        <source>Unable to open database:</source>
+        <oldsource>Unable to open database: %1</oldsource>
+        <translation>Otwarcie bazy nie powiodło się:</translation>
     </message>
     <message>
         <location filename="database.cpp" line="121"/>
         <source>Unable to initialize new database</source>
-        <translation type="unfinished"></translation>
+        <translation>Tworzenie nowej bazy nie powiodło się</translation>
     </message>
     <message>
         <location filename="database.cpp" line="129"/>
         <source>Unable to open database: unknown version</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwarcie bazy nie powiodło się: nieznana wersja</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="135"/>
+        <location filename="database.cpp" line="134"/>
         <source>Unable to open database: it was created with a newer version of the program</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwarcie bazy nie powiodło się: baza została stworzona w nowszej wersji programu i nie jest kompatybilna</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="142"/>
+        <location filename="database.cpp" line="141"/>
         <source>Unable to open database: it was created with an older version of the program and upgrade had failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwarcie bazy nie powiodło się: baza została stworzona w starszej wersji programu i nie udało się jej uaktualnić</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="150"/>
+        <location filename="database.cpp" line="149"/>
         <source>Unable to open database: fixing data format has failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwarcie bazy nie powiodło się: poprawa formatu danych nie powiodła się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="238"/>
+        <location filename="database.cpp" line="242"/>
         <source>Database format needs to be upgraded please press ok and wait</source>
-        <translation type="unfinished"></translation>
+        <translation>Format bazy danych musi zostać zaktualizowany, może to potrwać nawet kilka minut w zależności od wielkości bazy.\nProszę nacisnąć przycisk Ok i cierpliwie czekać</translation>
     </message>
 </context>
 <context>
     <name>Editor</name>
     <message>
-        <location filename="editor.ui" line="14"/>
+        <location filename="editor.ui" line="19"/>
         <source>Form</source>
-        <translation type="unfinished">Formularz</translation>
+        <translation>Formularz</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="26"/>
         <source>Add new</source>
-        <translation type="unfinished">Dodaj nowy</translation>
+        <translation type="obsolete">Dodaj nowy</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="43"/>
+        <location filename="editor.ui" line="84"/>
         <source>Pictures:</source>
-        <translation type="unfinished">Obrazy:</translation>
+        <translation>Obrazy:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="82"/>
         <source>Click on image to set as main. Double click to enlarge.</source>
-        <translation type="unfinished">Kliknij na obrazku i zapisz zmiany, aby uczynić go domyślnym. Kliknij dwukrotnie, by powiększyć obrazek.</translation>
+        <translation type="obsolete">Kliknij na obrazku i zapisz zmiany, aby uczynić go domyślnym. Kliknij dwukrotnie, by powiększyć obrazek.</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="118"/>
+        <location filename="editor.ui" line="58"/>
+        <source>Specimen</source>
+        <translation>Gatunek</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="105"/>
+        <source>Open gallery</source>
+        <translation>Otwórz galerię</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="134"/>
+        <source>Choose main photo for this specimen, double click to go to gallery.</source>
+        <translation>Wybierz główną fotografię. Kliknij dwukrotnie, aby przejść do galerii.</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="176"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
-    </message>
-    <message>
-        <location filename="editor.ui" line="129"/>
-        <source>Remove</source>
-        <translation type="unfinished">Usuń</translation>
-    </message>
-    <message>
-        <location filename="editor.ui" line="149"/>
-        <source>Data:</source>
-        <translation type="unfinished">Dane:</translation>
-    </message>
-    <message>
-        <location filename="editor.ui" line="167"/>
-        <source>Name:</source>
-        <translation type="unfinished">Nazwa:</translation>
-    </message>
-    <message>
-        <location filename="editor.ui" line="177"/>
-        <source>Type:</source>
-        <translation type="unfinished">Typ:</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="editor.ui" line="187"/>
-        <source>Grower</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="editor.ui" line="197"/>
-        <source>Flowers:</source>
-        <translation type="unfinished">Kwiaty:</translation>
+        <source>Remove</source>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="editor.ui" line="207"/>
+        <source>Data:</source>
+        <translation>Dane:</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="225"/>
+        <source>Name:</source>
+        <translation>Nazwa:</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="235"/>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="245"/>
+        <source>Grower:</source>
+        <oldsource>Grower</oldsource>
+        <translation>Hodowca:</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="255"/>
+        <source>Flowers:</source>
+        <translation>Kwiaty:</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="265"/>
         <source>Flavour:</source>
-        <translation type="unfinished">Zapach:</translation>
+        <translation>Zapach:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="217"/>
+        <location filename="editor.ui" line="275"/>
         <source>Flowering time:</source>
-        <translation type="unfinished">Pora kwitnienia:</translation>
+        <translation>Pora kwitnienia:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="227"/>
+        <location filename="editor.ui" line="285"/>
         <source>Bush size:</source>
-        <translation type="unfinished">Wielkość krzewów:</translation>
+        <translation>Wielkość krzewów:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="237"/>
+        <location filename="editor.ui" line="295"/>
         <source>Frost resistance:</source>
-        <translation type="unfinished">Mrozoodporność:</translation>
+        <translation>Mrozoodporność:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="252"/>
+        <location filename="editor.ui" line="310"/>
         <source>Description:</source>
-        <translation type="unfinished">Opis:</translation>
+        <translation>Opis:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="278"/>
+        <location filename="editor.ui" line="336"/>
         <source>&lt; Back to the table</source>
         <oldsource>&lt; Back to table</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>&lt; Wróć do tabeli</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="29"/>
         <source>Edit </source>
-        <translation type="unfinished">Edycja </translation>
+        <translation type="obsolete">Edycja </translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="133"/>
+        <location filename="editor.cpp" line="146"/>
         <source>Select garden file</source>
-        <translation type="unfinished">Wybierz plik z ogrodem</translation>
+        <translation>Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="135"/>
+        <location filename="editor.cpp" line="148"/>
         <source>Images (*.png *.jpg *.bmp)</source>
-        <translation type="unfinished">Obrazy (*.png *.jpg *.bmp)</translation>
+        <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
     <message>
         <source>Types</source>
@@ -345,6 +359,24 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <source>Frost resistance</source>
         <translation type="obsolete">Mrozoodporność</translation>
+    </message>
+</context>
+<context>
+    <name>Gallery</name>
+    <message>
+        <location filename="gallery.ui" line="14"/>
+        <source>Form</source>
+        <translation>Formularz</translation>
+    </message>
+    <message>
+        <location filename="gallery.ui" line="32"/>
+        <source>Specimen</source>
+        <translation>Gatunek</translation>
+    </message>
+    <message>
+        <location filename="gallery.ui" line="174"/>
+        <source>&lt; Back to the table</source>
+        <translation>&lt; Wróć do tabeli</translation>
     </message>
 </context>
 <context>
@@ -414,12 +446,12 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="maintable.cpp" line="57"/>
         <source>Choose row which you want to remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz wiersz, który chcesz usunąć</translation>
     </message>
     <message>
         <location filename="maintable.cpp" line="62"/>
         <source>Sure you want to remove this row?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy na pewno chcesz usunąć ten wiersz?</translation>
     </message>
     <message>
         <source>Are you sure you want to remove
@@ -496,13 +528,23 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <source>Cannot remove value because it is used by %1 species.</source>
         <translation type="obsolete">Nie można usunąć wartości, ponieważ jest ona ustawiona w %1 gatunkach.</translation>
     </message>
+    <message>
+        <location filename="obuiltinseditor.cpp" line="78"/>
+        <source>Remove row</source>
+        <translation>Usuń wiersz</translation>
+    </message>
+    <message>
+        <location filename="obuiltinseditor.cpp" line="79"/>
+        <source>Sure you want to remove this row?</source>
+        <translation>Czy na pewno chcesz usunąć ten wiersz?</translation>
+    </message>
 </context>
 <context>
     <name>OMain</name>
     <message>
         <location filename="omain.ui" line="14"/>
-        <location filename="omain.cpp" line="77"/>
-        <location filename="omain.cpp" line="96"/>
+        <location filename="omain.cpp" line="63"/>
+        <location filename="omain.cpp" line="158"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -515,87 +557,108 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Opcje</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="58"/>
+        <location filename="omain.ui" line="62"/>
         <source>Open file</source>
         <translation>Otwórz plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="61"/>
+        <location filename="omain.ui" line="65"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="70"/>
+        <location filename="omain.ui" line="74"/>
         <source>New file</source>
         <translation>Nowy plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="73"/>
+        <location filename="omain.ui" line="77"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="88"/>
+        <location filename="omain.ui" line="92"/>
         <source>Edit built-ins</source>
         <translation>Edytuj wartości wbudowane</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="91"/>
+        <location filename="omain.ui" line="95"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="103"/>
+        <location filename="omain.ui" line="107"/>
         <source>Close file</source>
         <translation>Zamknij plik</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="106"/>
+        <location filename="omain.ui" line="110"/>
         <source>Ctrl+W</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+W</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="115"/>
+        <location filename="omain.ui" line="119"/>
         <source>Quit</source>
         <translation>Wyjście</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="118"/>
+        <location filename="omain.ui" line="122"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="130"/>
+        <location filename="omain.ui" line="137"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapis zmian</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="133"/>
+        <location filename="omain.ui" line="140"/>
         <source>Save changes to disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz zmiany w pliku</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="136"/>
+        <location filename="omain.ui" line="143"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="151"/>
-        <source>Species</source>
-        <translation type="unfinished"></translation>
+        <location filename="omain.ui" line="158"/>
+        <source>Species table</source>
+        <translation>Tabela gatunków</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="154"/>
+        <location filename="omain.ui" line="161"/>
         <source>Show main table</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż główną tabelę programu</translation>
     </message>
     <message>
-        <location filename="omain.ui" line="157"/>
+        <location filename="omain.ui" line="164"/>
         <source>Ctrl+M</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+M</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="52"/>
+        <location filename="omain.cpp" line="72"/>
+        <source>Saving changes</source>
+        <translation>Zapisywanie zmian</translation>
+    </message>
+    <message>
+        <location filename="omain.cpp" line="73"/>
+        <source>Saving changes in progress, please wait all changes are saved</source>
+        <translation>Trwa zapisywanie zmian, proszę poczekać, aż wszystkie zmiany zostaną zapisane</translation>
+    </message>
+    <message>
+        <location filename="omain.cpp" line="90"/>
+        <source>Save file</source>
+        <translation>Zapisz zmiany</translation>
+    </message>
+    <message>
+        <location filename="omain.cpp" line="91"/>
+        <source>Do you want to save changes?</source>
+        <translation>Czy chcesz zapisać zmiany w pliku?</translation>
+    </message>
+    <message>
+        <location filename="omain.cpp" line="121"/>
+        <location filename="omain.cpp" line="126"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
@@ -638,6 +701,87 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <source>Types</source>
         <translation type="obsolete">Typy</translation>
     </message>
+    <message>
+        <location filename="logger.cpp" line="13"/>
+        <source>Information</source>
+        <translation>Informacja</translation>
+    </message>
+    <message>
+        <location filename="logger.cpp" line="18"/>
+        <source>Error</source>
+        <translation>Błąd</translation>
+    </message>
+</context>
+<context>
+    <name>SavingThread</name>
+    <message>
+        <location filename="savingthread.cpp" line="40"/>
+        <source>Unable to open database for saving</source>
+        <translation>Otwarcie bazy do zapisu nie powiodło się</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="51"/>
+        <source>Saving built in values...</source>
+        <translation>Zapisywanie wartości wbudowanych...</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="54"/>
+        <source>Unable to save changes to builtin values</source>
+        <translation>Zapis wartości wbudowanych nie powiódł się</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="59"/>
+        <source>Saving images...</source>
+        <translation>Zapisywanie obrazów...</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="62"/>
+        <source>Unable to save changes to images</source>
+        <translation>Zapis obrazów nie powiódł się</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="67"/>
+        <source>Saving species...</source>
+        <translation>Zapisywanie gatunków...</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="70"/>
+        <source>Unable to save changes to species</source>
+        <translation>Zapis gatunków nie powiódł się</translation>
+    </message>
+</context>
+<context>
+    <name>SavingWidget</name>
+    <message>
+        <location filename="savingwidget.ui" line="14"/>
+        <source>Form</source>
+        <translation>Formularz</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.ui" line="219"/>
+        <source>&lt; Back to the table</source>
+        <translation>&lt; Wróć do tabeli</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.ui" line="69"/>
+        <source>Saving changes</source>
+        <translation>Zapisywanie zmian</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.ui" line="136"/>
+        <source>Saving...</source>
+        <translation>Trwa zapis...</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.cpp" line="15"/>
+        <source>No changes needs to be saved</source>
+        <translation>Brak zmian do zapisania</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.cpp" line="36"/>
+        <source>Done</source>
+        <translation>Wykonano</translation>
+    </message>
 </context>
 <context>
     <name>SpecialAttribute</name>
@@ -648,6 +792,39 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <message>
         <source>Attribute</source>
         <translation type="obsolete">Atrybut</translation>
+    </message>
+</context>
+<context>
+    <name>SpecimenRenderer</name>
+    <message>
+        <location filename="specimenrenderer.cpp" line="57"/>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <location filename="specimenrenderer.cpp" line="57"/>
+        <source>Flowering</source>
+        <translation>Kwitnienie</translation>
+    </message>
+    <message>
+        <location filename="specimenrenderer.cpp" line="57"/>
+        <source>Grower</source>
+        <translation>Hodowca</translation>
+    </message>
+    <message>
+        <location filename="specimenrenderer.cpp" line="66"/>
+        <source>Flavour</source>
+        <translation>Zapach</translation>
+    </message>
+    <message>
+        <location filename="specimenrenderer.cpp" line="66"/>
+        <source>Size</source>
+        <translation>Wielkość</translation>
+    </message>
+    <message>
+        <location filename="specimenrenderer.cpp" line="66"/>
+        <source>Frost</source>
+        <translation>Mróz</translation>
     </message>
 </context>
 </TS>

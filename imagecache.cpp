@@ -139,6 +139,17 @@ bool ImageCache::save(QSqlDatabase &db)
     return true;
 }
 
+Image *ImageCache::getImage(const int id)
+{
+    if (images.size() <= id || !images[id]) {
+        if (id)
+            Log(Error) << "Unknown image" << id;
+        return 0;
+    }
+
+    return images[id];
+}
+
 QPixmap *ImageCache::getPixmap(const int imageId, const QSize &size)
 {
     if (images.size() <= imageId || !images[imageId]) {

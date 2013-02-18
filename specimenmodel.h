@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 
+class ImageCache;
 class Specimen;
 class QSqlDatabase;
 
@@ -13,7 +14,7 @@ public:
     explicit SpecimenModel(QObject *parent = 0);
 
     /* Load information from database, return true on success. */
-    bool load();
+    bool load(ImageCache *ic);
 
     bool isModified();
     int countModified();
@@ -42,6 +43,9 @@ public:
 
 signals:
     void oneSaved();
+
+private slots:
+    void imageChanged();
 
 private:
     int nextInsertId;

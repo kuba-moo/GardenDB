@@ -7,6 +7,20 @@ QString lvls[] = { "perf", "trc ", "dbg ", "uinf", "warn", "uerr", "err ", "asrt
 
 Logger *Logger::_i = 0;
 
+Logger::Logger()
+{
+    file = new QFile(QDir::homePath() + "/.garden.log");
+
+    if (!file->open(QIODevice::Append))
+        qDebug() << "Opening logfile failed";
+}
+
+Logger::~Logger()
+{
+    file->flush();
+    delete file;
+}
+
 void Logger::log(Severity lvl, QString msg)
 {
     if (lvl == UserInfo && window) {
@@ -22,7 +36,13 @@ void Logger::log(Severity lvl, QString msg)
     if (!window && (lvl == UserInfo || lvl == UserError))
         Log(Assert) << "Logger: window not set";
 
-    qDebug() << QString(lvls[lvl] + " " + msg);
+    msg = lvls[lvl] + " " + msg;
+    qDebug() << msg;
+    if (file->isOpen()) {
+        msg += "\n";
+        file->write(msg.toAscii());
+        file->flush();
+    }
 }
 
 Log::Log(Severity lvl)

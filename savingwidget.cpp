@@ -15,8 +15,8 @@ SavingWidget::SavingWidget(Database *db, QWidget *parent) :
         ui->header->setText(trUtf8("No changes needs to be saved"));
     }
 
-    ui->close->setVisible(false);
-    connect(ui->close, SIGNAL(accepted()), SIGNAL(finished()));
+    ui->backToTable->setVisible(false);
+    connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
     thread = new SavingThread(db, this);
     connect(thread, SIGNAL(finished()), SLOT(threadDone()));
@@ -34,7 +34,7 @@ void SavingWidget::threadDone()
 {
     ui->progressBar->setValue(100);
     ui->msg->setText(trUtf8("Done"));
-    ui->close->setVisible(true);
+    ui->backToTable->setVisible(true);
 
     emit done();
 }

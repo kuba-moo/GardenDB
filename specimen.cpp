@@ -100,8 +100,6 @@ void Specimen::markModified()
 {
     if (state == Removed)
         qDebug() << "Huh?? Removed species alive?";
-    if (state == Unmodified) {
+    if (state == Unmodified)
         state = Modified;
-        qDebug() << "Specimen" << id << "changed";
-    }
 }

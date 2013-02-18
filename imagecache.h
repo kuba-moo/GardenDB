@@ -49,6 +49,8 @@ public:
     int countModified();
     bool save(QSqlDatabase &);
 
+    /* Get specific image. */
+    Image *getImage(const int id);
     /* Read form cache pixmap of exactly given size. */
     QPixmap *getPixmap(const int imageId, const QSize &);
     /* Get pixmap greater or equal to given size. */

@@ -6,7 +6,7 @@
 
 QT       += core gui sql
 
-TARGET = Ogrod
+TARGET = garden
 TEMPLATE = app
 
 SOURCES += main.cpp\

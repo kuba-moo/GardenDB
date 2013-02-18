@@ -245,6 +245,8 @@ void Image::setCached(const QImage &image)
     cache.insert(0, new QPixmap(QPixmap::fromImage(image)));
 
     flags |= CacheLoaded;
+
+    emit changed();
 }
 
 void Image::setFullsize(const QImage &image)

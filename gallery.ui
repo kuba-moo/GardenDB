@@ -140,6 +140,9 @@
        <height>130</height>
       </size>
      </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -154,6 +157,9 @@
      </property>
      <property name="movement">
       <enum>QListView::Static</enum>
+     </property>
+     <property name="isWrapping" stdset="0">
+      <bool>false</bool>
      </property>
      <property name="resizeMode">
       <enum>QListView::Adjust</enum>

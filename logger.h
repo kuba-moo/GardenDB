@@ -25,10 +25,12 @@ public:
     void setWindow(QWidget *w) { window = w; }
 
 private:
-    Logger() {}
+    Logger();
     Logger(const Logger &) {}
     Logger &operator=(const Logger &) { return *this; }
+    ~Logger();
 
+    QFile *file;
     QWidget *window;
     static Logger *_i;
 };

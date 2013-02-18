@@ -52,7 +52,7 @@ void SpecimenRenderer::paint(QPainter *painter,
     fitName(painter, target, i->getName());
     target.setLeft(target.left() + fieldWidth + Space);
 
-    fieldWidth = 255;
+    fieldWidth = 260;
     target.setWidth(fieldWidth);
     QString labels1[3] = { trUtf8("Type") + ":", trUtf8("Flowering") + ":", trUtf8("Grower") + ":" };
     QString texts1[3] = { bi->getValue("Types", i->getTypeId()),
@@ -61,7 +61,7 @@ void SpecimenRenderer::paint(QPainter *painter,
     fitThree(painter, target, labels1, texts1);
     target.setLeft(target.left() + fieldWidth + Space);
 
-    fieldWidth = 130;
+    fieldWidth = 135;
     target.setWidth(fieldWidth);
     QString labels2[3] = { trUtf8("Flavour") + ":", trUtf8("Size") + ":", trUtf8("Frost") + ":" };
     QString texts2[3] = { bi->getValue("Flavour", i->getFlavourId()),
@@ -162,7 +162,7 @@ void SpecimenRenderer::fitThree(QPainter *painter, QRect target,
         QString value = t[i].isEmpty() ? "-" : t[i];
         usedArea = painter->boundingRect(bt, Qt::AlignLeft, value);
         bottom[i] = usedArea.bottom();
-        painter->drawText(bt, Qt::AlignLeft | Qt::TextWordWrap, value);
+        painter->drawText(bt, Qt::AlignLeft, value);
         bt.setTop(bottom[i] + vSpace);
     }
 

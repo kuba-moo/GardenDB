@@ -134,7 +134,7 @@ void ImageListModel::imageChanged()
     int row = imgs.indexOf(img);
     if (row < 0)
         return;
-    QModelIndex i = index(imgs.indexOf(img), 0);
+    QModelIndex i = index(row, 0);
 
     emit dataChanged(i, i);
 }

@@ -1,3 +1,5 @@
+#include "image.h"
+#include "imagecache.h"
 #include "logger.h"
 #include "specimen.h"
 #include "specimenmodel.h"
@@ -10,7 +12,7 @@ SpecimenModel::SpecimenModel(QObject *parent) :
 {
 }
 
-bool SpecimenModel::load()
+bool SpecimenModel::load(ImageCache *ic)
 {
     QSqlQuery query("SELECT * FROM Species ORDER BY no,id");
     if (query.lastError().isValid()) {
@@ -24,6 +26,10 @@ bool SpecimenModel::load()
         spec->setNo(specs.size());
         specs.append(spec);
         nextInsertId = qMax(nextInsertId, spec->getId());
+
+        Image *mainImage = ic->getImage(spec->getMainPhotoId());
+        if (mainImage)
+            connect(mainImage, SIGNAL(changed()), SLOT(imageChanged()));
     }
     nextInsertId++;
 
@@ -246,4 +252,21 @@ bool SpecimenModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     endMoveRows();
 
     return false;
+}
+
+void SpecimenModel::imageChanged()
+{
+    Image *img = qobject_cast<Image *>(QObject::sender());
+
+    int row;
+    for (row = 0; row < specs.size(); row++)
+        if (specs[row]->getMainPhotoId() == img->id())
+            break;
+
+    if (row == specs.size())
+        return;
+
+    QModelIndex i = index(row, 0);
+
+    emit dataChanged(i, i);
 }

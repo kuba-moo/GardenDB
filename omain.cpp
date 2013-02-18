@@ -116,18 +116,24 @@ void OMain::openFile()
     QFileDialog fileDialog(this);
     fileDialog.setFileMode(QFileDialog::AnyFile);
     QString newFileName;
-    if (action == ui->actionOpen_file)
+    if (action == ui->actionOpen_file) {
+        Log(Debug) << "OMain openFile existing file";
         newFileName = fileDialog.getOpenFileName(this,
                                                  trUtf8("Select garden file"),
                                                  QString(),
                                                  QString("Garden files (*.grd)"));
-    else
+    } else {
+        Log(Debug) << "OMain openFile new file";
         newFileName = fileDialog.getSaveFileName(this,
                                                  trUtf8("Select garden file"),
                                                  QString(),
                                                  QString("Garden files (*.grd)"));
-    if (newFileName.isEmpty())
+    }
+
+    if (newFileName.isEmpty()) {
+        Log(Debug) << "... file name empty";
         return;
+    }
 
     if (! newFileName.endsWith(".grd"))
         newFileName += ".grd";

@@ -154,7 +154,7 @@ Database::Database(QString filename, QObject *parent) :
 
     bi = new Builtins(this);
     if (!bi->load()) {
-        Log(UserError) << "Unable to read builtin values from database";
+        Log(UserError) << trUtf8("Unable to read builtin values from database");
         database.close();
         return;
     }
@@ -166,8 +166,8 @@ Database::Database(QString filename, QObject *parent) :
     }
 
     sm = new SpecimenModel(this);
-    if (!sm->load()) {
-        Log(UserError) << "Unable to read species from database";
+    if (!sm->load(ic)) {
+        Log(UserError) << trUtf8("Unable to read species from database");
         database.close();
         return;
     }
@@ -189,7 +189,8 @@ bool Database::isModified()
 
 bool Database::init()
 {
-    Log(Debug) << "init database";
+    QTime t; t.start();
+    Log(Debug) << "Database init";
 
     QSqlQuery result;
     for (unsigned i=0; i < numCreates && !result.lastError().isValid(); i++)
@@ -205,6 +206,7 @@ bool Database::init()
     }
 
     result.finish();
+    Log(Performance) << "Database init took" << t.elapsed() << "ms";
 
     return true;
 }

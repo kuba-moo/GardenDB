@@ -31,8 +31,6 @@ public:
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent);
-signals:
-    void imageLoaded();
 
 private slots:
     void imageChanged();

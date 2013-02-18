@@ -45,6 +45,7 @@ Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
     connect(ui->bush, SIGNAL(textEdited(QString)), specimen, SLOT(setSize(QString)));
     ui->desc->setText(specimen->getDesc());
     connect(ui->desc, SIGNAL(textChanged()), SLOT(setDescription()));
+    connect(ui->name, SIGNAL(textEdited(QString)), ui->title, SLOT(setText(QString)));
 
     populateComboes();
 

@@ -31,10 +31,15 @@ private slots:
     void previous();
     void setPicture();
     void setPicture(const QModelIndex &index);
+    /* Image (possibly main) has changed. */
+    void imageChanged(const QModelIndex &,const QModelIndex &);
+    /* This needs to be posted, before widget is shown scrolls are not visible. */
+    void lateInit();
 
 private:
     Ui::Gallery *ui;
     int current;
+    int cutWidth;
 };
 
 #endif // GALLERY_H
