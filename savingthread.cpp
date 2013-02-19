@@ -50,7 +50,7 @@ void SavingThread::run()
 
     if (!database.transaction()) {
         database.close();
-        Log(UserError) << trUtf8("Unable to open database for saving, try again");
+        emit error(trUtf8("Unable to open database for saving, try again"));
         Log(Error) << "start transaction" << database.lastError().text();
         return;
     }
@@ -59,7 +59,7 @@ void SavingThread::run()
     msg = trUtf8("Saving built in values...");
     if (!bi->save(database)) {
         database.close();
-        Log(UserError) << trUtf8("Unable to save changes to builtin values");
+        emit error(trUtf8("Unable to save changes to builtin values"));
         return;
     }
 
@@ -67,7 +67,7 @@ void SavingThread::run()
     msg = trUtf8("Saving images...");
     if (!ic->save(database)) {
         database.close();
-        Log(UserError) << trUtf8("Unable to save changes to images");
+        emit error(trUtf8("Unable to save changes to images"));
         return;
     }
 
@@ -75,13 +75,13 @@ void SavingThread::run()
     msg = trUtf8("Saving species...");
     if (!sm->save(database)) {
         database.close();
-        Log(UserError) << trUtf8("Unable to save changes to species");
+        emit error(trUtf8("Unable to save changes to species"));
         return;
     }
 
     if (!database.commit()) {
         database.close();
-        Log(UserError) << trUtf8("Unable to commit changes to database, try again");
+        emit error(trUtf8("Unable to commit changes to database, your changes were lost"));
         Log(Error) << "commit transaction" << database.lastError().text();
         return;
     }

@@ -27,6 +27,7 @@ signals:
 private slots:
     void threadDone();
     void advance(int percent, const QString & msg = QString());
+    void reportError(const QString &msg);
 
 private:
     SavingThread *thread;

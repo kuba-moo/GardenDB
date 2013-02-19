@@ -1,4 +1,5 @@
 #include "database.h"
+#include "logger.h"
 #include "savingwidget.h"
 #include "savingthread.h"
 #include "ui_savingwidget.h"
@@ -22,6 +23,7 @@ SavingWidget::SavingWidget(Database *db, QWidget *parent) :
     connect(thread, SIGNAL(finished()), SLOT(threadDone()));
     connect(thread, SIGNAL(advance(int)), SLOT(advance(int)));
     connect(thread, SIGNAL(advance(int,QString)), SLOT(advance(int,QString)));
+    connect(thread, SIGNAL(error(QString)), SLOT(reportError(QString)));
     thread->start();
 }
 
@@ -49,4 +51,9 @@ void SavingWidget::advance(int percent, const QString &msg)
     ui->progressBar->setValue(percent);
     if (msg.length())
         ui->msg->setText(msg);
+}
+
+void SavingWidget::reportError(const QString &msg)
+{
+    Log(UserError) << msg;
 }

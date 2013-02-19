@@ -9,6 +9,8 @@ Logger *Logger::_i = 0;
 
 Logger::Logger()
 {
+    QMutexLocker locker(&mutex);
+
     file = new QFile(QDir::homePath() + "/.garden.log");
 
     if (!file->open(QIODevice::Append))
@@ -23,6 +25,8 @@ Logger::~Logger()
 
 void Logger::log(Severity lvl, QString msg)
 {
+    QMutexLocker locker(&mutex);
+
     if (lvl == UserInfo && window) {
         QMessageBox::information(window, QApplication::trUtf8("Information"), msg);
         return;

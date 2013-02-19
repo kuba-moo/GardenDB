@@ -2,6 +2,7 @@
 #define LOGGER_H
 
 #include <QtCore>
+#include <QMutex>
 #include <QWidget>
 
 enum Severity {
@@ -29,6 +30,8 @@ private:
     Logger(const Logger &) {}
     Logger &operator=(const Logger &) { return *this; }
     ~Logger();
+
+    QMutex mutex;
 
     QFile *file;
     QWidget *window;
