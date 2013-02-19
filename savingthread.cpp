@@ -13,6 +13,7 @@ SavingThread::SavingThread(Database *database, QObject *parent) :
     db = database;
     alreadySaved = 0;
     dbFilename = QSqlDatabase::database().databaseName();
+    _hasErrors = true;
 }
 
 void SavingThread::oneDone()
@@ -47,6 +48,13 @@ void SavingThread::run()
 
     totalToBeSaved = bi->countModified() + ic->countModified() + sm->countModified();
 
+    if (!database.transaction()) {
+        database.close();
+        Log(UserError) << trUtf8("Unable to open database for saving, try again");
+        Log(Error) << "start transaction" << database.lastError().text();
+        return;
+    }
+
     connect(bi, SIGNAL(oneSaved()), SLOT(oneDone()));
     msg = trUtf8("Saving built in values...");
     if (!bi->save(database)) {
@@ -71,5 +79,13 @@ void SavingThread::run()
         return;
     }
 
+    if (!database.commit()) {
+        database.close();
+        Log(UserError) << trUtf8("Unable to commit changes to database, try again");
+        Log(Error) << "commit transaction" << database.lastError().text();
+        return;
+    }
+
+    _hasErrors = false;
     database.close();
 }

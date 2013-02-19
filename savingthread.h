@@ -13,6 +13,8 @@ public:
     
     void run();
 
+    bool hasErrors() const { return _hasErrors; }
+
 signals:
     void advance(int);
     void advance(int, const QString &);
@@ -25,6 +27,8 @@ private:
     Database *db;
     int totalToBeSaved, alreadySaved;
     QString msg, dbFilename;
+    /* Saving process failed. */
+    bool _hasErrors;
 };
 
 #endif // SAVINGTHREAD_H

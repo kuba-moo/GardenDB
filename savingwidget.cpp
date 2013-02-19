@@ -33,8 +33,13 @@ SavingWidget::~SavingWidget()
 void SavingWidget::threadDone()
 {
     ui->progressBar->setValue(100);
-    ui->msg->setText(trUtf8("Done"));
     ui->backToTable->setVisible(true);
+
+    if (thread->hasErrors()) {
+        ui->header->setText(trUtf8("Failed to save changes"));
+        ui->msg->setText(trUtf8("Failed"));
+    } else
+        ui->msg->setText(trUtf8("Done"));
 
     emit done();
 }

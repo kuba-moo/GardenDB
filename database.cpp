@@ -192,6 +192,12 @@ bool Database::init()
     QTime t; t.start();
     Log(Debug) << "Database init";
 
+    if (!database.transaction()) {
+        database.close();
+        Log(Error) << "start transaction" << database.lastError().text();
+        return false;
+    }
+
     QSqlQuery result;
     for (unsigned i=0; i < numCreates && !result.lastError().isValid(); i++)
         result = database.exec(creates[i]);
@@ -202,6 +208,12 @@ bool Database::init()
     if (result.lastError().isValid()) {
         Log(Error) << "init" << result.lastQuery() << " | "
                    << result.lastError().text();
+        return false;
+    }
+
+    if (!database.commit()) {
+        database.close();
+        Log(Error) << "commit transaction" << database.lastError().text();
         return false;
     }
 

@@ -113,14 +113,11 @@ bool Image::store(QSqlDatabase &db)
         fullsize.save(&buf, "JPG", Quality);
     }
 
-    db.transaction();
-
     QString ins("INSERT INTO ImagesIndex VALUES(%1, %2)");
-    QSqlQuery insertPicture(ins.arg(_id).arg(_ownerId));
+    QSqlQuery insertPicture(ins.arg(_id).arg(_ownerId), db);
     if (insertPicture.lastError().isValid()) {
         Log(Error) << "Image save index" << insertPicture.lastError().text()
                    << " | " << insertPicture.lastQuery();
-        db.rollback();
         return false;
     }
 
@@ -131,7 +128,6 @@ bool Image::store(QSqlDatabase &db)
     if (insertPicture.lastError().isValid()) {
         Log(Error) << "Image save image" << insertPicture.lastError().text()
                    << " | " << insertPicture.lastQuery();
-        db.rollback();
         return false;
     }
 
@@ -147,12 +143,6 @@ bool Image::store(QSqlDatabase &db)
     if (insertPicture.lastError().isValid()) {
         Log(Error) << "Image save cache" << insertPicture.lastError().text()
                    << " | " << insertPicture.lastQuery();
-        db.rollback();
-        return false;
-    }
-
-    if (!db.commit()) {
-        Log(Error) << "Image save commit: " << insertPicture.lastError().text();
         return false;
     }
 
