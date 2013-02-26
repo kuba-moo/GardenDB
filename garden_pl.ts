@@ -223,7 +223,17 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation>Otwarcie bazy nie powiodło się: poprawa formatu danych nie powiodła się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="242"/>
+        <location filename="database.cpp" line="157"/>
+        <source>Unable to read builtin values from database</source>
+        <translation>Odczyt wartości wbudowanych nie powiódł się</translation>
+    </message>
+    <message>
+        <location filename="database.cpp" line="170"/>
+        <source>Unable to read species from database</source>
+        <translation>Odczyt gatunków z bazy danych nie powiódł się</translation>
+    </message>
+    <message>
+        <location filename="database.cpp" line="256"/>
         <source>Database format needs to be upgraded please press ok and wait</source>
         <translation>Format bazy danych musi zostać zaktualizowany, może to potrwać nawet kilka minut w zależności od wielkości bazy.\nProszę nacisnąć przycisk Ok i cierpliwie czekać</translation>
     </message>
@@ -335,12 +345,12 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation type="obsolete">Edycja </translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="146"/>
+        <location filename="editor.cpp" line="147"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="148"/>
+        <location filename="editor.cpp" line="149"/>
         <source>Images (*.png *.jpg *.bmp)</source>
         <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
@@ -374,7 +384,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation>Gatunek</translation>
     </message>
     <message>
-        <location filename="gallery.ui" line="174"/>
+        <location filename="gallery.ui" line="180"/>
         <source>&lt; Back to the table</source>
         <translation>&lt; Wróć do tabeli</translation>
     </message>
@@ -544,7 +554,7 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <message>
         <location filename="omain.ui" line="14"/>
         <location filename="omain.cpp" line="63"/>
-        <location filename="omain.cpp" line="158"/>
+        <location filename="omain.cpp" line="164"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -657,8 +667,8 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Czy chcesz zapisać zmiany w pliku?</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="121"/>
-        <location filename="omain.cpp" line="126"/>
+        <location filename="omain.cpp" line="122"/>
+        <location filename="omain.cpp" line="128"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
@@ -702,12 +712,12 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Typy</translation>
     </message>
     <message>
-        <location filename="logger.cpp" line="13"/>
+        <location filename="logger.cpp" line="31"/>
         <source>Information</source>
         <translation>Informacja</translation>
     </message>
     <message>
-        <location filename="logger.cpp" line="18"/>
+        <location filename="logger.cpp" line="36"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
@@ -715,39 +725,49 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>SavingThread</name>
     <message>
-        <location filename="savingthread.cpp" line="40"/>
+        <location filename="savingthread.cpp" line="41"/>
         <source>Unable to open database for saving</source>
         <translation>Otwarcie bazy do zapisu nie powiodło się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="51"/>
+        <location filename="savingthread.cpp" line="53"/>
+        <source>Unable to open database for saving, try again</source>
+        <translation>Nie udało się otworzyć bazy danych w trybie do zapisu, spróbuj ponownie</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="59"/>
         <source>Saving built in values...</source>
         <translation>Zapisywanie wartości wbudowanych...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="54"/>
+        <location filename="savingthread.cpp" line="62"/>
         <source>Unable to save changes to builtin values</source>
         <translation>Zapis wartości wbudowanych nie powiódł się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="59"/>
+        <location filename="savingthread.cpp" line="67"/>
         <source>Saving images...</source>
         <translation>Zapisywanie obrazów...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="62"/>
+        <location filename="savingthread.cpp" line="70"/>
         <source>Unable to save changes to images</source>
         <translation>Zapis obrazów nie powiódł się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="67"/>
+        <location filename="savingthread.cpp" line="75"/>
         <source>Saving species...</source>
         <translation>Zapisywanie gatunków...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="70"/>
+        <location filename="savingthread.cpp" line="78"/>
         <source>Unable to save changes to species</source>
         <translation>Zapis gatunków nie powiódł się</translation>
+    </message>
+    <message>
+        <location filename="savingthread.cpp" line="84"/>
+        <source>Unable to commit changes to database, your changes were lost</source>
+        <translation>Nie udało się zatwierdzić wprowadzonych zmian, Twoje modyfikacje mogły zostać utracone</translation>
     </message>
 </context>
 <context>
@@ -773,12 +793,22 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Trwa zapis...</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="15"/>
+        <location filename="savingwidget.cpp" line="16"/>
         <source>No changes needs to be saved</source>
         <translation>Brak zmian do zapisania</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="36"/>
+        <location filename="savingwidget.cpp" line="41"/>
+        <source>Failed to save changes</source>
+        <translation>Nie udało się zapisać zmian</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.cpp" line="42"/>
+        <source>Failed</source>
+        <translation>Porażka</translation>
+    </message>
+    <message>
+        <location filename="savingwidget.cpp" line="44"/>
         <source>Done</source>
         <translation>Wykonano</translation>
     </message>

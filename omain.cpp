@@ -22,14 +22,15 @@ OMain::OMain(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    prevTableScroll = prevTableSel = 0;
     db = 0;
 
     Logger::instance()->setWindow(this);
 
-    connect(ui->actionNew_file, SIGNAL(triggered()), SLOT(openFile()));
-    connect(ui->actionOpen_file, SIGNAL(triggered()), SLOT(openFile()));
-    connect(ui->actionClose_file, SIGNAL(triggered()), SLOT(closeFile()));
-    connect(ui->actionSave, SIGNAL(triggered()), SLOT(save()));
+    connect(ui->actionNew_file, SIGNAL(triggered()), SLOT(handleActionMaySave()));
+    connect(ui->actionOpen_file, SIGNAL(triggered()), SLOT(handleActionMaySave()));
+    connect(ui->actionClose_file, SIGNAL(triggered()), SLOT(handleActionMaySave()));
+    connect(ui->actionSave, SIGNAL(triggered()), SLOT(triggerSave()));
     connect(ui->actionSpecies, SIGNAL(triggered()), SLOT(goToTable()));
     connect(ui->actionEdit_built_ins,SIGNAL(triggered()),SLOT(editBuiltIns()));
     connect(ui->actionQuit, SIGNAL(triggered()), SLOT(quit()));
@@ -76,53 +77,50 @@ void OMain::closeEvent(QCloseEvent *ev)
         return;
     }
 
-    if (askSave(AppQuit))
-        ev->accept();
-    else
-        ev->ignore();
+    ev->ignore();
+    userSave(AppQuit);
 }
 
-bool OMain::askSave(SaveTrigger trigger)
+void OMain::userSave(SaveTrigger trigger)
 {
-    if (!db || !db->isModified())
-        return true;
+    saveReason = trigger;
+
+    if (!db || !db->isModified()) {
+        dispatchAction();
+        return;
+    }
 
     int ret = QMessageBox::question(this, trUtf8("Save file"),
                                     trUtf8("Do you want to save changes?"),
                                     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
                                     QMessageBox::Save);
-    if (ret == QMessageBox::Cancel)
-        return false;
-    if (ret == QMessageBox::Save) {
-        save(trigger);
-        return false;
-    }
-    return true;
+
+    /* Start saving process it will do all the rest. */
+    if (ret == QMessageBox::Save)
+        save();
+    else if (ret == QMessageBox::Discard)
+        dispatchAction();
+    else if (ret == QMessageBox::Cancel)
+        return;
 }
 
 void OMain::quit()
 {
-    if (askSave(AppQuit))
-        qApp->quit();
+    userSave(AppQuit);
 }
 
 void OMain::openFile()
 {
-    QAction *action = qobject_cast<QAction *>(QObject::sender());
-
-    if (isFileOpened())
-        closeFile();
-
     QFileDialog fileDialog(this);
     fileDialog.setFileMode(QFileDialog::AnyFile);
     QString newFileName;
-    if (action == ui->actionOpen_file) {
+    if (saveReason == FileOpen) {
         Log(Debug) << "OMain openFile existing file";
         newFileName = fileDialog.getOpenFileName(this,
                                                  trUtf8("Select garden file"),
                                                  QString(),
                                                  QString("Garden files (*.grd)"));
-    } else {
+    } else if (saveReason == FileNew) {
         Log(Debug) << "OMain openFile new file";
         newFileName = fileDialog.getSaveFileName(this,
                                                  trUtf8("Select garden file"),
@@ -141,10 +139,35 @@ void OMain::openFile()
     doOpen(newFileName);
 }
 
-void OMain::closeFile()
+void OMain::handleActionMaySave()
 {
-    if (askSave(FileClose))
-        doCloseFile();
+    QAction *action = qobject_cast<QAction *>(QObject::sender());
+
+    if (action == ui->actionNew_file)
+        userSave(FileNew);
+    else if (action == ui->actionOpen_file)
+        userSave(FileOpen);
+    else if (action == ui->actionClose_file)
+        userSave(FileClose);
+}
+
+void OMain::dispatchAction()
+{
+    switch (saveReason) {
+    case Done: Log(Assert) << "Saving double done-done."; break;
+    case FileNew:
+    case FileOpen:
+        if (isFileOpened())
+            doCloseFile();
+        openFile();
+        break;
+    case FileClose:
+        if (isFileOpened())
+            doCloseFile();
+        break;
+    case AppQuit: qApp->quit(); break;
+    case ActionSave: break;
+    }
 }
 
 void OMain::doCloseFile()
@@ -164,10 +187,15 @@ void OMain::doCloseFile()
     this->setWindowTitle(trUtf8("Garden"));
 }
 
-void OMain::save(SaveTrigger reason)
+void OMain::triggerSave()
 {
-    saveReason = reason;
+    saveReason = ActionSave;
+    save();
+}
 
+void OMain::save()
+{
+    saveTablePos();
     ui->actionEdit_built_ins->setChecked(false);
     ui->actionSpecies->setChecked(false);
     ui->actionSave->setChecked(true);
@@ -188,12 +216,7 @@ void OMain::save(SaveTrigger reason)
 
 void OMain::savingDone()
 {
-    switch (saveReason) {
-    case Done: Log(Assert) << "Saving double done-done."; break;
-    case Action: saveReason = Done; break;
-    case FileClose: doCloseFile(); break;
-    case AppQuit: qApp->quit(); break;
-    }
+    dispatchAction();
 
     ui->actionNew_file->setEnabled(true);
     ui->actionOpen_file->setEnabled(true);
@@ -206,6 +229,7 @@ void OMain::savingDone()
 
 void OMain::editBuiltIns()
 {
+    saveTablePos();
     ui->actionEdit_built_ins->setChecked(true);
     ui->actionSpecies->setChecked(false);
     ui->actionSave->setChecked(false);
@@ -220,25 +244,35 @@ void OMain::editBuiltIns()
 
 void OMain::showGallery(const QModelIndex &index)
 {
+    saveTablePos();
     showGallery((Specimen *)index.data().toULongLong());
 }
 
 void OMain::showGallery(Specimen *s)
 {
+    /* prevTablePos still valid this comes from showGallery(index) or from details. */
     ui->actionEdit_built_ins->setChecked(false);
     ui->actionSpecies->setChecked(false);
 
     Gallery *gallery = new Gallery(db, s, this);
+    connect(gallery, SIGNAL(requestEditor(Specimen*)),
+            SLOT(showDetails(Specimen*)));
     connect(gallery, SIGNAL(finished()), SLOT(goToTable()));
     setCentralWidget(gallery);
 }
 
 void OMain::showDetails(const QModelIndex &index)
 {
+    saveTablePos();
+    showDetails((Specimen *)index.data().toULongLong());
+}
+
+void OMain::showDetails(Specimen *s)
+{
     ui->actionEdit_built_ins->setChecked(false);
     ui->actionSpecies->setChecked(false);
 
-    editor = new Editor(db, index, this);
+    editor = new Editor(db, s, this);
     connect(editor, SIGNAL(requestGallery(Specimen*)),
             SLOT(showGallery(Specimen*)));
     connect(editor, SIGNAL(finished()), SLOT(goToTable()));
@@ -254,10 +288,18 @@ void OMain::goToTable()
     if (centralWidget() == mainTable)
         return;
 
-    mainTable = new MainTable(db, this);
+    mainTable = new MainTable(db, prevTableScroll, prevTableSel, this);
     connect(mainTable, SIGNAL(requestEditor(QModelIndex)),
             SLOT(showDetails(QModelIndex)));
     connect(mainTable, SIGNAL(requestGallery(QModelIndex)),
             SLOT(showGallery(QModelIndex)));
     setCentralWidget(mainTable);
+}
+
+void OMain::saveTablePos()
+{
+    if (centralWidget() == mainTable) {
+        prevTableScroll = mainTable->scrollRow();
+        prevTableSel = mainTable->selectedRow();
+    }
 }

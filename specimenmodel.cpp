@@ -10,6 +10,7 @@
 SpecimenModel::SpecimenModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
+    ignoreRemove = false;
 }
 
 bool SpecimenModel::load(ImageCache *ic)
@@ -166,6 +167,12 @@ bool SpecimenModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool SpecimenModel::removeRows(int row, int count, const QModelIndex &parent)
 {
+    if (ignoreRemove) {
+        Log(Debug) << "Remove" << row << "caused by move, ignoring";
+        ignoreRemove = false;
+        return false;
+    }
+
     if (count <= 0 || row < 0 || (row + count) > rowCount(parent))
         return false;
 
@@ -251,7 +258,8 @@ bool SpecimenModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
     endMoveRows();
 
-    return false;
+    ignoreRemove = true;
+    return true;
 }
 
 void SpecimenModel::imageChanged()

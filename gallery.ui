@@ -194,6 +194,17 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QPushButton" name="editor">
+       <property name="text">
+        <string>Details &gt;</string>
+       </property>
+       <property name="icon">
+        <iconset resource="app.qrc">
+         <normaloff>:/icons/Icons/document-edit.png</normaloff>:/icons/Icons/document-edit.png</iconset>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

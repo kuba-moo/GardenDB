@@ -11,11 +11,13 @@
 #include <QScrollBar>
 #include <QTimer>
 
-Gallery::Gallery(Database *db, Specimen *specimen, QWidget *parent) :
+Gallery::Gallery(Database *db, Specimen *s, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Gallery)
 {
     ui->setupUi(this);
+
+    specimen = s;
 
     connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
@@ -31,6 +33,7 @@ Gallery::Gallery(Database *db, Specimen *specimen, QWidget *parent) :
             SLOT(setPicture(QModelIndex)));
     connect(ui->next, SIGNAL(clicked()), SLOT(next()));
     connect(ui->previous, SIGNAL(clicked()), SLOT(previous()));
+    connect(ui->editor, SIGNAL(clicked()), SLOT(emitRequestEditor()));
     current = 0;
     cutWidth = 220;
 
@@ -120,4 +123,9 @@ void Gallery::lateInit()
     }
 
     setPicture();
+}
+
+void Gallery::emitRequestEditor()
+{
+    emit requestEditor(specimen);
 }

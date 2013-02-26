@@ -15,6 +15,7 @@
         <file>Icons/go-previous.png</file>
         <file>Icons/go-next.png</file>
         <file>Icons/Gifts/128/rose.png</file>
+        <file>Icons/document-edit.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="pl">garden_pl.qm</file>

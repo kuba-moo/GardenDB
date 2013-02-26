@@ -7,13 +7,13 @@
 #include "specimenmodel.h"
 #include "specimenrenderer.h"
 
-#include <QDebug>
+#include <QScrollBar>
 #include <QSqlRelationalTableModel>
 #include <QSqlRelationalDelegate>
 #include <QStyledItemDelegate>
 #include <QMessageBox>
 
-MainTable::MainTable(Database *db, QWidget *parent) :
+MainTable::MainTable(Database *db, const int scrollTo, const int selected, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainTable)
 {
@@ -24,11 +24,24 @@ MainTable::MainTable(Database *db, QWidget *parent) :
     ui->listView->setModel(db->specimenModel());
     ui->listView->setItemDelegate(new SpecimenRenderer(db));
 
+    ui->nSpecies->setText(QString::number(ui->listView->model()->rowCount()));
+
+    QModelIndex index = db->specimenModel()->index(selected, 0);
+    if (index.isValid()) {
+        QItemSelectionModel *selection = new QItemSelectionModel(db->specimenModel());
+        selection->select(index, QItemSelectionModel::Select);
+        selection->setCurrentIndex(index, QItemSelectionModel::Select);
+        ui->listView->setSelectionModel(selection);
+    }
+    index = db->specimenModel()->index(scrollTo, 0);
+    if (index.isValid())
+        ui->listView->scrollTo(index);
+
     connect(ui->add, SIGNAL(clicked()), SLOT(addRow()));
     connect(ui->remove, SIGNAL(clicked()), SLOT(removeRow()));
     connect(db->imageCache(), SIGNAL(changed()), ui->listView, SLOT(update()));
     connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)),
-            SLOT(doubleClicked(QModelIndex)));;
+            SLOT(doubleClicked(QModelIndex)));
 }
 
 MainTable::~MainTable()
@@ -36,17 +49,25 @@ MainTable::~MainTable()
     delete ui;
 }
 
+int MainTable::selectedRow()
+{
+    const QModelIndexList &selected = ui->listView->selectionModel()->selectedRows();
+    if (selected.isEmpty())
+        return -1;
+    return selected.first().row();
+}
+
+int MainTable::scrollRow()
+{
+    return ui->listView->verticalScrollBar()->value();
+}
+
 void MainTable::addRow()
 {
     SpecimenModel *sm = database->specimenModel();
     sm->insertRow(sm->rowCount());
 
-    QModelIndex index = sm->index(sm->rowCount(QModelIndex()) - 1, 0);
-    QItemSelectionModel *selection = new QItemSelectionModel(sm);
-    selection->select(index, QItemSelectionModel::Select);
-    selection->setCurrentIndex(index, QItemSelectionModel::Select);
-    ui->listView->setSelectionModel(selection);
-    ui->listView->scrollTo(index);
+    emit requestEditor(sm->index(sm->rowCount() - 1, 0));
 }
 
 void MainTable::removeRow()
@@ -65,6 +86,8 @@ void MainTable::removeRow()
         int row = view->selectionModel()->currentIndex().row();
         view->model()->removeRow(row);
     }
+
+    ui->nSpecies->setText(QString::number(ui->listView->model()->rowCount()));
 }
 
 void MainTable::doubleClicked(const QModelIndex &index)

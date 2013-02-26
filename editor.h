@@ -23,7 +23,7 @@ class Editor : public QWidget
     Q_OBJECT
 
 public:
-    explicit Editor(Database *db, const QModelIndex &index, QWidget *parent);
+    explicit Editor(Database *db, Specimen *s, QWidget *parent);
     ~Editor();
 
 signals:
@@ -51,6 +51,7 @@ private slots:
     /* Set main photo to nth photo in listWidget. */
     void setMainPhoto(const QModelIndex &index);
     void emitRequestGallery();
+    void mainPhotoClicked();
 
 private:
     /* Reload photos list from images. */

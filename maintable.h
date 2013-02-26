@@ -21,8 +21,11 @@ signals:
     void requestEditor(QModelIndex);
 
 public:
-    explicit MainTable(Database *db, QWidget *parent = 0);
+    explicit MainTable(Database *db, const int scrollTo, const int selected, QWidget *parent = 0);
     ~MainTable();
+
+    int selectedRow();
+    int scrollRow();
 
 private slots:
     /* Add new row to model and scroll to it. */

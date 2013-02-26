@@ -350,6 +350,20 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QPushButton" name="gallery">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Gallery &gt;</string>
+          </property>
+          <property name="icon">
+           <iconset resource="app.qrc">
+            <normaloff>:/icons/image</normaloff>:/icons/image</iconset>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>

@@ -15,7 +15,7 @@
 #include <QMessageBox>
 #include <QStringList>
 
-Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
+Editor::Editor(Database *db, Specimen *s, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Editor)
 {
@@ -23,7 +23,7 @@ Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
 
     //connect(ic, SIGNAL(changed()), SLOT(reloadPhotos()));
     builtins = db->builtins();
-    specimen = (Specimen *)db->specimenModel()->data(index, Qt::DisplayRole).toULongLong();
+    specimen = s;
     if (!specimen)
         Log(Assert) << "Editor wants to edit empty specimen";
 
@@ -56,8 +56,9 @@ Editor::Editor(Database *db, const QModelIndex &index, QWidget *parent) :
             SLOT(setMainPhoto(QModelIndex)));
     connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)),
             SLOT(emitRequestGallery()));
+    connect(ui->gallery, SIGNAL(clicked()), SLOT(emitRequestGallery()));
     connect(ui->mainPhoto, SIGNAL(clicked()),
-            SLOT(emitRequestGallery()));
+            SLOT(mainPhotoClicked()));
     connect(ui->backToTable, SIGNAL(clicked()), SIGNAL(finished()));
 
     reloadPhotos();
@@ -129,6 +130,9 @@ void Editor::reloadPhotos()
             break;
         }
     }
+
+    if (!ui->listView->model()->rowCount())
+        ui->gallery->setEnabled(false);
 }
 
 void Editor::imageChanged(const QModelIndex &index,const QModelIndex &)
@@ -139,12 +143,17 @@ void Editor::imageChanged(const QModelIndex &index,const QModelIndex &)
         setMainPhoto(ui->listView->model()->index(0, 0));
     else if (current.row() == index.row())
         setMainPhoto(current);
+
+    if (!ui->listView->model()->rowCount())
+        ui->gallery->setEnabled(false);
+    else
+        ui->gallery->setEnabled(true);
 }
 
 void Editor::addPhoto()
 {
     QString fileName =
-            QFileDialog::getOpenFileName(this, trUtf8("Select garden file"),
+            QFileDialog::getOpenFileName(this, trUtf8("Select image to add"),
                                          QString(),
                                          trUtf8("Images (*.png *.jpg *.bmp)"));
     if (fileName.isEmpty())
@@ -155,6 +164,8 @@ void Editor::addPhoto()
     QModelIndex current = ui->listView->selectionModel()->currentIndex();
     if (!current.isValid())
         setMainPhoto(ui->listView->model()->index(0, 0));
+
+    ui->gallery->setEnabled(true);
 }
 
 void Editor::removePhoto()
@@ -171,8 +182,10 @@ void Editor::removePhoto()
         setMainPhoto(ui->listView->model()->index(row-1, 0));
     else if (row < ui->listView->model()->rowCount())
         setMainPhoto(ui->listView->model()->index(row, 0));
-    else
+    else {
         setMainPhoto(QModelIndex());
+        ui->gallery->setEnabled(false);
+    }
 }
 
 void Editor::setMainPhoto(const QModelIndex &index)
@@ -199,4 +212,12 @@ void Editor::setMainPhoto(const QModelIndex &index)
 void Editor::emitRequestGallery()
 {
     emit requestGallery(specimen);
+}
+
+void Editor::mainPhotoClicked()
+{
+    if (ui->listView->model()->rowCount())
+        emitRequestGallery();
+    else
+        addPhoto();
 }

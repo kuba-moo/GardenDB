@@ -48,6 +48,7 @@ private slots:
     void imageChanged();
 
 private:
+    bool ignoreRemove;
     int nextInsertId;
     QList<Specimen *> specs, removed;
 };
