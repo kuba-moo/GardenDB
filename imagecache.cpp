@@ -29,7 +29,7 @@ ImageCache::~ImageCache()
 
 bool ImageCache::load()
 {
-    QTime t;
+    QElapsedTimer t;
     t.start();
     QSqlQuery fetchAll("SELECT * FROM ImagesIndex");
     if (fetchAll.lastError().isValid()) {

@@ -9,7 +9,6 @@
 #include <QPixmap>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QTime>
 #include <QVariant>
 
 const QSize Image::CachedImageSize(400, 400);

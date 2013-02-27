@@ -341,16 +341,25 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation>&lt; Wróć do tabeli</translation>
     </message>
     <message>
+        <location filename="editor.ui" line="359"/>
+        <source>Gallery &gt;</source>
+        <translation>Galeria &gt;</translation>
+    </message>
+    <message>
         <source>Edit </source>
         <translation type="obsolete">Edycja </translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="147"/>
         <source>Select garden file</source>
-        <translation>Wybierz plik z ogrodem</translation>
+        <translation type="obsolete">Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="149"/>
+        <location filename="editor.cpp" line="156"/>
+        <source>Select image to add</source>
+        <translation>Wybierz obraz do dodania</translation>
+    </message>
+    <message>
+        <location filename="editor.cpp" line="158"/>
         <source>Images (*.png *.jpg *.bmp)</source>
         <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
@@ -388,6 +397,11 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <source>&lt; Back to the table</source>
         <translation>&lt; Wróć do tabeli</translation>
     </message>
+    <message>
+        <location filename="gallery.ui" line="200"/>
+        <source>Details &gt;</source>
+        <translation>Szczegóły &gt;</translation>
+    </message>
 </context>
 <context>
     <name>MainTable</name>
@@ -397,17 +411,27 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation>Formularz</translation>
     </message>
     <message>
-        <location filename="maintable.ui" line="60"/>
+        <location filename="maintable.ui" line="47"/>
+        <source>Number of species:</source>
+        <translation>Liczba gatunków:</translation>
+    </message>
+    <message>
+        <location filename="maintable.ui" line="54"/>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <location filename="maintable.ui" line="74"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="maintable.ui" line="67"/>
+        <location filename="maintable.ui" line="81"/>
         <source>Ctrl+A</source>
         <translation>Ctrl+A</translation>
     </message>
     <message>
-        <location filename="maintable.ui" line="74"/>
+        <location filename="maintable.ui" line="88"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
@@ -448,18 +472,18 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation type="obsolete">Typ</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="56"/>
-        <location filename="maintable.cpp" line="61"/>
+        <location filename="maintable.cpp" line="77"/>
+        <location filename="maintable.cpp" line="82"/>
         <source>Remove row</source>
         <translation>Usuń wiersz</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="57"/>
+        <location filename="maintable.cpp" line="78"/>
         <source>Choose row which you want to remove</source>
         <translation>Wybierz wiersz, który chcesz usunąć</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="62"/>
+        <location filename="maintable.cpp" line="83"/>
         <source>Sure you want to remove this row?</source>
         <translation>Czy na pewno chcesz usunąć ten wiersz?</translation>
     </message>
@@ -553,8 +577,8 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <name>OMain</name>
     <message>
         <location filename="omain.ui" line="14"/>
-        <location filename="omain.cpp" line="63"/>
-        <location filename="omain.cpp" line="164"/>
+        <location filename="omain.cpp" line="64"/>
+        <location filename="omain.cpp" line="187"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -647,28 +671,28 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Ctrl+M</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="72"/>
+        <location filename="omain.cpp" line="73"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="73"/>
+        <location filename="omain.cpp" line="74"/>
         <source>Saving changes in progress, please wait all changes are saved</source>
         <translation>Trwa zapisywanie zmian, proszę poczekać, aż wszystkie zmiany zostaną zapisane</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="90"/>
+        <location filename="omain.cpp" line="93"/>
         <source>Save file</source>
         <translation>Zapisz zmiany</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="91"/>
+        <location filename="omain.cpp" line="94"/>
         <source>Do you want to save changes?</source>
         <translation>Czy chcesz zapisać zmiany w pliku?</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="122"/>
-        <location filename="omain.cpp" line="128"/>
+        <location filename="omain.cpp" line="120"/>
+        <location filename="omain.cpp" line="126"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>

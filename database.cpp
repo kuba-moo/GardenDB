@@ -5,7 +5,7 @@
 #include "specimenmodel.h"
 
 #include <QApplication>
-#include <QTime>
+#include <QElapsedTimer>
 
 const int Database::version = 1;
 
@@ -189,7 +189,7 @@ bool Database::isModified()
 
 bool Database::init()
 {
-    QTime t; t.start();
+    QElapsedTimer t; t.start();
     Log(Debug) << "Database init";
 
     if (!database.transaction()) {
@@ -259,8 +259,7 @@ bool Database::upgrade(QSqlDatabase &db, const int from)
     if (from != 0)
         return false;
 
-    QTime t;
-    t.start();
+    QElapsedTimer t; t.start();
     /* We can leave it hanging on failure - close will rollback. */
     if (!db.transaction()) {
         Log(Error) << "upgrade can't begin";

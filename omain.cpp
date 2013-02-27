@@ -49,7 +49,7 @@ OMain::~OMain()
 
 void OMain::doOpen(QString newFileName)
 {
-    QTime t; t.start();
+    QElapsedTimer t; t.start();
     db = new Database(newFileName, this);
     if (!db->isOk()) {
         delete db;

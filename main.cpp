@@ -3,9 +3,37 @@
 #include "omain.h"
 #include <QTranslator>
 
+class Application : public QApplication
+{
+public:
+    Application(int &argc, char **argv) : QApplication(argc, argv) {}
+    virtual ~Application() {}
+
+    virtual bool notify(QObject *receiver, QEvent *event)
+    {
+        timer.start();
+        bool ret = QApplication::notify(receiver, event);
+
+        if (event && receiver && timer.elapsed() > 100) {
+            if (event->type() != 52)
+                Log(Warning) << "Processing event =" << (int)event->type()
+                             << "receiver=" << receiver->objectName()
+                             << "took" << (int)timer.elapsed() << "ms";
+            else
+                Log(Warning) << "Processing event =" << (int)event->type()
+                             << "took" << (int)timer.elapsed() << "ms";
+        }
+
+        return ret;
+    }
+
+private:
+    QElapsedTimer timer;
+};
+
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    Application a(argc, argv);
 
     QTranslator qtTranslator;
     qtTranslator.load(":/translations/pl");

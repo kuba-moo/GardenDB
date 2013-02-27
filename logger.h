@@ -50,6 +50,7 @@ public:
     Log &operator <<(const QStringList &list);
     Log &operator <<(const int &number);
     Log &operator <<(const unsigned long long &number);
+    Log &operator <<(const qint64 &number);
 
 private:
     Severity level;

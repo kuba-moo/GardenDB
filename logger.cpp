@@ -82,3 +82,9 @@ Log &Log::operator <<(const unsigned long long &number)
     list << QString::number(number);
     return *this;
 }
+
+Log &Log::operator <<(const qint64 &number)
+{
+    list << QString::number(number);
+    return *this;
+}
