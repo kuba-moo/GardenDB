@@ -49,40 +49,33 @@ bool Specimen::save(QSqlDatabase &db)
     QString str;
 
     if (state == New)
-        str = "INSERT INTO Species(id,no,name,grower,flowers,size,desc,"
-                "main_photo,fl_id,fw_id,fr_id,tp_id) VALUES(" +
-                QString::number(id) + "," +
-                QString::number(no) + "," +
-                "'" + name + "'," +
-                "'" + grower + "'," +
-                "'" + flowers + "'," +
-                "'" + size + "'," +
-                "'" + desc + "'," +
-                QString::number(main_photo) + "," +
-                QString::number(fl_id) + "," +
-                QString::number(fw_id) + "," +
-                QString::number(fr_id) + "," +
-                QString::number(tp_id) + ')';
+        str = "INSERT INTO Species(id,no,name,grower,flowers,size,desc,main_photo,fl_id,fw_id,fr_id,tp_id)"
+              " VALUES(:id,:no,:name,:grower,:flowers,:size,:desc,:main_photo,:fl_id,:fw_id,:fr_id,:tp_id)";
     else if (state == Modified)
-        str = "UPDATE Species SET "
-                "no=" + QString::number(no) + ","
-                "name='" + name + "',"
-                "grower='" + grower + "',"
-                "flowers='" + flowers + "',"
-                "size='" + size + "',"
-                "desc='" + desc + "',"
-                "main_photo=" + QString::number(main_photo) + ","
-                "fl_id=" + QString::number(fl_id) + ","
-                "fw_id=" + QString::number(fw_id) + ","
-                "fr_id=" + QString::number(fr_id) + ","
-                "tp_id=" + QString::number(tp_id) +
-                " WHERE id=" + QString::number(id);
+        str = "UPDATE Species SET no=:no,name=:name,grower=:grower,flowers=:flowers,size=:size,desc=:desc,"
+              "main_photo=:main_photo,fl_id=:fl_id,fw_id=:fw_id,fr_id=:fr_id,tp_id=:tp_id WHERE id=:id";
     else if (state == Removed)
-        str = "DELETE FROM Species WHERE id=" + QString::number(id);
+        str = "DELETE FROM Species WHERE id=:id";
     else
         Log(Assert) << "Someone saved unmodified Specimen";
 
-    QSqlQuery query(str, db);
+    QSqlQuery query(db);
+    query.prepare(str);
+    query.bindValue(":id", id);
+    if (state == New || state == Modified) {
+        query.bindValue(":no", no);
+        query.bindValue(":name", name);
+        query.bindValue(":grower", grower);
+        query.bindValue(":flowers", flowers);
+        query.bindValue(":size", size);
+        query.bindValue(":desc", desc);
+        query.bindValue(":main_photo", main_photo);
+        query.bindValue(":fl_id", fl_id);
+        query.bindValue(":fw_id", fw_id);
+        query.bindValue(":fr_id", fr_id);
+        query.bindValue(":tp_id", tp_id);
+    }
+    query.exec();
     if (query.lastError().isValid()) {
         Log(Error) << query.lastError().text() << " | " << query.lastQuery();
         return false;
@@ -99,7 +92,7 @@ bool Specimen::save(QSqlDatabase &db)
 void Specimen::markModified()
 {
     if (state == Removed)
-        qDebug() << "Huh?? Removed species alive?";
+        Log(Error) << "Huh?? Removed species alive?";
     if (state == Unmodified)
         state = Modified;
 }
