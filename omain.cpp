@@ -225,6 +225,8 @@ void OMain::savingDone()
     ui->actionSpecies->setEnabled(true);
     ui->actionEdit_built_ins->setEnabled(true);
     ui->actionQuit->setEnabled(true);
+
+    saveReason = Done;
 }
 
 void OMain::editBuiltIns()
