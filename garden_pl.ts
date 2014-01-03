@@ -230,7 +230,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="database.cpp" line="170"/>
         <source>Unable to read species from database</source>
-        <translation>Odczyt gatunków z bazy danych nie powiódł się</translation>
+        <translation>Odczyt odmian z bazy danych nie powiódł się</translation>
     </message>
     <message>
         <location filename="database.cpp" line="256"/>
@@ -261,7 +261,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="editor.ui" line="58"/>
         <source>Specimen</source>
-        <translation>Gatunek</translation>
+        <translation>Odmiana</translation>
     </message>
     <message>
         <location filename="editor.ui" line="105"/>
@@ -390,7 +390,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="gallery.ui" line="32"/>
         <source>Specimen</source>
-        <translation>Gatunek</translation>
+        <translation>Odmiana</translation>
     </message>
     <message>
         <location filename="gallery.ui" line="180"/>
@@ -413,7 +413,7 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
     <message>
         <location filename="maintable.ui" line="47"/>
         <source>Number of species:</source>
-        <translation>Liczba gatunków:</translation>
+        <translation>Liczba odmian:</translation>
     </message>
     <message>
         <location filename="maintable.ui" line="54"/>
@@ -658,7 +658,7 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <message>
         <location filename="omain.ui" line="158"/>
         <source>Species table</source>
-        <translation>Tabela gatunków</translation>
+        <translation>Tabela odmian</translation>
     </message>
     <message>
         <location filename="omain.ui" line="161"/>
@@ -781,12 +781,12 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <message>
         <location filename="savingthread.cpp" line="75"/>
         <source>Saving species...</source>
-        <translation>Zapisywanie gatunków...</translation>
+        <translation>Zapisywanie odmian...</translation>
     </message>
     <message>
         <location filename="savingthread.cpp" line="78"/>
         <source>Unable to save changes to species</source>
-        <translation>Zapis gatunków nie powiódł się</translation>
+        <translation>Zapis odmian nie powiódł się</translation>
     </message>
     <message>
         <location filename="savingthread.cpp" line="84"/>
