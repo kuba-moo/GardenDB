@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2014 Jakub Kicinski <kubakici@wp.pl>
+ * Distributed under the GNU GPL v2. For full terms see the file gpl-2.0.txt.
+ **/
 #include "builtins.h"
 #include "obuiltinseditor.h"
 #include "ui_obuiltinseditor.h"

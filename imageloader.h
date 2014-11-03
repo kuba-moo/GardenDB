@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2014 Jakub Kicinski <kubakici@wp.pl>
+ * Distributed under the GNU GPL v2. For full terms see the file gpl-2.0.txt.
+ **/
 #ifndef IMAGELOADER_H
 #define IMAGELOADER_H
 

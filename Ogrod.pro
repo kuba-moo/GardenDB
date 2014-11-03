@@ -70,6 +70,7 @@ TRANSLATIONS = garden_pl.ts
 
 OTHER_FILES += \
     win_app.rc \
-    garden-install.nsi
+    garden-install.nsi \
+    TODO
 
 win32:RC_FILE = win_app.rc

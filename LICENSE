@@ -1,0 +1,7 @@
+All C++ code and header files are licensed under GPLv2 (see "gpl-2.0.txt").
+
+All Qt design files (.ui) are licensed under GPLv2 (see "gpl-2.0.txt").
+
+All graphics directly in the Icons folder are from the Oxygen Project <http://www.oxygen-icons.org/> and are licensed under LGPLv3 (see "lgpl-3.0.txt"). Sources of these icons are placed in the Icons/SVG directory.
+
+Gift icons (distributed under Icons/Gifts) are made by IconDrawer team <www.icondrawer.com>. See "Icons/Gifts/Read Me.rtf" for more information on licensing.
