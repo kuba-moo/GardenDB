@@ -1,0 +1,5 @@
+Features:
+          - map
+Bugs:
+          - all strings passed to queries should be escaped
+            through binding or formatValue
