@@ -10,6 +10,7 @@
 #include "specimenrenderer.h"
 
 #include <QPainter>
+#include <QStaticText>
 
 const int SpecimenRenderer::MinWidth = 1000;
 
@@ -79,9 +80,12 @@ void SpecimenRenderer::paint(QPainter *painter,
     sizeToFit(painter, target, i->getFlowers());
     target.setLeft(target.left() + fieldWidth + Space);
 
+    QStaticText text(i->getDesc());
+    text.setTextWidth(option.rect.width() - target.left());
+    text.setTextOption(QTextOption(Qt::AlignVCenter));
     target.setWidth(option.rect.width() - target.left());
     target.setTop(target.top() + 2);
-    painter->drawText(target, Qt::AlignVCenter | Qt::TextWordWrap, i->getDesc());
+    painter->drawStaticText(target.topLeft(), text);
     target.setLeft(target.left() + fieldWidth + Space);
 }
 

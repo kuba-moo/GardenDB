@@ -13,6 +13,7 @@ namespace Ui {
 }
 
 class QComboBox;
+class QTextCharFormat;
 
 class Builtins;
 class Database;
@@ -56,10 +57,17 @@ private slots:
     void setMainPhoto(const QModelIndex &index);
     void emitRequestGallery();
     void mainPhotoClicked();
+    /* Text formatting callbacks. */
+    void textColor();
+    void textBold();
+    void textItalic();
+    void descSelChanged();
 
 private:
     /* Reload photos list from images. */
     void reloadPhotos();
+    /* Rich-text editing functions. */
+    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
 
     Ui::Editor *ui;
     Specimen *specimen;

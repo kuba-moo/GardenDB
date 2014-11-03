@@ -137,7 +137,7 @@
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
             <property name="dragDropMode">
-             <enum>QAbstractItemView::DropOnly</enum>
+             <enum>QAbstractItemView::NoDragDrop</enum>
             </property>
             <property name="defaultDropAction">
              <enum>Qt::TargetMoveAction</enum>
@@ -299,30 +299,114 @@
           <item row="7" column="1">
            <widget class="QComboBox" name="frost"/>
           </item>
-          <item row="9" column="1">
-           <widget class="QWidget" name="widget" native="true">
-            <layout class="QHBoxLayout" name="horizontalLayout"/>
-           </widget>
-          </item>
-          <item row="8" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="label_10">
             <property name="text">
              <string>Description:</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
-           <widget class="QTextBrowser" name="desc">
-            <property name="sizeIncrement">
-             <size>
-              <width>0</width>
-              <height>12</height>
-             </size>
+          <item row="9" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="leftMargin">
+             <number>0</number>
             </property>
-            <property name="readOnly">
-             <bool>false</bool>
+            <property name="topMargin">
+             <number>0</number>
             </property>
-           </widget>
+            <item>
+             <widget class="QTextEdit" name="desc">
+              <property name="sizeIncrement">
+               <size>
+                <width>0</width>
+                <height>12</height>
+               </size>
+              </property>
+              <property name="readOnly">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QToolButton" name="bold">
+                <property name="toolTip">
+                 <string>Bold</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="app.qrc">
+                  <normaloff>:/icons/Icons/format-text-bold.png</normaloff>:/icons/Icons/format-text-bold.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="italic">
+                <property name="toolTip">
+                 <string>Italics</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="app.qrc">
+                  <normaloff>:/icons/Icons/format-text-italic.png</normaloff>:/icons/Icons/format-text-italic.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="shortcut">
+                 <string>Ctrl+I</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="color">
+                <property name="toolTip">
+                 <string>Color</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="app.qrc">
+                  <normaloff>:/icons/Icons/fill-color.png</normaloff>:/icons/Icons/fill-color.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -381,7 +465,6 @@
   <tabstop>flowering</tabstop>
   <tabstop>bush</tabstop>
   <tabstop>frost</tabstop>
-  <tabstop>desc</tabstop>
  </tabstops>
  <resources>
   <include location="app.qrc"/>

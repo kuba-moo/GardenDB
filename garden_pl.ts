@@ -158,33 +158,33 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
 <context>
     <name>Builtins</name>
     <message>
-        <location filename="builtins.cpp" line="14"/>
+        <location filename="builtins.cpp" line="18"/>
         <source>Types</source>
         <translation>Typy</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="14"/>
+        <location filename="builtins.cpp" line="18"/>
         <source>Flavour</source>
         <translation>Zapach</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="15"/>
+        <location filename="builtins.cpp" line="19"/>
         <source>Frost resistance</source>
         <translation>Mrozoodporność</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="15"/>
+        <location filename="builtins.cpp" line="19"/>
         <source>Flowering time</source>
         <translation>Pora kwitnienia</translation>
     </message>
     <message>
-        <location filename="builtins.cpp" line="150"/>
-        <location filename="builtins.cpp" line="187"/>
+        <location filename="builtins.cpp" line="154"/>
+        <location filename="builtins.cpp" line="191"/>
         <source>Duplicated value</source>
         <translation>Powtórzona wartość, wartości muszą być unikatowe</translation>
     </message>
     <message>
-        <location filename="builtins.h" line="37"/>
+        <location filename="builtins.h" line="41"/>
         <source>New value</source>
         <translation>Nowa wartość</translation>
     </message>
@@ -192,48 +192,48 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
 <context>
     <name>Database</name>
     <message>
-        <location filename="database.cpp" line="114"/>
+        <location filename="database.cpp" line="118"/>
         <source>Unable to open database:</source>
         <oldsource>Unable to open database: %1</oldsource>
         <translation>Otwarcie bazy nie powiodło się:</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="121"/>
+        <location filename="database.cpp" line="125"/>
         <source>Unable to initialize new database</source>
         <translation>Tworzenie nowej bazy nie powiodło się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="129"/>
+        <location filename="database.cpp" line="133"/>
         <source>Unable to open database: unknown version</source>
         <translation>Otwarcie bazy nie powiodło się: nieznana wersja</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="134"/>
+        <location filename="database.cpp" line="138"/>
         <source>Unable to open database: it was created with a newer version of the program</source>
         <translation>Otwarcie bazy nie powiodło się: baza została stworzona w nowszej wersji programu i nie jest kompatybilna</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="141"/>
+        <location filename="database.cpp" line="145"/>
         <source>Unable to open database: it was created with an older version of the program and upgrade had failed</source>
         <translation>Otwarcie bazy nie powiodło się: baza została stworzona w starszej wersji programu i nie udało się jej uaktualnić</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="149"/>
+        <location filename="database.cpp" line="153"/>
         <source>Unable to open database: fixing data format has failed</source>
         <translation>Otwarcie bazy nie powiodło się: poprawa formatu danych nie powiodła się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="157"/>
+        <location filename="database.cpp" line="161"/>
         <source>Unable to read builtin values from database</source>
         <translation>Odczyt wartości wbudowanych nie powiódł się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="170"/>
+        <location filename="database.cpp" line="174"/>
         <source>Unable to read species from database</source>
         <translation>Odczyt odmian z bazy danych nie powiódł się</translation>
     </message>
     <message>
-        <location filename="database.cpp" line="256"/>
+        <location filename="database.cpp" line="260"/>
         <source>Database format needs to be upgraded please press ok and wait</source>
         <translation>Format bazy danych musi zostać zaktualizowany, może to potrwać nawet kilka minut w zależności od wielkości bazy.\nProszę nacisnąć przycisk Ok i cierpliwie czekać</translation>
     </message>
@@ -330,18 +330,38 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation>Mrozoodporność:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="310"/>
+        <location filename="editor.ui" line="305"/>
         <source>Description:</source>
         <translation>Opis:</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="336"/>
+        <location filename="editor.ui" line="341"/>
+        <source>Bold</source>
+        <translation>Pogrubienie</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="364"/>
+        <source>Italics</source>
+        <translation>Kursywa</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="380"/>
+        <source>Ctrl+I</source>
+        <translation>Ctrl+I</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="390"/>
+        <source>Color</source>
+        <translation>Kolor</translation>
+    </message>
+    <message>
+        <location filename="editor.ui" line="420"/>
         <source>&lt; Back to the table</source>
         <oldsource>&lt; Back to table</oldsource>
         <translation>&lt; Wróć do tabeli</translation>
     </message>
     <message>
-        <location filename="editor.ui" line="359"/>
+        <location filename="editor.ui" line="443"/>
         <source>Gallery &gt;</source>
         <translation>Galeria &gt;</translation>
     </message>
@@ -354,12 +374,12 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation type="obsolete">Wybierz plik z ogrodem</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="156"/>
+        <location filename="editor.cpp" line="166"/>
         <source>Select image to add</source>
         <translation>Wybierz obraz do dodania</translation>
     </message>
     <message>
-        <location filename="editor.cpp" line="158"/>
+        <location filename="editor.cpp" line="168"/>
         <source>Images (*.png *.jpg *.bmp)</source>
         <translation>Obrazy (*.png *.jpg *.bmp)</translation>
     </message>
@@ -472,18 +492,18 @@ Proszę zapisać anulować edycję i spróbować ponownie.</translation>
         <translation type="obsolete">Typ</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="77"/>
-        <location filename="maintable.cpp" line="82"/>
+        <location filename="maintable.cpp" line="81"/>
+        <location filename="maintable.cpp" line="86"/>
         <source>Remove row</source>
         <translation>Usuń wiersz</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="78"/>
+        <location filename="maintable.cpp" line="82"/>
         <source>Choose row which you want to remove</source>
         <translation>Wybierz wiersz, który chcesz usunąć</translation>
     </message>
     <message>
-        <location filename="maintable.cpp" line="83"/>
+        <location filename="maintable.cpp" line="87"/>
         <source>Sure you want to remove this row?</source>
         <translation>Czy na pewno chcesz usunąć ten wiersz?</translation>
     </message>
@@ -563,12 +583,12 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Nie można usunąć wartości, ponieważ jest ona ustawiona w %1 gatunkach.</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="78"/>
+        <location filename="obuiltinseditor.cpp" line="82"/>
         <source>Remove row</source>
         <translation>Usuń wiersz</translation>
     </message>
     <message>
-        <location filename="obuiltinseditor.cpp" line="79"/>
+        <location filename="obuiltinseditor.cpp" line="83"/>
         <source>Sure you want to remove this row?</source>
         <translation>Czy na pewno chcesz usunąć ten wiersz?</translation>
     </message>
@@ -577,8 +597,8 @@ i nie będzie możliwości cofnięcia zmian.</translation>
     <name>OMain</name>
     <message>
         <location filename="omain.ui" line="14"/>
-        <location filename="omain.cpp" line="64"/>
-        <location filename="omain.cpp" line="187"/>
+        <location filename="omain.cpp" line="68"/>
+        <location filename="omain.cpp" line="191"/>
         <source>Garden</source>
         <translation>Ogród</translation>
     </message>
@@ -671,28 +691,28 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Ctrl+M</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="73"/>
+        <location filename="omain.cpp" line="77"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="74"/>
+        <location filename="omain.cpp" line="78"/>
         <source>Saving changes in progress, please wait all changes are saved</source>
         <translation>Trwa zapisywanie zmian, proszę poczekać, aż wszystkie zmiany zostaną zapisane</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="93"/>
+        <location filename="omain.cpp" line="97"/>
         <source>Save file</source>
         <translation>Zapisz zmiany</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="94"/>
+        <location filename="omain.cpp" line="98"/>
         <source>Do you want to save changes?</source>
         <translation>Czy chcesz zapisać zmiany w pliku?</translation>
     </message>
     <message>
-        <location filename="omain.cpp" line="120"/>
-        <location filename="omain.cpp" line="126"/>
+        <location filename="omain.cpp" line="124"/>
+        <location filename="omain.cpp" line="130"/>
         <source>Select garden file</source>
         <translation>Wybierz plik z ogrodem</translation>
     </message>
@@ -712,22 +732,22 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>QApplication</name>
     <message utf8="true">
-        <location filename="database.cpp" line="75"/>
+        <location filename="database.cpp" line="79"/>
         <source>pnące</source>
         <translation>pnące</translation>
     </message>
     <message utf8="true">
-        <location filename="database.cpp" line="83"/>
+        <location filename="database.cpp" line="87"/>
         <source>średni</source>
         <translation>średni</translation>
     </message>
     <message utf8="true">
-        <location filename="database.cpp" line="84"/>
+        <location filename="database.cpp" line="88"/>
         <source>słaby</source>
         <translation>słaby</translation>
     </message>
     <message utf8="true">
-        <location filename="database.cpp" line="89"/>
+        <location filename="database.cpp" line="93"/>
         <source>słabo powtarza</source>
         <translation>słabo powtarza</translation>
     </message>
@@ -736,12 +756,12 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation type="obsolete">Typy</translation>
     </message>
     <message>
-        <location filename="logger.cpp" line="31"/>
+        <location filename="logger.cpp" line="35"/>
         <source>Information</source>
         <translation>Informacja</translation>
     </message>
     <message>
-        <location filename="logger.cpp" line="36"/>
+        <location filename="logger.cpp" line="40"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
@@ -749,47 +769,47 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>SavingThread</name>
     <message>
-        <location filename="savingthread.cpp" line="41"/>
+        <location filename="savingthread.cpp" line="45"/>
         <source>Unable to open database for saving</source>
         <translation>Otwarcie bazy do zapisu nie powiodło się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="53"/>
+        <location filename="savingthread.cpp" line="57"/>
         <source>Unable to open database for saving, try again</source>
         <translation>Nie udało się otworzyć bazy danych w trybie do zapisu, spróbuj ponownie</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="59"/>
+        <location filename="savingthread.cpp" line="63"/>
         <source>Saving built in values...</source>
         <translation>Zapisywanie wartości wbudowanych...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="62"/>
+        <location filename="savingthread.cpp" line="66"/>
         <source>Unable to save changes to builtin values</source>
         <translation>Zapis wartości wbudowanych nie powiódł się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="67"/>
+        <location filename="savingthread.cpp" line="71"/>
         <source>Saving images...</source>
         <translation>Zapisywanie obrazów...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="70"/>
+        <location filename="savingthread.cpp" line="74"/>
         <source>Unable to save changes to images</source>
         <translation>Zapis obrazów nie powiódł się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="75"/>
+        <location filename="savingthread.cpp" line="79"/>
         <source>Saving species...</source>
         <translation>Zapisywanie odmian...</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="78"/>
+        <location filename="savingthread.cpp" line="82"/>
         <source>Unable to save changes to species</source>
         <translation>Zapis odmian nie powiódł się</translation>
     </message>
     <message>
-        <location filename="savingthread.cpp" line="84"/>
+        <location filename="savingthread.cpp" line="88"/>
         <source>Unable to commit changes to database, your changes were lost</source>
         <translation>Nie udało się zatwierdzić wprowadzonych zmian, Twoje modyfikacje mogły zostać utracone</translation>
     </message>
@@ -817,22 +837,22 @@ i nie będzie możliwości cofnięcia zmian.</translation>
         <translation>Trwa zapis...</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="16"/>
+        <location filename="savingwidget.cpp" line="20"/>
         <source>No changes needs to be saved</source>
         <translation>Brak zmian do zapisania</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="41"/>
+        <location filename="savingwidget.cpp" line="45"/>
         <source>Failed to save changes</source>
         <translation>Nie udało się zapisać zmian</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="42"/>
+        <location filename="savingwidget.cpp" line="46"/>
         <source>Failed</source>
         <translation>Porażka</translation>
     </message>
     <message>
-        <location filename="savingwidget.cpp" line="44"/>
+        <location filename="savingwidget.cpp" line="48"/>
         <source>Done</source>
         <translation>Wykonano</translation>
     </message>
@@ -851,32 +871,32 @@ i nie będzie możliwości cofnięcia zmian.</translation>
 <context>
     <name>SpecimenRenderer</name>
     <message>
-        <location filename="specimenrenderer.cpp" line="57"/>
+        <location filename="specimenrenderer.cpp" line="62"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="specimenrenderer.cpp" line="57"/>
+        <location filename="specimenrenderer.cpp" line="62"/>
         <source>Flowering</source>
         <translation>Kwitnienie</translation>
     </message>
     <message>
-        <location filename="specimenrenderer.cpp" line="57"/>
+        <location filename="specimenrenderer.cpp" line="62"/>
         <source>Grower</source>
         <translation>Hodowca</translation>
     </message>
     <message>
-        <location filename="specimenrenderer.cpp" line="66"/>
+        <location filename="specimenrenderer.cpp" line="71"/>
         <source>Flavour</source>
         <translation>Zapach</translation>
     </message>
     <message>
-        <location filename="specimenrenderer.cpp" line="66"/>
+        <location filename="specimenrenderer.cpp" line="71"/>
         <source>Size</source>
         <translation>Wielkość</translation>
     </message>
     <message>
-        <location filename="specimenrenderer.cpp" line="66"/>
+        <location filename="specimenrenderer.cpp" line="71"/>
         <source>Frost</source>
         <translation>Mróz</translation>
     </message>

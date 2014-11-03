@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2014 Jakub Kicinski <kubakici@wp.pl>
+ * Copyright (c) 2013 Digia Plc and/or its subsidiary(-ies).
  * Distributed under the GNU GPL v2. For full terms see the file gpl-2.0.txt.
  **/
 #include "editor.h"
@@ -15,6 +16,7 @@
 #include "ui_editor.h"
 
 #include <QBuffer>
+#include <QColorDialog>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStringList>
@@ -68,6 +70,11 @@ Editor::Editor(Database *db, Specimen *s, QWidget *parent) :
     reloadPhotos();
 
     ui->listView->setAcceptDrops(true);
+
+    connect(ui->color, SIGNAL(clicked()), SLOT(textColor()));
+    connect(ui->bold, SIGNAL(clicked()), SLOT(textBold()));
+    connect(ui->italic, SIGNAL(clicked()), SLOT(textItalic()));
+    connect(ui->desc, SIGNAL(selectionChanged()), SLOT(descSelChanged()));
 }
 
 Editor::~Editor()
@@ -95,7 +102,7 @@ void Editor::fillCombo(QComboBox *combo, const QString &category, const int curr
 
 void Editor::setDescription()
 {
-    specimen->setDesc(ui->desc->document()->toPlainText());
+    specimen->setDesc(ui->desc->document()->toHtml());
 }
 
 void Editor::populateComboes()
@@ -224,4 +231,44 @@ void Editor::mainPhotoClicked()
         emitRequestGallery();
     else
         addPhoto();
+}
+
+void Editor::textColor()
+{
+    QColor col = QColorDialog::getColor(ui->desc->textColor(), this);
+    if (!col.isValid())
+        return;
+    QTextCharFormat fmt;
+    fmt.setForeground(col);
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+
+void Editor::textBold()
+{
+    QTextCharFormat fmt;
+    fmt.setFontWeight(ui->bold->isChecked() ? QFont::Bold : QFont::Normal);
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+void Editor::textItalic()
+{
+    QTextCharFormat fmt;
+    fmt.setFontItalic(ui->italic->isChecked());
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+void Editor::descSelChanged()
+{
+    ui->bold->setChecked(false);
+    ui->italic->setChecked(false);
+}
+
+void Editor::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
+{
+    QTextCursor cursor = ui->desc->textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+    cursor.mergeCharFormat(format);
+    ui->desc->mergeCurrentCharFormat(format);
 }
